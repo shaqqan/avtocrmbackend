@@ -1,12 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Role, User } from 'generated/prisma';
+import { Prisma, User } from '@prisma/client';
+
+type UserWithRelations = User & {
+    roles: { role: { name: string } }[];
+    permissions: { permission: { name: string } }[];
+};
 
 export class GetMeResponseDto {
-    constructor(user: User) {
+    constructor(user: UserWithRelations) {
         this.id = user.id;
         this.email = user.email;
         this.firstName = user.firstName;
         this.lastName = user.lastName;
+        this.roles = user.roles.map(role => role.role.name);
+        this.permissions = user.permissions.map(permission => permission.permission.name);
     }
 
     @ApiProperty({ type: Number })
@@ -23,4 +30,7 @@ export class GetMeResponseDto {
 
     @ApiProperty({ type: [String] })
     roles?: string[];
+
+    @ApiProperty({ type: [String] })
+    permissions?: string[];
 }

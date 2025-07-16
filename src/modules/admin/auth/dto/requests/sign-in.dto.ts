@@ -13,7 +13,7 @@ export class SignInDto {
     })
     @ApiProperty({
         description: 'The email of the user',
-        example: 'user@kitob.uz'
+        example: 'admin@kitob.uz'
     })
     email: string;
 
@@ -31,7 +31,7 @@ export class SignInDto {
     })
     @ApiProperty({
         description: 'The password of the user',
-        example: 'User123!'
+        example: 'Password123!'
     })
     password: string;
 }

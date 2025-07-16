@@ -25,7 +25,24 @@ export class JwtAdminAccessStrategy extends PassportStrategy(Strategy, 'jwt-admi
     async validate(payload: { email: string }) {
         const user = await this.prisma.user.findUnique({
             include: {
-                roles: true,
+                roles: {
+                    include: {
+                        role: {
+                            include: {
+                                permissions: {
+                                    include: {
+                                        permission: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                permissions: {
+                    include: {
+                        permission: true
+                    }
+                }
             },
             where: {
                 email: payload.email,

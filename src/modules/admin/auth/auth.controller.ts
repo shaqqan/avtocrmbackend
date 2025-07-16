@@ -22,7 +22,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
   @Post('sign-in')
-  @HttpCode(HttpStatus.OK) 
+  @HttpCode(HttpStatus.OK)
   @UseFilters(new I18nValidationExceptionFilter())
   @ApiOperation({ summary: 'Sign in to the admin panel' })
   @ApiGlobalResponses()
@@ -52,8 +52,7 @@ export class AuthController {
   }
 
   @Get('me')
-  @UseGuards(JwtAuthAdminAccessGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthAdminAccessGuard)
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get me' })

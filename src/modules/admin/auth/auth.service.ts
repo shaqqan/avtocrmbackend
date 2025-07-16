@@ -28,6 +28,18 @@ export class AuthService {
     const { email, password } = signInDto;
 
     const user = await this.prisma.user.findUnique({
+      include: {
+        roles: {
+          include: {
+            role: true,
+          },
+        },
+        permissions: {
+          include: {
+            permission: true,
+          },
+        },
+      },
       where: {
         email: email,
       }
@@ -69,20 +81,14 @@ export class AuthService {
   async getMe(user: User): Promise<GetMeResponseDto> {
     const userWithRoles = await this.prisma.user.findUnique({
       where: { id: user.id },
-      include: { roles: { include: { role: true } } }
+      include: { roles: { include: { role: true } }, permissions: { include: { permission: true } } }
     });
 
     if (!userWithRoles) {
       throw new NotFoundException(this.i18n.t('errors.USER.NOT_FOUND'));
     }
 
-    return {
-      id: userWithRoles.id,
-      email: userWithRoles.email,
-      firstName: userWithRoles.firstName,
-      lastName: userWithRoles.lastName,
-      roles: userWithRoles.roles.map((role) => role.role.name),
-    };
+    return new GetMeResponseDto(userWithRoles);
   }
 
   private async generateTokens(user: User): Promise<{ accessToken: string, refreshToken: string }> {

@@ -12,12 +12,11 @@
     "TOKEN_EXPIRED": "Token has expired",
     "INVALID_PASSWORD": "Invalid password"
   },
-  "FORBIDDEN": {
-    "ACCESS": "You are not allowed to access this resource",
-    "ROLES": "You are not allowed to access this resource",
-    "PERMISSIONS": "You are not allowed to access this resource"
-  },
   "USER": {
     "NOT_FOUND": "User not found"
+  },
+  "FORBIDDEN": {
+    "ROLES": "You don't have the required role to perform this action",
+    "PERMISSIONS": "You don't have the required permissions to perform this action"
   }
 }
