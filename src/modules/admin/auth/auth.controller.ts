@@ -14,6 +14,7 @@ import { RefreshTokenResponseDto } from './dto/responses/refresh-token';
 import { Roles } from 'src/common/decorators';
 import { Role } from 'src/common/enums';
 import { I18nValidationExceptionFilter } from 'nestjs-i18n';
+import { RolesGuard } from 'src/common/guards/role.guard';
 
 @Controller('admin/auth')
 @ApiTags('🔐 Authentication')
@@ -51,7 +52,7 @@ export class AuthController {
   }
 
   @Get('me')
-  @UseGuards(JwtAuthAdminAccessGuard)
+  @UseGuards(JwtAuthAdminAccessGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
@@ -60,5 +61,4 @@ export class AuthController {
   public getMe(@GetUser() user: User): Promise<GetMeResponseDto> {
     return this.authService.getMe(user);
   }
-
 }

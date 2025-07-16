@@ -12,6 +12,11 @@
     "TOKEN_EXPIRED": "Token muddati tugagan",
     "INVALID_PASSWORD": "Parol noto'g'ri"
   },
+  "FORBIDDEN": {
+    "ACCESS": "Sizga ushbu resursdan foydalanish taqiqlangan,",
+    "ROLES": "Sizga ushbu resursdan foydalanish taqiqlangan,",
+    "PERMISSIONS": "Sizga ushbu resursdan foydalanish taqiqlangan,"
+  },
   "USER": {
     "NOT_FOUND": "Foydalanuvchi topilmadi"
   }

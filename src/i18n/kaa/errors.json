@@ -12,6 +12,11 @@
     "TOKEN_EXPIRED": "Token waqtı pitken",
     "INVALID_PASSWORD": "Parol nadurıs"
   },
+  "FORBIDDEN": {
+    "ACCESS": "Sizge bul resursqa kiriwge ruxsat berilmeydi,",
+    "ROLES": "Sizge bul resursqa kiriwge ruxsat berilmeydi,",
+    "PERMISSIONS": "Sizge bul resursqa kiriwge ruxsat berilmeydi"
+  },
   "USER": {
     "NOT_FOUND": "Foydalanuvchi topilmadi"
   }

@@ -9,6 +9,7 @@ import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
 import { JwtConfig } from 'src/common/configs';
 import { JwtAdminAccessStrategy } from 'src/common/strategies/admin/jwt-admin-accsess.strategy';
 import { JwtAdminRefreshStrategy } from 'src/common/strategies/admin/jwt-admin-refresh.strategy';
+import { RolesGuard } from 'src/common/guards/role.guard';
 
 @Module({
   imports: [
@@ -30,7 +31,8 @@ import { JwtAdminRefreshStrategy } from 'src/common/strategies/admin/jwt-admin-r
   providers: [
     AuthService,
     JwtAdminAccessStrategy,
-    JwtAdminRefreshStrategy
+    JwtAdminRefreshStrategy,
+    RolesGuard
   ],
   exports: [AuthService]
 })
