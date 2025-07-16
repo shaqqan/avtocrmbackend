@@ -1,15 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class SignInDto {
     @IsEmail({}, {
-        message: 'errors.VALIDATION.IS_EMAIL'
+        message: i18nValidationMessage('errors.VALIDATION.IS_EMAIL')
     })
     @IsNotEmpty({
-        message: 'errors.VALIDATION.NOT_EMPTY'
+        message: i18nValidationMessage('errors.VALIDATION.NOT_EMPTY')
     })
     @MaxLength(255, {
-        message: 'errors.VALIDATION.MAX_LENGTH'
+        message: i18nValidationMessage('errors.VALIDATION.MAX_LENGTH')
     })
     @ApiProperty({
         description: 'The email of the user',
@@ -18,16 +19,16 @@ export class SignInDto {
     email: string;
 
     @IsString({
-        message: 'errors.VALIDATION.IS_STRING'
+        message: i18nValidationMessage('errors.VALIDATION.IS_STRING')
     })
     @IsNotEmpty({
-        message: 'errors.VALIDATION.NOT_EMPTY'
+        message: i18nValidationMessage('errors.VALIDATION.NOT_EMPTY')
     })
     @MinLength(6, {
-        message: 'errors.VALIDATION.MIN_LENGTH'
+        message: i18nValidationMessage('errors.VALIDATION.MIN_LENGTH')
     })
     @MaxLength(255, {
-        message: 'errors.VALIDATION.MAX_LENGTH',
+        message: i18nValidationMessage('errors.VALIDATION.MAX_LENGTH'),
     })
     @ApiProperty({
         description: 'The password of the user',
