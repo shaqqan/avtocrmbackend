@@ -3,7 +3,7 @@ import { PrismaService } from '../../../databases/prisma/prisma.service';
 import { SignInDto } from './dto/requests/sign-in.dto';
 import * as bcrypt from 'bcrypt';
 import { SignInResponseDto } from './dto/responses/sign-in.res';
-import { Role, User } from 'generated/prisma';
+import { User } from 'generated/prisma';
 import { JwtService } from '@nestjs/jwt';
 import { RedisService } from 'src/databases/redis/redis.service';
 import { randomUUID } from 'node:crypto';
@@ -118,7 +118,7 @@ export class AuthService {
       }),
     ]);
 
-    await this.redisService.setWithExpiry(`refresh_token_${user.id}`, refreshTokenId, config.admin.refreshTokenTtl);
+    await this.redisService.set(`refresh_token_${user.id}`, refreshTokenId, config.admin.refreshTokenTtl);
 
     return {
       accessToken,

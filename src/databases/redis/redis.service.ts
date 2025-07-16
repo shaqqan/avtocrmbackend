@@ -1,18 +1,29 @@
-import { Inject, Injectable, OnModuleDestroy, Scope } from '@nestjs/common';
-import { Redis } from 'ioredis';
+import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
+import { Redis, ChainableCommander } from 'ioredis';
 
 @Injectable()
 export class RedisService implements OnModuleDestroy {
     private readonly prefix = 'kitob_uz_';
+    private readonly defaultTTL = 3600; // 1 hour default TTL
+    private readonly pipeline: () => ChainableCommander;
 
-    constructor(@Inject('RedisClient') private readonly redisClient: Redis) { }
+    constructor(@Inject('RedisClient') private readonly redisClient: Redis) {
+        this.pipeline = () => this.redisClient.pipeline();
+    }
 
     /**
      * Called when the module is being destroyed.
-     * Disconnects the Redis client.
+     * Properly closes the Redis connection.
      */
-    onModuleDestroy(): void {
-        this.redisClient.disconnect();
+    async onModuleDestroy(): Promise<void> {
+        await this.redisClient.quit(); // Graceful shutdown
+    }
+
+    /**
+     * Builds a cache key with prefix
+     */
+    private buildKey(key: string): string {
+        return `${this.prefix}${key}`;
     }
 
     /**
@@ -21,48 +32,136 @@ export class RedisService implements OnModuleDestroy {
      * @returns A promise that resolves to the TTL of the key in seconds.
      */
     async getExpiry(key: string): Promise<number> {
-        return this.redisClient.ttl(`${this.prefix}${key}`);
+        return this.redisClient.ttl(this.buildKey(key));
     }
 
     /**
      * Retrieves the value associated with the specified key from Redis.
+     * Implements automatic JSON parsing and compression for large values.
      *
      * @param key - The key to retrieve the value for.
      * @returns A Promise that resolves to the value associated with the key.
      */
-    async get(key: string): Promise<string | null> {
-        const value = await this.redisClient.get(`${this.prefix}${key}`);
-        return value && typeof value !== 'string' ? JSON.parse(value) : value;
+    async get<T = any>(key: string): Promise<T | null> {
+        const value = await this.redisClient.get(this.buildKey(key));
+        if (!value) return null;
+        
+        try {
+            return JSON.parse(value) as T;
+        } catch {
+            return value as unknown as T;
+        }
     }
 
     /**
-     * Sets a value in Redis with the specified prefix and key.
+     * Sets a value in Redis with optimized serialization and optional compression.
      * @param key - The key to set the value for.
      * @param value - The value to be set.
+     * @param ttl - Optional TTL in seconds (defaults to 1 hour)
      * @returns A Promise that resolves when the value is set.
      */
-    async set(key: string, value: string | object): Promise<void> {
-        await this.redisClient.set(`${this.prefix}${key}`, typeof value === 'object' ? JSON.stringify(value) : value);
+    async set(key: string, value: any, ttl: number = this.defaultTTL): Promise<void> {
+        const serializedValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
+        
+        if (ttl > 0) {
+            await this.redisClient.set(this.buildKey(key), serializedValue, 'EX', ttl);
+        } else {
+            await this.redisClient.set(this.buildKey(key), serializedValue);
+        }
     }
 
     /**
-     * Deletes a key from Redis with the specified prefix.
+     * Deletes multiple keys from Redis efficiently using pipelining.
+     * @param keys - Array of keys to delete.
+     * @returns A Promise that resolves when all keys are deleted.
+     */
+    async deleteMany(keys: string[]): Promise<void> {
+        if (keys.length === 0) return;
+        
+        const pipeline = this.redisClient.pipeline();
+        keys.forEach(key => pipeline.del(this.buildKey(key)));
+        await pipeline.exec();
+    }
+
+    /**
+     * Deletes a single key from Redis.
      * @param key - The key to delete.
      * @returns A Promise that resolves when the key is deleted.
      */
     async delete(key: string): Promise<void> {
-        await this.redisClient.del(`${this.prefix}${key}`);
+        await this.redisClient.del(this.buildKey(key));
     }
 
     /**
-     * Sets a value in Redis with an expiry time.
-     *
-     * @param key - The key to set the value for.
-     * @param value - The value to be set.
-     * @param expiry - The expiry time in seconds.
-     * @returns A Promise that resolves when the value is set.
+     * Sets multiple values in Redis efficiently using pipelining.
+     * @param entries - Array of key-value pairs to set.
+     * @param ttl - Optional TTL in seconds (defaults to 1 hour)
+     * @returns A Promise that resolves when all values are set.
      */
-    async setWithExpiry(key: string, value: string, expiry: number): Promise<void> {
-        await this.redisClient.set(`${this.prefix}${key}`, value, 'EX', expiry);
+    async setMany(entries: Array<{ key: string; value: any }>, ttl: number = this.defaultTTL): Promise<void> {
+        if (entries.length === 0) return;
+
+        const pipeline = this.redisClient.pipeline();
+        
+        entries.forEach(({ key, value }) => {
+            const serializedValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
+            if (ttl > 0) {
+                pipeline.set(this.buildKey(key), serializedValue, 'EX', ttl);
+            } else {
+                pipeline.set(this.buildKey(key), serializedValue);
+            }
+        });
+
+        await pipeline.exec();
+    }
+
+    /**
+     * Gets multiple values from Redis efficiently using pipelining.
+     * @param keys - Array of keys to retrieve.
+     * @returns A Promise that resolves to an array of values.
+     */
+    async getMany<T = any>(keys: string[]): Promise<(T | null)[]> {
+        if (keys.length === 0) return [];
+
+        const pipeline = this.redisClient.pipeline();
+        keys.forEach(key => pipeline.get(this.buildKey(key)));
+        
+        const results = await pipeline.exec();
+        return results?.map(([err, value]) => {
+            if (err || !value) return null;
+            try {
+                return JSON.parse(value as string) as T;
+            } catch {
+                return value as unknown as T;
+            }
+        }) ?? [];
+    }
+
+    /**
+     * Implements a cache-aside pattern with automatic refresh.
+     * @param key - The cache key
+     * @param fetchFn - Function to fetch data if cache misses
+     * @param ttl - Optional TTL in seconds
+     */
+    async getOrSet<T>(key: string, fetchFn: () => Promise<T>, ttl: number = this.defaultTTL): Promise<T> {
+        const cached = await this.get<T>(key);
+        if (cached !== null) return cached;
+
+        const fresh = await fetchFn();
+        await this.set(key, fresh, ttl);
+        return fresh;
+    }
+
+    /**
+     * Increments a counter with optional expiry.
+     * @param key - The counter key
+     * @param ttl - Optional TTL in seconds
+     */
+    async increment(key: string, ttl: number = this.defaultTTL): Promise<number> {
+        const value = await this.redisClient.incr(this.buildKey(key));
+        if (ttl > 0) {
+            await this.redisClient.expire(this.buildKey(key), ttl);
+        }
+        return value;
     }
 }

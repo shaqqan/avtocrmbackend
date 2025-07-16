@@ -1,6 +1,5 @@
 import { UnprocessableEntityException, ValidationPipe } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
-import { I18nService } from 'nestjs-i18n';
 
 interface ErrorResponse {
     statusCode: number;
@@ -17,6 +16,7 @@ export class ValidationErrorHandler extends ValidationPipe {
             transformOptions: {
                 enableImplicitConversion: true,
             },
+            forbidUnknownValues: false,
             exceptionFactory: (errors: ValidationError[]) =>
                 this.createException(errors),
         });
