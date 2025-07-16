@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { SignInDto } from './dto/requests/sign-in.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SignInResponseDto } from './dto/responses/sign-in.res';
-import { ApiGlobalResponses } from 'src/common/decorators/admin/swagger';
+import { ApiGlobalResponses } from 'src/common/decorators/swagger';
 import { GetUser } from 'src/common/decorators/admin/get-user.decorator';
 import { User } from 'generated/prisma';
 import { JwtAuthAdminRefreshGuard } from 'src/common/guards/admin/jwt-auth-admin-refresh.guard';
@@ -11,10 +11,7 @@ import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
 import { GetMeResponseDto } from './dto/responses/get-me';
 import { SignOutResponseDto } from './dto/responses/sign-out';
 import { RefreshTokenResponseDto } from './dto/responses/refresh-token';
-import { Roles } from 'src/common/decorators';
-import { Role } from 'src/common/enums';
 import { I18nValidationExceptionFilter } from 'nestjs-i18n';
-import { RolesGuard } from 'src/common/guards/role.guard';
 
 @Controller('admin/auth')
 @ApiTags('🔐 Authentication')
