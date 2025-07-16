@@ -18,7 +18,7 @@ import { JwtAdminRefreshStrategy } from 'src/common/strategies/admin/jwt-admin-r
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
-        const jwtConfig = configService.get<ConfigType<typeof JwtConfig>>('jwt')
+        const jwtConfig = configService.getOrThrow<ConfigType<typeof JwtConfig>>('jwt')
         return {
           secret: jwtConfig.admin.accessSecret,
         }

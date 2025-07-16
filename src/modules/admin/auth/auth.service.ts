@@ -12,6 +12,7 @@ import { JwtConfig } from 'src/common/configs';
 import { GetMeResponseDto } from './dto/responses/get-me';
 import { SignOutResponseDto } from './dto/responses/sign-out';
 import { RefreshTokenResponseDto } from './dto/responses/refresh-token';
+import { I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +21,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly redisService: RedisService,
     private readonly configService: ConfigService,
+    private readonly i18n: I18nService,
   ) { }
 
   async signIn(signInDto: SignInDto): Promise<SignInResponseDto> {
@@ -32,13 +34,13 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(this.i18n.t('errors.USER.NOT_FOUND'));
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid password');
+      throw new UnauthorizedException(this.i18n.t('errors.AUTH.INVALID_PASSWORD'));
     }
 
     const tokens = await this.generateTokens(user);
@@ -60,7 +62,7 @@ export class AuthService {
   async signOut(user: User): Promise<SignOutResponseDto> {
     await this.redisService.delete(`refresh_token_${user.id}`);
     return {
-      message: 'Signed out successfully',
+      message: this.i18n.t('success.AUTH.LOGOUT'),
     };
   }
 
@@ -69,6 +71,10 @@ export class AuthService {
       where: { id: user.id },
       include: { roles: { include: { role: true } } }
     });
+
+    if (!userWithRoles) {
+      throw new NotFoundException(this.i18n.t('errors.USER.NOT_FOUND'));
+    }
 
     return {
       id: userWithRoles.id,
@@ -85,14 +91,14 @@ export class AuthService {
       email: user.email,
     };
 
-    const config = this.configService.get<ConfigType<typeof JwtConfig>>('jwt');
+    const config = this.configService.getOrThrow<ConfigType<typeof JwtConfig>>('jwt');
     const refreshTokenId = randomUUID();
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
-        secret: config.admin.accessSecret,
-        audience: config.admin.audience,
-        expiresIn: config.admin.accessTokenTtl,
-        issuer: config.admin.issuer,
+        secret: config?.admin.accessSecret,
+        audience: config?.admin.audience,
+        expiresIn: config?.admin.accessTokenTtl,
+        issuer: config?.admin.issuer,
       }),
 
       this.jwtService.signAsync({

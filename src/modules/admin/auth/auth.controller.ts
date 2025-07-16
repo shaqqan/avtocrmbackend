@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, UseFilters, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/requests/sign-in.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -13,6 +13,7 @@ import { SignOutResponseDto } from './dto/responses/sign-out';
 import { RefreshTokenResponseDto } from './dto/responses/refresh-token';
 import { Roles } from 'src/common/decorators';
 import { Role } from 'src/common/enums';
+import { I18nValidationExceptionFilter } from 'nestjs-i18n';
 
 @Controller('admin/auth')
 @ApiTags('🔐 Authentication')
@@ -20,7 +21,8 @@ export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
   @Post('sign-in')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.OK) 
+  @UseFilters(new I18nValidationExceptionFilter())
   @ApiOperation({ summary: 'Sign in to the admin panel' })
   @ApiGlobalResponses()
   public signIn(@Body() signInDto: SignInDto): Promise<SignInResponseDto> {

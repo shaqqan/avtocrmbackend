@@ -1,15 +1,15 @@
 import { UnprocessableEntityException, ValidationPipe } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
+import { I18nService } from 'nestjs-i18n';
 
-/**
- * Custom validation pipe to handle validation errors and transform them into UnprocessableEntityException with structured error messages.
- */
+interface ErrorResponse {
+    statusCode: number;
+    error: string;
+    errors: Record<string, string[]>;
+}
+
 export class ValidationErrorHandler extends ValidationPipe {
-    /**
-     * Constructor to create a new instance of ValidationErrorHandler.
-     * Configures the validation pipe with custom exception handling.
-     */
-    constructor() {
+    constructor(private readonly i18n) {
         super({
             skipMissingProperties: false,
             whitelist: true,
@@ -17,55 +17,89 @@ export class ValidationErrorHandler extends ValidationPipe {
             transformOptions: {
                 enableImplicitConversion: true,
             },
-            exceptionFactory: (
-                errors: ValidationError[],
-            ): UnprocessableEntityException => {
-                const errorResponse = {
-                    statusCode: 422,
-                    error: 'Unprocessable Entity',
-                    errors: this.extractErrors(errors),
-                };
-
-                return new UnprocessableEntityException(errors);
-            },
+            exceptionFactory: (errors: ValidationError[]) =>
+                this.createException(errors),
         });
     }
 
-    /**
-     * Extracts validation errors from a list of ValidationError objects and organizes them into a nested structure.
-     *
-     * @param {ValidationError[]} validationErrors - The list of ValidationError objects to extract errors from.
-     * @param {string} [parentPath=''] - The parent path of the current error. Defaults to an empty string.
-     * @return {Record<string, any>} - A nested structure of errors, with each error organized by its property path.
-     */
-    private extractErrors(
+    private async createException(errors: ValidationError[]): Promise<UnprocessableEntityException> {
+        const errorResponse: ErrorResponse = {
+            statusCode: 422,
+            error: 'Unprocessable Entity',
+            errors: await this.extractErrors(errors),
+        };
+
+        return new UnprocessableEntityException(errorResponse);
+    }
+
+    private async extractErrors(
         validationErrors: ValidationError[],
         parentPath = '',
-    ): Record<string, any> {
-        let errors: Record<string, any> = {};
+    ): Promise<Record<string, string[]>> {
+        const errors: Record<string, string[]> = {};
 
-        validationErrors.forEach((error) => {
-            const propertyPath = parentPath
-                ? `${parentPath}.${error.property}`
-                : error.property;
+        // Process all errors concurrently for better performance
+        await Promise.all(
+            validationErrors.map(async (error) => {
+                const propertyPath = this.buildPropertyPath(parentPath, error.property);
 
-            if (error.constraints) {
-                if (parentPath) {
-                    if (!errors[parentPath]) {
-                        errors[parentPath] = {};
-                    }
-                    errors[parentPath][error.property] = Object.values(error.constraints);
-                } else {
-                    errors[propertyPath] = Object.values(error.constraints);
+                // Handle constraints
+                if (error.constraints) {
+                    const messages = await this.translateConstraints(error.constraints, error.property, error.value);
+                    this.setErrorMessages(errors, propertyPath, parentPath, error.property, messages);
                 }
-            }
+                // Handle nested errors recursively
+                if (error.children && error.children.length > 0) {
+                    const nestedErrors = await this.extractErrors(error.children, propertyPath);
+                    Object.assign(errors, nestedErrors);
+                }
+            })
+        );
 
-            if (error.children && error.children.length > 0) {
-                const nestedErrors = this.extractErrors(error.children, propertyPath);
-                errors = { ...errors, ...nestedErrors };
+        return errors;
+    }
+
+    private buildPropertyPath(parentPath: string, property: string): string {
+        return parentPath ? `${parentPath}.${property}` : property;
+    }
+
+    private async translateConstraints(constraints: Record<string, string>, property: string, value: any): Promise<string[]> {
+        const translationPromises = Object.values(constraints).map(async (message) => {
+            try {
+                const [key, argsStr] = message.split('|');
+                const args = argsStr ? JSON.parse(argsStr) : {};
+                // Add property name and value to translation args
+                args.property = property;
+                args.value = value;
+                return await this.i18n.translate(key, { args });
+            } catch (error) {
+                // Fallback to original message if translation fails
+                console.warn(`Translation failed for message: ${message}`, error);
+                return message;
             }
         });
 
-        return errors;
+        return Promise.all(translationPromises);
+    }
+
+    private setErrorMessages(
+        errors: Record<string, string[]>,
+        propertyPath: string,
+        parentPath: string,
+        property: string,
+        messages: string[],
+    ): void {
+        if (parentPath) {
+            // For nested properties, create nested structure
+            if (!errors[parentPath]) {
+                // @ts-ignore
+                errors[parentPath] = {};
+            }
+            // @ts-ignore
+            (errors[parentPath] as Record<string, string[]>)[property] = messages;
+        } else {
+            // For top-level properties
+            errors[propertyPath] = messages;
+        }
     }
 }

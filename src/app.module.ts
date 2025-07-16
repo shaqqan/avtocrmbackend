@@ -5,7 +5,7 @@ import { Configs } from './common/configs';
 import { PrismaModule } from './databases/prisma/prisma.module';
 import { RedisModule } from './databases/redis/redis.module';
 import { AcceptLanguageResolver, HeaderResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
-import { join } from 'node:path';
+import * as path from 'path';
 import { I18nConfig } from './common/configs/i18n.config';
 
 @Module({
@@ -19,13 +19,11 @@ import { I18nConfig } from './common/configs/i18n.config';
       useFactory: (configService: ConfigService) => ({
         fallbackLanguage: configService.getOrThrow<ConfigType<typeof I18nConfig>>('i18n').fakerLocale,
         loaderOptions: {
-          path: join(process.cwd(), 'src/i18n/'),
+          path: path.join(process.cwd(), 'src/i18n/'),
           watch: true,
         },
       }),
       resolvers: [
-        { use: QueryResolver, options: ['lang'] },
-        AcceptLanguageResolver,
         new HeaderResolver(['x-lang']),
       ],
       inject: [ConfigService],

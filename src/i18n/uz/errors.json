@@ -1,19 +1,18 @@
 {
   "VALIDATION": {
-    "REQUIRED": "{field} talab qilinadi",
-    "INVALID": "{field} noto'g'ri",
-    "STRING": {
-      "MIN": "{field} kamida {min} ta belgidan iborat bo'lishi kerak",
-      "MAX": "{field} {max} ta belgidan oshmasligi kerak"
-    },
-    "NUMBER": {
-      "MIN": "{field} kamida {min} bo'lishi kerak",
-      "MAX": "{field} {max} dan oshmasligi kerak"
-    }
+    "NOT_EMPTY": "{property} kiritilishi shart",
+    "IS_EMAIL": "{property} noto'g'ri email formatida ({value})",
+    "MAX_LENGTH": "{property} {constraints.0} ta belgidan oshmasligi kerak",
+    "MIN_LENGTH": "{property} kamida {constraints.0} ta belgidan iborat bo'lishi kerak",
+    "IS_STRING": "{property} matn formatida bo'lishi kerak"
   },
   "AUTH": {
     "INVALID_CREDENTIALS": "Email yoki parol noto'g'ri",
     "UNAUTHORIZED": "Ruxsat berilmagan",
-    "TOKEN_EXPIRED": "Token muddati tugagan"
+    "TOKEN_EXPIRED": "Token muddati tugagan",
+    "INVALID_PASSWORD": "Parol noto'g'ri"
+  },
+  "USER": {
+    "NOT_FOUND": "Foydalanuvchi topilmadi"
   }
 }

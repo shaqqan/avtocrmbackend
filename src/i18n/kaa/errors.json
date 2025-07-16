@@ -1,19 +1,18 @@
 {
   "VALIDATION": {
-    "REQUIRED": "{field} talap etiledi",
-    "INVALID": "{field} nadurıs",
-    "STRING": {
-      "MIN": "{field} keminde {min} belgiden ibarat bolıwı kerek",
-      "MAX": "{field} {max} belgiden aspaslıǵı kerek"
-    },
-    "NUMBER": {
-      "MIN": "{field} keminde {min} bolıwı kerek",
-      "MAX": "{field} {max} dan aspaslıǵı kerek"
-    }
+    "NOT_EMPTY": "{property} kiritiliw shárt",
+    "IS_EMAIL": "{property} nadurıs email formatında ({value})",
+    "MAX_LENGTH": "{property} {constraints.0} belgiden aspaǵan bolıwı kerek",
+    "MIN_LENGTH": "{property} keminde {constraints.0} belgiden ibarat bolıwı kerek",
+    "IS_STRING": "{property} tekst formatında bolıwı kerek"
   },
   "AUTH": {
     "INVALID_CREDENTIALS": "Email yamasa parol nadurıs",
     "UNAUTHORIZED": "Ruxsat etilmegen",
-    "TOKEN_EXPIRED": "Token waqtı pitken"
+    "TOKEN_EXPIRED": "Token waqtı pitken",
+    "INVALID_PASSWORD": "Parol nadurıs"
+  },
+  "USER": {
+    "NOT_FOUND": "Foydalanuvchi topilmadi"
   }
 }

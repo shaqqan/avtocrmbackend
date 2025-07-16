@@ -1,19 +1,18 @@
 {
   "VALIDATION": {
-    "REQUIRED": "Поле {field} обязательно",
-    "INVALID": "Поле {field} неверно",
-    "STRING": {
-      "MIN": "Поле {field} должно содержать минимум {min} символов",
-      "MAX": "Поле {field} не должно превышать {max} символов"
-    },
-    "NUMBER": {
-      "MIN": "Поле {field} должно быть не менее {min}",
-      "MAX": "Поле {field} не должно превышать {max}"
-    }
+    "NOT_EMPTY": "{property} обязателен для заполнения",
+    "IS_EMAIL": "{property} имеет неверный формат email ({value})",
+    "MAX_LENGTH": "{property} не должен превышать {constraints.0} символов",
+    "MIN_LENGTH": "{property} должен содержать минимум {constraints.0} символов",
+    "IS_STRING": "{property} должен быть текстом"
   },
   "AUTH": {
     "INVALID_CREDENTIALS": "Неверный email или пароль",
     "UNAUTHORIZED": "Неавторизованный доступ",
-    "TOKEN_EXPIRED": "Срок действия токена истек"
+    "TOKEN_EXPIRED": "Срок действия токена истек",
+    "INVALID_PASSWORD": "Неверный пароль"
+  },
+  "USER": {
+    "NOT_FOUND": "Пользователь не найден"
   }
 }

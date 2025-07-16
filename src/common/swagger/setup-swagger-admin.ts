@@ -13,7 +13,7 @@ The API documentation for the Kitob.uz Admin API.
 
 export const setupSwaggerAdmin = (app: INestApplication): void => {
     const config = app.get(ConfigService)
-    const swagger = config.get<ConfigType<typeof SwaggerConfig>>('swagger')
+    const swagger = config.getOrThrow<ConfigType<typeof SwaggerConfig>>('swagger')
 
     const swaggerConfig = new DocumentBuilder()
         .setTitle('Kitob.uz Admin API')
@@ -37,10 +37,10 @@ export const setupSwaggerAdmin = (app: INestApplication): void => {
             name: 'x-lang',
             in: 'header',
             required: false,
-            description: 'Language preference header. Supported values: uz, ru, en, kk.',
+            description: 'Language preference header. Supported values: uz, ru, en, kaa.',
             schema: {
                 type: 'string',
-                example: 'kk',
+                example: 'kaa',
             },
         })
         .build();
@@ -50,7 +50,7 @@ export const setupSwaggerAdmin = (app: INestApplication): void => {
     })
     app.use('/api-docs-json/', (req: Request, res: Response) => res.send(document))
 
-    SwaggerModule.setup(swagger?.urlAdmin, app, document, {
+    SwaggerModule.setup(swagger.urlAdmin || '/api-docs', app, document, {
         swaggerOptions: {
             persistAuthorization: true,
         },

@@ -1,19 +1,18 @@
 {
   "VALIDATION": {
-    "REQUIRED": "{field} is required",
-    "INVALID": "{field} is invalid",
-    "STRING": {
-      "MIN": "{field} must be at least {min} characters",
-      "MAX": "{field} must not exceed {max} characters"
-    },
-    "NUMBER": {
-      "MIN": "{field} must be at least {min}",
-      "MAX": "{field} must not exceed {max}"
-    }
+    "NOT_EMPTY": "{property} is required",
+    "IS_EMAIL": "{property} has invalid email format ({value})",
+    "MAX_LENGTH": "{property} must not exceed {constraints.0} characters",
+    "MIN_LENGTH": "{property} must be at least {constraints.0} characters long",
+    "IS_STRING": "{property} must be a text"
   },
   "AUTH": {
     "INVALID_CREDENTIALS": "Invalid email or password",
     "UNAUTHORIZED": "Unauthorized access",
-    "TOKEN_EXPIRED": "Token has expired"
+    "TOKEN_EXPIRED": "Token has expired",
+    "INVALID_PASSWORD": "Invalid password"
+  },
+  "USER": {
+    "NOT_FOUND": "User not found"
   }
 }
