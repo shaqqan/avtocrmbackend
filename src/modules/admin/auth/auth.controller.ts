@@ -6,10 +6,14 @@ import { SignInResponseDto } from './dto/responses/sign-in.res';
 import { ApiGlobalResponses } from 'src/common/decorators/admin/swagger';
 import { GetUser } from 'src/common/decorators/admin/get-user.decorator';
 import { User } from 'generated/prisma';
-import { JwtAuthAdminGuard } from 'src/common/guards/admin/jwt-auth-admin.guard';
+import { JwtAuthAdminRefreshGuard } from 'src/common/guards/admin/jwt-auth-admin-refresh.guard';
+import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
+import { GetMeResponseDto } from './dto/responses/get-me';
+import { SignOutResponseDto } from './dto/responses/sign-out';
+import { RefreshTokenResponseDto } from './dto/responses/refresh-token';
 
 @Controller('admin/auth')
-@ApiTags('Admin Auth')
+@ApiTags('🔐 Authentication')
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
@@ -23,13 +27,33 @@ export class AuthController {
 
 
   @Post('refresh-tokens')
-  @UseGuards(JwtAuthAdminGuard)
   @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthAdminRefreshGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Refresh tokens' })
   @ApiGlobalResponses()
-  public refreshTokens(@GetUser() user: User) {
+  public refreshTokens(@GetUser() user: User): Promise<RefreshTokenResponseDto> {
     return this.authService.refreshTokens(user);
+  }
+
+  @Post('sign-out')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthAdminAccessGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Sign out' })
+  @ApiGlobalResponses()
+  public signOut(@GetUser() user: User): Promise<SignOutResponseDto> {
+    return this.authService.signOut(user);
+  }
+
+  @Get('me')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthAdminAccessGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get me' })
+  @ApiGlobalResponses()
+  public getMe(@GetUser() user: User): Promise<GetMeResponseDto> {
+    return this.authService.getMe(user);
   }
 
 }

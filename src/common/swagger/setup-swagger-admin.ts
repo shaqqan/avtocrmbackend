@@ -19,15 +19,7 @@ export const setupSwaggerAdmin = (app: INestApplication): void => {
         .setTitle('Kitob.uz Admin API')
         .setDescription('This documentation provides a comprehensive overview of the Kitob.uz Admin API, including available endpoints, request formats, and response structures.')
         .setVersion('1.0.0')
-        .addBearerAuth(
-            {
-                type: 'http',
-                scheme: 'bearer',
-                bearerFormat: 'JWT',
-                description: 'Enter your JWT token in the format: Bearer <token>',
-            },
-            'access-token',
-        )
+        .addBearerAuth()
         .setContact(
             'Kitob.uz Support Team',
             'https://kitob.uz',
@@ -38,6 +30,7 @@ export const setupSwaggerAdmin = (app: INestApplication): void => {
             'https://kitob.uz',
         )
         .setTermsOfService('https://github.com/kitobuz/core-api')
+        .addServer('http://10.95.3.14:3000', 'Wi-Fi Network')
         .addServer('http://127.0.0.1:3000', 'Local Development Server')
         .addServer('https://api.kitob.uz', 'Production Server')
         .addGlobalParameters({

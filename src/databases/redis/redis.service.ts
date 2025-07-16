@@ -32,7 +32,7 @@ export class RedisService implements OnModuleDestroy {
      */
     async get(key: string): Promise<string | null> {
         const value = await this.redisClient.get(`${this.prefix}${key}`);
-        return value ? JSON.parse(value) : null;
+        return value && typeof value !== 'string' ? JSON.parse(value) : value;
     }
 
     /**

@@ -1,0 +1,19 @@
+{
+  "VALIDATION": {
+    "REQUIRED": "{field} talab qilinadi",
+    "INVALID": "{field} noto'g'ri",
+    "STRING": {
+      "MIN": "{field} kamida {min} ta belgidan iborat bo'lishi kerak",
+      "MAX": "{field} {max} ta belgidan oshmasligi kerak"
+    },
+    "NUMBER": {
+      "MIN": "{field} kamida {min} bo'lishi kerak",
+      "MAX": "{field} {max} dan oshmasligi kerak"
+    }
+  },
+  "AUTH": {
+    "INVALID_CREDENTIALS": "Email yoki parol noto'g'ri",
+    "UNAUTHORIZED": "Ruxsat berilmagan",
+    "TOKEN_EXPIRED": "Token muddati tugagan"
+  }
+}

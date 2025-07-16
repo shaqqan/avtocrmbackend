@@ -1,24 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from 'generated/prisma';
+import { GetMeResponseDto } from './get-me';
+import { RefreshTokenResponseDto } from './refresh-token';
 
-class Tokens {
-    @ApiProperty({
-        description: 'The access token',
-        example: 'fake-jwt-token'
-    })
-    accessToken: string;
-
-    @ApiProperty({
-        description: 'The refresh token',
-        example: 'fake-jwt-token'
-    })
-    refreshToken: string;
-}
 
 export class SignInResponseDto {
+
+    @ApiProperty({
+        description: 'The user',
+        type: GetMeResponseDto
+    })
+    user: GetMeResponseDto;
+
     @ApiProperty({
         description: 'The tokens',
-        type: Tokens
+        type: RefreshTokenResponseDto
     })
-    tokens: Tokens;
+    tokens: RefreshTokenResponseDto;
 }

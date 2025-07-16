@@ -1,0 +1,12 @@
+{
+  "AUTH": {
+    "LOGIN": "Muvaffaqiyatli kirildi",
+    "LOGOUT": "Muvaffaqiyatli chiqildi",
+    "REGISTER": "Muvaffaqiyatli ro'yxatdan o'tildi"
+  },
+  "COMMON": {
+    "CREATE": "{entity} muvaffaqiyatli yaratildi",
+    "UPDATE": "{entity} muvaffaqiyatli yangilandi",
+    "DELETE": "{entity} muvaffaqiyatli o'chirildi"
+  }
+} 

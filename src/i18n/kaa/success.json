@@ -1,0 +1,12 @@
+{
+  "AUTH": {
+    "LOGIN": "Tabıslı kiriw",
+    "LOGOUT": "Tabıslı shıǵıw",
+    "REGISTER": "Tabıslı dizimnen ótiw"
+  },
+  "COMMON": {
+    "CREATE": "{entity} tabıslı jaratıldı",
+    "UPDATE": "{entity} tabıslı jańalandı",
+    "DELETE": "{entity} tabıslı óshirildi"
+  }
+} 

@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../../../databases/prisma/prisma.service';
 import { SignInDto } from './dto/requests/sign-in.dto';
 import * as bcrypt from 'bcrypt';
@@ -7,6 +7,11 @@ import { User } from 'generated/prisma';
 import { JwtService } from '@nestjs/jwt';
 import { RedisService } from 'src/databases/redis/redis.service';
 import { randomUUID } from 'node:crypto';
+import { ConfigService, ConfigType } from '@nestjs/config';
+import { JwtConfig } from 'src/common/configs';
+import { GetMeResponseDto } from './dto/responses/get-me';
+import { SignOutResponseDto } from './dto/responses/sign-out';
+import { RefreshTokenResponseDto } from './dto/responses/refresh-token';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +19,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly redisService: RedisService,
+    private readonly configService: ConfigService,
   ) { }
 
   async signIn(signInDto: SignInDto): Promise<SignInResponseDto> {
@@ -38,21 +44,32 @@ export class AuthService {
     const tokens = await this.generateTokens(user);
 
     return {
+      user: new GetMeResponseDto(user),
       tokens,
     };
   }
 
-  async refreshTokens(user: User) {
-
-    const isValid = await this.redisService.get(`refresh_token_${user.id}`);
-
-    if (!isValid) {
-      throw new UnauthorizedException('Invalid refresh token');
-    }
-
+  async refreshTokens(user: User): Promise<RefreshTokenResponseDto> {
     const tokens = await this.generateTokens(user);
     return {
-      tokens,
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+    };
+  }
+
+  async signOut(user: User): Promise<SignOutResponseDto> {
+    await this.redisService.delete(`refresh_token_${user.id}`);
+    return {
+      message: 'Signed out successfully',
+    };
+  }
+
+  async getMe(user: User): Promise<GetMeResponseDto> {
+    return {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
     };
   }
 
@@ -62,17 +79,28 @@ export class AuthService {
       email: user.email,
     };
 
+    const config = this.configService.get<ConfigType<typeof JwtConfig>>('jwt');
     const refreshTokenId = randomUUID();
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(payload, {
+        secret: config.admin.accessSecret,
+        audience: config.admin.audience,
+        expiresIn: config.admin.accessTokenTtl,
+        issuer: config.admin.issuer,
+      }),
 
-    const accessToken = await this.jwtService.signAsync(payload, {
-      expiresIn: '15m',
-    });
+      this.jwtService.signAsync({
+        ...payload,
+        refreshTokenId,
+      }, {
+        secret: config.admin.refreshSecret,
+        audience: config.admin.audience,
+        expiresIn: config.admin.refreshTokenTtl,
+        issuer: config.admin.issuer,
+      }),
+    ]);
 
-    const refreshToken = await this.jwtService.signAsync(payload, {
-      expiresIn: '7d',
-    });
-
-    await this.redisService.setWithExpiry(`refresh_token_${user.id}`, refreshToken, 60 * 60 * 24 * 7);
+    await this.redisService.setWithExpiry(`refresh_token_${user.id}`, refreshTokenId, config.admin.refreshTokenTtl);
 
     return {
       accessToken,

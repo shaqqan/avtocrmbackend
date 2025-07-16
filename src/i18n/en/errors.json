@@ -1,0 +1,19 @@
+{
+  "VALIDATION": {
+    "REQUIRED": "{field} is required",
+    "INVALID": "{field} is invalid",
+    "STRING": {
+      "MIN": "{field} must be at least {min} characters",
+      "MAX": "{field} must not exceed {max} characters"
+    },
+    "NUMBER": {
+      "MIN": "{field} must be at least {min}",
+      "MAX": "{field} must not exceed {max}"
+    }
+  },
+  "AUTH": {
+    "INVALID_CREDENTIALS": "Invalid email or password",
+    "UNAUTHORIZED": "Unauthorized access",
+    "TOKEN_EXPIRED": "Token has expired"
+  }
+}

@@ -1,1 +1,1 @@
-export * from './jwt-admin.strategy';
+export * from './jwt-admin-accsess.strategy';

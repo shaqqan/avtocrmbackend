@@ -1,0 +1,12 @@
+{
+  "AUTH": {
+    "LOGIN": "Successfully logged in",
+    "LOGOUT": "Successfully logged out",
+    "REGISTER": "Successfully registered"
+  },
+  "COMMON": {
+    "CREATE": "{entity} created successfully",
+    "UPDATE": "{entity} updated successfully",
+    "DELETE": "{entity} deleted successfully"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "VALIDATION": {
+    "REQUIRED": "Поле {field} обязательно",
+    "INVALID": "Поле {field} неверно",
+    "STRING": {
+      "MIN": "Поле {field} должно содержать минимум {min} символов",
+      "MAX": "Поле {field} не должно превышать {max} символов"
+    },
+    "NUMBER": {
+      "MIN": "Поле {field} должно быть не менее {min}",
+      "MAX": "Поле {field} не должно превышать {max}"
+    }
+  },
+  "AUTH": {
+    "INVALID_CREDENTIALS": "Неверный email или пароль",
+    "UNAUTHORIZED": "Неавторизованный доступ",
+    "TOKEN_EXPIRED": "Срок действия токена истек"
+  }
+}

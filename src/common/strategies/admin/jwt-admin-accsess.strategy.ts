@@ -6,18 +6,13 @@ import { JwtConfig } from 'src/common/configs';
 import { PrismaService } from 'src/databases/prisma/prisma.service';
 
 @Injectable()
-export class JwtAdminStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class JwtAdminAccessStrategy extends PassportStrategy(Strategy, 'jwt-admin-access-token') {
     constructor(private readonly prisma: PrismaService, private readonly configService: ConfigService) {
         const config = configService.get<ConfigType<typeof JwtConfig>>('jwt');
-        console.log('JWT Config:', config); // Debug log
-        
-        if (!config?.admin?.secret) {
-            throw new Error('JWT admin secret is not configured');
-        }
 
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            secretOrKey: config.admin.secret,
+            secretOrKey: config.admin.accessSecret,
         });
     }
 
