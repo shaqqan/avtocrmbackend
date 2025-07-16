@@ -11,6 +11,8 @@ import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
 import { GetMeResponseDto } from './dto/responses/get-me';
 import { SignOutResponseDto } from './dto/responses/sign-out';
 import { RefreshTokenResponseDto } from './dto/responses/refresh-token';
+import { Roles } from 'src/common/decorators';
+import { Role } from 'src/common/enums';
 
 @Controller('admin/auth')
 @ApiTags('🔐 Authentication')
@@ -47,8 +49,9 @@ export class AuthController {
   }
 
   @Get('me')
-  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthAdminAccessGuard)
+  @Roles(Role.ADMIN)
+  @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get me' })
   @ApiGlobalResponses()

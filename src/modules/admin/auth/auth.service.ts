@@ -3,7 +3,7 @@ import { PrismaService } from '../../../databases/prisma/prisma.service';
 import { SignInDto } from './dto/requests/sign-in.dto';
 import * as bcrypt from 'bcrypt';
 import { SignInResponseDto } from './dto/responses/sign-in.res';
-import { User } from 'generated/prisma';
+import { Role, User } from 'generated/prisma';
 import { JwtService } from '@nestjs/jwt';
 import { RedisService } from 'src/databases/redis/redis.service';
 import { randomUUID } from 'node:crypto';
@@ -65,11 +65,17 @@ export class AuthService {
   }
 
   async getMe(user: User): Promise<GetMeResponseDto> {
+    const userWithRoles = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: { roles: { include: { role: true } } }
+    });
+
     return {
-      id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
+      id: userWithRoles.id,
+      email: userWithRoles.email,
+      firstName: userWithRoles.firstName,
+      lastName: userWithRoles.lastName,
+      roles: userWithRoles.roles.map((role) => role.role.name),
     };
   }
 
