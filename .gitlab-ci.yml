@@ -11,12 +11,11 @@ variables:
   MESSAGE_THREAD_ID: "$MESSAGE_THREAD_ID"
   PARSE_MODE: "Markdown"
 
-
 release:
   stage: release
   image: node:latest
-  tags:
-    - production
+  # tags:
+  #   - production
   script:
     - npm ci
     - npx semantic-release
