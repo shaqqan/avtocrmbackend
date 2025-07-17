@@ -14,8 +14,6 @@ variables:
 release:
   stage: release
   image: node:20-alpine
-  # tags:
-  #   - production
   script:
     - node -v
     - npm -v
@@ -27,9 +25,7 @@ release:
 
 notify_on_merge_request:
   stage: deploy
-  # tags:
-  #   - stage
-  image: busybox:latest
+  image: curlimages/curl:latest
   script:
     - >
       LINE1="⏳ *New Merge Request*"
