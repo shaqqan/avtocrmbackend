@@ -45,7 +45,7 @@ export class RedisService implements OnModuleDestroy {
     async get<T = any>(key: string): Promise<T | null> {
         const value = await this.redisClient.get(this.buildKey(key));
         if (!value) return null;
-        
+
         try {
             return JSON.parse(value) as T;
         } catch {
@@ -62,7 +62,7 @@ export class RedisService implements OnModuleDestroy {
      */
     async set(key: string, value: any, ttl: number = this.defaultTTL): Promise<void> {
         const serializedValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
-        
+
         if (ttl > 0) {
             await this.redisClient.set(this.buildKey(key), serializedValue, 'EX', ttl);
         } else {
@@ -77,7 +77,7 @@ export class RedisService implements OnModuleDestroy {
      */
     async deleteMany(keys: string[]): Promise<void> {
         if (keys.length === 0) return;
-        
+
         const pipeline = this.redisClient.pipeline();
         keys.forEach(key => pipeline.del(this.buildKey(key)));
         await pipeline.exec();
@@ -102,7 +102,7 @@ export class RedisService implements OnModuleDestroy {
         if (entries.length === 0) return;
 
         const pipeline = this.redisClient.pipeline();
-        
+
         entries.forEach(({ key, value }) => {
             const serializedValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
             if (ttl > 0) {
@@ -125,7 +125,7 @@ export class RedisService implements OnModuleDestroy {
 
         const pipeline = this.redisClient.pipeline();
         keys.forEach(key => pipeline.get(this.buildKey(key)));
-        
+
         const results = await pipeline.exec();
         return results?.map(([err, value]) => {
             if (err || !value) return null;

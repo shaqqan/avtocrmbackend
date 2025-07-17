@@ -14,7 +14,9 @@ export class JwtAdminAccessStrategy extends PassportStrategy(Strategy, 'jwt-admi
         private readonly i18n: I18nService,
     ) {
         const config = configService.getOrThrow<ConfigType<typeof JwtConfig>>('jwt');
-        if (!config?.admin.accessSecret) throw new Error('JWT_ADMIN_ACCESS_SECRET is not defined');
+        if (!config?.admin.accessSecret) {
+            throw new Error('JWT_ADMIN_ACCESS_SECRET is not defined');
+        }
 
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -22,37 +24,60 @@ export class JwtAdminAccessStrategy extends PassportStrategy(Strategy, 'jwt-admi
         });
     }
 
-    async validate(payload: { email: string }) {
+    async validate(payload: { id: number; email: string }) {
         const user = await this.prisma.user.findUnique({
-            include: {
+            where: {
+                id: payload.id,
+                email: payload.email,
+            },
+            select: {
+                id: true,
+                email: true,
                 roles: {
-                    include: {
+                    select: {
                         role: {
-                            include: {
+                            select: {
+                                id: true,
+                                name: true,
                                 permissions: {
-                                    include: {
-                                        permission: true
-                                    }
-                                }
-                            }
-                        }
-                    }
+                                    select: {
+                                        permission: {
+                                            select: {
+                                                id: true,
+                                                name: true,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
                 },
                 permissions: {
-                    include: {
-                        permission: true
-                    }
-                }
+                    select: {
+                        permission: {
+                            select: {
+                                id: true,
+                                name: true,
+                            },
+                        },
+                    },
+                },
             },
-            where: {
-                email: payload.email,
-            }
         });
 
         if (!user) {
             throw new UnauthorizedException(this.i18n.t('errors.AUTH.UNAUTHORIZED'));
         }
 
-        return user;
+        const rolePermissions = user.roles.flatMap(r => r.role.permissions.map(p => p.permission.name));
+        const directPermissions = user.permissions.map(p => p.permission.name);
+
+        const uniquePermissions = Array.from(new Set([...directPermissions, ...rolePermissions]));
+
+        return {
+            ...user,
+            permissions: uniquePermissions,
+        };
     }
 }

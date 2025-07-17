@@ -5,9 +5,7 @@ import { withAccelerate } from '@prisma/extension-accelerate';
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
     constructor() {
-        super({
-            log: ['query', 'info', 'warn', 'error'],
-        });
+        super();
         // Enable the accelerate extension for better performance
         this.$extends(withAccelerate());
     }

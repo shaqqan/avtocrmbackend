@@ -4,7 +4,7 @@ import { SignInDto } from './dto/requests/sign-in.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SignInResponseDto } from './dto/responses/sign-in.res';
 import { ApiGlobalResponses } from 'src/common/decorators/swagger';
-import { GetUser } from 'src/common/decorators/admin/get-user.decorator';
+import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { User } from 'generated/prisma';
 import { JwtAuthAdminRefreshGuard } from 'src/common/guards/admin/jwt-auth-admin-refresh.guard';
 import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';

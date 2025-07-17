@@ -5,12 +5,6 @@ import { SwaggerConfig } from '../configs'
 import { INestApplication } from '@nestjs/common'
 import { AdminModule } from 'src/modules/admin/admin.module'
 
-const markdownDescription = `
-# Kitob.uz Admin API Documentation
-
-The API documentation for the Kitob.uz Admin API.
-`
-
 export const setupSwaggerAdmin = (app: INestApplication): void => {
     const config = app.get(ConfigService)
     const swagger = config.getOrThrow<ConfigType<typeof SwaggerConfig>>('swagger')

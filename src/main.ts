@@ -8,6 +8,7 @@ import { I18nService, I18nValidationExceptionFilter } from 'nestjs-i18n';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import compression from '@fastify/compress';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 
 (async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule,
@@ -36,7 +37,7 @@ import compression from '@fastify/compress';
   const i18n = app.get(I18nService);
   app.useGlobalPipes(new ValidationErrorHandler(i18n));
   app.useGlobalFilters(new I18nValidationExceptionFilter());
-
+  app.useGlobalFilters(new GlobalExceptionFilter(app.get(ConfigService)));
   app.setGlobalPrefix('api');
 
   // Enhanced compression configuration
@@ -52,6 +53,6 @@ import compression from '@fastify/compress';
 
   await app.listen(serverConfig.port, serverConfig.host, async () => {
     const url = await app.getUrl();
-    console.log(`🚀🚀 Server is running on ${url}`);
+    console.log(`🚀🚀 Server is running on ${url} in ${serverConfig.env} mode`);
   });
 })();
