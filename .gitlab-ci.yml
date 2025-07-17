@@ -22,7 +22,6 @@ release:
     - if: '$CI_COMMIT_BRANCH == "main"'
       when: on_success
 
-
 notify_on_merge_request:
   stage: deploy
   # tags:
@@ -52,10 +51,6 @@ notify_on_merge_request:
       "text": "'"$TEXT"'",
       "parse_mode": "'"$PARSE_MODE"'",
       "reply_markup": '"$INLINE_KEYBOARD"'
-      }' $TELEGRAM_API_URL
-  only:
-    - merge_requests
-    "reply_markup": '"$INLINE_KEYBOARD"'
       }' $TELEGRAM_API_URL
   only:
     - merge_requests
