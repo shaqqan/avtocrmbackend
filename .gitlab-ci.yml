@@ -24,8 +24,8 @@ release:
 
 notify_on_merge_request:
   stage: deploy
-  tags:
-    - stage
+  # tags:
+  #   - stage
   image: busybox:latest
   script:
     - >
