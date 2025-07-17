@@ -1,0 +1,46 @@
+stages:
+  - test
+  - build
+  - deploy
+  - release
+
+variables:
+  TELEGRAM_API_URL: "https://api.telegram.org/bot$BOT_TOKEN/sendMessage"
+  GITLAB_BASE_URL: "https://gitlab.uzinfocom.uz"
+  CHAT_ID: "$CHAT_ID"
+  MESSAGE_THREAD_ID: "$MESSAGE_THREAD_ID"
+  PARSE_MODE: "Markdown"
+
+
+notify_on_merge_request:
+  stage: deploy
+  tags:
+    - stage
+  image: busybox:latest
+  script:
+    - >
+      LINE1="⏳ *New Merge Request*"
+      LINE2="💬 Comment: \`${CI_COMMIT_MESSAGE}\`"
+      LINE3="👤 Author: [${GITLAB_USER_NAME}]($GITLAB_BASE_URL/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/-/users/$GITLAB_USER_ID)"
+      LINE4="🌿 Branch: \`${CI_COMMIT_REF_NAME}\`"
+      LINE5="📤 Target Branch: \`${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}\`"
+      LINE6="🕰 Date: \`$(date)\`"
+      TEXT="$LINE1\n\n$LINE2\n$LINE3\n$LINE4\n$LINE5\n$LINE6"
+    - >
+      INLINE_KEYBOARD='{
+        "inline_keyboard": [
+          [
+            {"text": "View Merge Request", "url": "'"$GITLAB_BASE_URL/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/merge_requests/$CI_MERGE_REQUEST_IID"'"}
+          ]
+        ]
+      }'
+    - >
+      curl -X POST -H "Content-Type: application/json" -d '{
+      "chat_id": "'"$CHAT_ID"'",
+      "message_thread_id": "'"$MESSAGE_THREAD_ID"'",
+      "text": "'"$TEXT"'",
+      "parse_mode": "'"$PARSE_MODE"'",
+      "reply_markup": '"$INLINE_KEYBOARD"'
+      }' $TELEGRAM_API_URL
+  only:
+    - merge_requests
