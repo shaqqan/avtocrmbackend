@@ -17,10 +17,12 @@ release:
   # tags:
   #   - production
   script:
+    - corepack enable
+    - corepack prepare pnpm@10.11.1 --activate
+    - pnpm --version
     - node -v
-    - npm -v
-    - npm ci
-    - npx semantic-release
+    - pnpm install --frozen-lockfile
+    - pnpm run release
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
       when: on_success
