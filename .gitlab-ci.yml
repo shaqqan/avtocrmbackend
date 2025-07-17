@@ -13,7 +13,7 @@ variables:
 
 release:
   stage: release
-  image: node:latest
+  image: node:20-alpine
   # tags:
   #   - production
   script:
