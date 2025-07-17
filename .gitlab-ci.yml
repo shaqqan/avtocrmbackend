@@ -13,19 +13,15 @@ variables:
 
 release:
   stage: release
-  image: node:20-bullseye
+  image: node:20-alpine
   # tags:
   #   - production
   script:
-    - corepack enable
-    - corepack prepare pnpm@10.11.1 --activate
-    - pnpm --version
-    - node -v
-    - pnpm install --frozen-lockfile
-    - pnpm run release
+    - npx semantic-release
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
       when: on_success
+
 
 notify_on_merge_request:
   stage: deploy
@@ -56,6 +52,10 @@ notify_on_merge_request:
       "text": "'"$TEXT"'",
       "parse_mode": "'"$PARSE_MODE"'",
       "reply_markup": '"$INLINE_KEYBOARD"'
+      }' $TELEGRAM_API_URL
+  only:
+    - merge_requests
+    "reply_markup": '"$INLINE_KEYBOARD"'
       }' $TELEGRAM_API_URL
   only:
     - merge_requests
