@@ -1,9 +1,7 @@
 import { ConfigService, ConfigType } from '@nestjs/config'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
-import { Request, Response } from 'express'
 import { SwaggerConfig } from '../configs'
 import { INestApplication } from '@nestjs/common'
-import { AdminModule } from 'src/modules/admin/admin.module'
 
 export const setupSwaggerAdmin = (app: INestApplication): void => {
     const config = app.get(ConfigService)
@@ -42,12 +40,18 @@ export const setupSwaggerAdmin = (app: INestApplication): void => {
     const document = SwaggerModule.createDocument(app, swaggerConfig, {
         // include: [AdminModule],
     })
-    app.use('/api-docs-json/', (req: Request, res: Response) => res.send(document))
 
     SwaggerModule.setup(swagger.urlAdmin || '/api-docs', app, document, {
         swaggerOptions: {
             persistAuthorization: true,
         },
+        explorer: true,
+        jsonDocumentUrl: '/admin/api-docs-json/',
+        yamlDocumentUrl: '/admin/api-docs-yaml/',
+        swaggerUiEnabled: true,
+        ui: true,
+        raw: ['json', 'yaml'],
+        swaggerUrl: '/admin/api-docs-json/',
         customSiteTitle: swagger.title,
         customCss: '.swagger-container .swagger-ui { max-width: 900px; margin: 0 auto; }',
     })

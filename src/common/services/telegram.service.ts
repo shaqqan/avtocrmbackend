@@ -45,10 +45,10 @@ export class TelegramService {
         message += `<b>Error:</b> <code>${error.message}</code>\n`;
 
         if (request) {
-            message += `\n<b>Request Details:</b>\n`;
-            message += `Method: ${request.method}\n`;
-            message += `URL: <code>${request.url}</code>\n`;
-            message += `User Agent: ${request.headers['user-agent']}\n`;
+            message += `\n<b>Request Details:\n`;
+            message += `Method: </b> ${request.method}\n`;
+            message += `<b>URL:</b> <code>${request.url}</code>\n`;
+            message += `<b>User Agent:</b> ${request.headers['user-agent']}\n`;
         }
 
         if (error.stack) {

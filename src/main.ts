@@ -13,18 +13,14 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
 (async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule,
     new FastifyAdapter({
-      // Performance optimizations
-      caseSensitive: true, // Faster route lookup
-      ignoreTrailingSlash: true, // Reduce route matching complexity
-      maxParamLength: 100, // Limit param length for security and performance
-      bodyLimit: 1048576, // 1MB body size limit
-      onProtoPoisoning: 'remove', // Security and performance
-      onConstructorPoisoning: 'remove',
-      disableRequestLogging: true, // Reduce I/O overhead
-      return503OnClosing: true, // Proper shutdown handling
-      trustProxy: true, // Important if behind a proxy
+      logger: true,
+      caseSensitive: true,
+      ignoreTrailingSlash: true,
+      maxParamLength: 100,
+      bodyLimit: 1048576,
     }),
     {
+      logger: ['error', 'warn', 'log', 'verbose', 'debug'],
       cors: {
         origin: true,
         credentials: true,
