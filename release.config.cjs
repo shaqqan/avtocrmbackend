@@ -33,7 +33,7 @@ config.plugins = [
         }
     ],
     [
-        "@semantic-release/gitlab",
+        "@semantic-release/gitlab", // TODO: add gitlab token
         {
             "gitlabUrl": "https://gitlab.uzinfocom.uz",
             "gitlabApiPathPrefix": "/api/v4"
