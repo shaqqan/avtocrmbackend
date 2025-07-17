@@ -24,16 +24,16 @@ release:
 
 notify_on_merge_request:
   stage: deploy
-  # tags:
-  #   - stage
+  tags:
+    - stage
   image: busybox:latest
   script:
     - >
       LINE1="⏳ *New Merge Request*"
-      LINE2="💬 Comment: \`$( echo "${CI_COMMIT_MESSAGE}" | sed 's/[_*\[\]`]/\\&/g' )\`"
-      LINE3="👤 Author: [$( echo "${GITLAB_USER_NAME}" | sed 's/[_*\[\]`]/\\&/g' )]($GITLAB_BASE_URL/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/-/users/$GITLAB_USER_ID)"
-      LINE4="🌿 Branch: \`$( echo "${CI_COMMIT_REF_NAME}" | sed 's/[_*\[\]`]/\\&/g' )\`"
-      LINE5="📤 Target Branch: \`$( echo "${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}" | sed 's/[_*\[\]`]/\\&/g' )\`"
+      LINE2="💬 Comment: \`${CI_COMMIT_MESSAGE}\`"
+      LINE3="👤 Author: [${GITLAB_USER_NAME}]($GITLAB_BASE_URL/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/-/users/$GITLAB_USER_ID)"
+      LINE4="🌿 Branch: \`${CI_COMMIT_REF_NAME}\`"
+      LINE5="📤 Target Branch: \`${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}\`"
       LINE6="🕰 Date: \`$(date)\`"
       TEXT="$LINE1\n\n$LINE2\n$LINE3\n$LINE4\n$LINE5\n$LINE6"
     - >
