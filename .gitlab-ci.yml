@@ -17,12 +17,13 @@ release:
   # tags:
   #   - production
   script:
+    - node -v
+    - npm -v
     - npm ci
     - npx semantic-release
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
       when: on_success
-
 
 notify_on_merge_request:
   stage: deploy
