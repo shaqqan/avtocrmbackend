@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../../../databases/prisma/prisma.service';
 import { SignInDto } from './dto/requests/sign-in.dto';
 import * as bcrypt from 'bcrypt';
@@ -22,7 +26,7 @@ export class AuthService {
     private readonly redisService: RedisService,
     private readonly configService: ConfigService,
     private readonly i18n: I18nService,
-  ) { }
+  ) {}
 
   async signIn(signInDto: SignInDto): Promise<SignInResponseDto> {
     const { email, password } = signInDto;
@@ -42,7 +46,7 @@ export class AuthService {
       },
       where: {
         email: email,
-      }
+      },
     });
 
     if (!user) {
@@ -52,7 +56,9 @@ export class AuthService {
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException(this.i18n.t('errors.AUTH.INVALID_PASSWORD'));
+      throw new UnauthorizedException(
+        this.i18n.t('errors.AUTH.INVALID_PASSWORD'),
+      );
     }
 
     const tokens = await this.generateTokens(user);
@@ -81,7 +87,10 @@ export class AuthService {
   async getMe(user: User): Promise<GetMeResponseDto> {
     const userWithRoles = await this.prisma.user.findUnique({
       where: { id: user.id },
-      include: { roles: { include: { role: true } }, permissions: { include: { permission: true } } }
+      include: {
+        roles: { include: { role: true } },
+        permissions: { include: { permission: true } },
+      },
     });
 
     if (!userWithRoles) {
@@ -91,13 +100,16 @@ export class AuthService {
     return new GetMeResponseDto(userWithRoles);
   }
 
-  private async generateTokens(user: User): Promise<{ accessToken: string, refreshToken: string }> {
+  private async generateTokens(
+    user: User,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     const payload = {
       id: user.id,
       email: user.email,
     };
 
-    const config = this.configService.getOrThrow<ConfigType<typeof JwtConfig>>('jwt');
+    const config =
+      this.configService.getOrThrow<ConfigType<typeof JwtConfig>>('jwt');
     const refreshTokenId = randomUUID();
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
@@ -107,23 +119,29 @@ export class AuthService {
         issuer: config?.admin.issuer,
       }),
 
-      this.jwtService.signAsync({
-        ...payload,
-        refreshTokenId,
-      }, {
-        secret: config.admin.refreshSecret,
-        audience: config.admin.audience,
-        expiresIn: config.admin.refreshTokenTtl,
-        issuer: config.admin.issuer,
-      }),
+      this.jwtService.signAsync(
+        {
+          ...payload,
+          refreshTokenId,
+        },
+        {
+          secret: config.admin.refreshSecret,
+          audience: config.admin.audience,
+          expiresIn: config.admin.refreshTokenTtl,
+          issuer: config.admin.issuer,
+        },
+      ),
     ]);
 
-    await this.redisService.set(`refresh_token_${user.id}`, refreshTokenId, config.admin.refreshTokenTtl);
+    await this.redisService.set(
+      `refresh_token_${user.id}`,
+      refreshTokenId,
+      config.admin.refreshTokenTtl,
+    );
 
     return {
       accessToken,
       refreshToken,
     };
   }
-
 }

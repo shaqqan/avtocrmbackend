@@ -1,4 +1,14 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, UseFilters, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  UseFilters,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/requests/sign-in.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -16,7 +26,7 @@ import { I18nValidationExceptionFilter } from 'nestjs-i18n';
 @Controller('admin/auth')
 @ApiTags('🔐 Authentication')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Post('sign-in')
   @HttpCode(HttpStatus.OK)
@@ -27,14 +37,15 @@ export class AuthController {
     return this.authService.signIn(signInDto);
   }
 
-
   @Post('refresh-tokens')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthAdminRefreshGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Refresh tokens' })
   @ApiGlobalResponses()
-  public refreshTokens(@GetUser() user: User): Promise<RefreshTokenResponseDto> {
+  public refreshTokens(
+    @GetUser() user: User,
+  ): Promise<RefreshTokenResponseDto> {
     return this.authService.refreshTokens(user);
   }
 

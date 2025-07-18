@@ -10,9 +10,9 @@ import { I18nConfig } from './i18n.config';
 import { TelegramBotConfig } from './telegram-bot.config';
 
 export const Configs = [
-    AppConfig,
-    SwaggerConfig,
-    JwtConfig,
-    I18nConfig,
-    TelegramBotConfig,
+  AppConfig,
+  SwaggerConfig,
+  JwtConfig,
+  I18nConfig,
+  TelegramBotConfig,
 ];

@@ -19,10 +19,11 @@ import { RolesGuard } from 'src/common/guards/role.guard';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
-        const jwtConfig = configService.getOrThrow<ConfigType<typeof JwtConfig>>('jwt')
+        const jwtConfig =
+          configService.getOrThrow<ConfigType<typeof JwtConfig>>('jwt');
         return {
           secret: jwtConfig.admin.accessSecret,
-        }
+        };
       },
       inject: [ConfigService],
     }),
@@ -32,8 +33,8 @@ import { RolesGuard } from 'src/common/guards/role.guard';
     AuthService,
     JwtAdminAccessStrategy,
     JwtAdminRefreshStrategy,
-    RolesGuard
+    RolesGuard,
   ],
-  exports: [AuthService]
+  exports: [AuthService],
 })
-export class AuthModule { }
+export class AuthModule {}

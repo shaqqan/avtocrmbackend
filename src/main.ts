@@ -11,7 +11,8 @@ import compression from '@fastify/compress';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 
 (async function bootstrap() {
-  const app = await NestFactory.create<NestFastifyApplication>(AppModule,
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
     new FastifyAdapter({
       logger: true,
       caseSensitive: true,
@@ -28,7 +29,8 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
         maxAge: 600, // Cache preflight requests for 10 minutes
       },
       bufferLogs: true, // Buffer logs for better performance
-    });
+    },
+  );
 
   const i18n = app.get(I18nService);
   app.useGlobalPipes(new ValidationErrorHandler(i18n));
@@ -44,8 +46,9 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
 
   setupSwaggerAdmin(app);
 
-  const configService = app.get(ConfigService)
-  const serverConfig = configService.getOrThrow<ConfigType<typeof AppConfig>>('node')
+  const configService = app.get(ConfigService);
+  const serverConfig =
+    configService.getOrThrow<ConfigType<typeof AppConfig>>('node');
 
   await app.listen(serverConfig.port, serverConfig.host, async () => {
     const url = await app.getUrl();
