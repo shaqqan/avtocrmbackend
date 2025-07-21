@@ -17,11 +17,9 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
       logger: true,
       caseSensitive: true,
       ignoreTrailingSlash: true,
-      maxParamLength: 100,
-      bodyLimit: 1048576,
     }),
     {
-      logger: ['error', 'warn', 'log', 'verbose', 'debug'],
+      logger: false,
       cors: {
         origin: true,
         credentials: true,

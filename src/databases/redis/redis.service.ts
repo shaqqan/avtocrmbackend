@@ -1,14 +1,27 @@
-import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
-import { Redis, ChainableCommander } from 'ioredis';
+import { Injectable, OnApplicationBootstrap, OnApplicationShutdown, OnModuleDestroy } from '@nestjs/common';
+import { Redis } from 'ioredis';
+import { ConfigService, ConfigType } from '@nestjs/config';
+import { RedisConfig } from 'src/common/configs';
 
 @Injectable()
-export class RedisService implements OnModuleDestroy {
+export class RedisService implements OnModuleDestroy, OnApplicationBootstrap, OnApplicationShutdown {
+  private redisClient: Redis;
+
   private readonly prefix = 'kitob_uz_';
   private readonly defaultTTL = 3600; // 1 hour default TTL
-  private readonly pipeline: () => ChainableCommander;
 
-  constructor(@Inject('RedisClient') private readonly redisClient: Redis) {
-    this.pipeline = () => this.redisClient.pipeline();
+  constructor(private readonly configService: ConfigService) { }
+  onApplicationBootstrap() {
+    const redisConfig = this.configService.getOrThrow<ConfigType<typeof RedisConfig>>('redis');
+    this.redisClient = new Redis({
+      host: redisConfig.host || 'localhost',
+      port: redisConfig.port || 6379,
+      password: redisConfig.password,
+    });
+  }
+
+  onApplicationShutdown(signal?: string) {
+    return this.redisClient.quit();
   }
 
   /**
@@ -16,7 +29,7 @@ export class RedisService implements OnModuleDestroy {
    * Properly closes the Redis connection.
    */
   async onModuleDestroy(): Promise<void> {
-    await this.redisClient.quit(); // Graceful shutdown
+    await this.redisClient.quit();
   }
 
   /**

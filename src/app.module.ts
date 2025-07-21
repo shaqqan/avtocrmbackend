@@ -7,7 +7,6 @@ import { RedisModule } from './databases/redis/redis.module';
 import { HeaderResolver, I18nModule } from 'nestjs-i18n';
 import * as path from 'path';
 import { I18nConfig } from './common/configs/i18n.config';
-import { ListenersModule } from './listeners/listeners.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
@@ -36,7 +35,6 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     PrismaModule,
     ModulesModule,
     RedisModule,
-    ListenersModule,
   ],
 })
 export class AppModule {}
