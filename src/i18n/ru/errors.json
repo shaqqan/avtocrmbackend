@@ -4,7 +4,10 @@
     "IS_EMAIL": "{property} имеет неверный формат email ({value})",
     "MAX_LENGTH": "{property} не должен превышать {constraints.0} символов",
     "MIN_LENGTH": "{property} должен содержать минимум {constraints.0} символов",
-    "IS_STRING": "{property} должен быть текстом"
+    "IS_STRING": "{property} должен быть текстом",
+    "IS_LOCALE": "{property} должен быть валидным локальным форматом",
+    "IS_NOT_EMPTY": "{property} обязателен для заполнения",
+    "FILE_SIZE_TOO_LARGE": "Размер файла слишком большой"
   },
   "AUTH": {
     "INVALID_CREDENTIALS": "Неверный email или пароль",
@@ -18,5 +21,8 @@
   "FORBIDDEN": {
     "ROLES": "У вас нет необходимой роли для выполнения этого действия",
     "PERMISSIONS": "У вас нет необходимых прав для выполнения этого действия"
+  },
+  "LANGUAGE": {
+    "NOT_FOUND": "Язык не найден"
   }
 }

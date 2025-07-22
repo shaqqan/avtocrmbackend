@@ -4,7 +4,7 @@ import {
   ArgumentsHost,
   HttpException,
   HttpStatus,
-  Logger,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { TelegramService } from '../services/telegram.service';
@@ -12,7 +12,7 @@ import { ConfigService } from '@nestjs/config';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly configService: ConfigService) { }
 
   async catch(exception: Error, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -35,15 +35,24 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       });
     }
 
-    // Prepare the error response
+    // Handle validation errors
+    if (exception instanceof UnprocessableEntityException) {
+      const validationResponse = exception.getResponse();
+      return response.status(status).send(validationResponse);
+    }
+
+    // Prepare the error response for other types of errors
     const errorResponse = {
       statusCode: status,
-      message: 'Internal server error',
+      message: process.env.NODE_ENV === 'development' ? exception.message : 'Internal server error',
     };
 
-    // Don't expose error details in production
-    if (process.env.NODE_ENV === 'development') {
-      errorResponse['message'] = exception.message;
+    // If it's an HTTP exception, include any additional response data
+    if (exception instanceof HttpException) {
+      const exceptionResponse = exception.getResponse();
+      if (typeof exceptionResponse === 'object') {
+        Object.assign(errorResponse, exceptionResponse);
+      }
     }
 
     response.status(status).send(errorResponse);

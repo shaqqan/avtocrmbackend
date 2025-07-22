@@ -8,5 +8,13 @@
     "CREATE": "{entity} created successfully",
     "UPDATE": "{entity} updated successfully",
     "DELETE": "{entity} deleted successfully"
+  },
+  "LANGUAGE": {
+    "CREATED": "Language created successfully",
+    "UPDATED": "Language updated successfully",
+    "REMOVED": "Language removed successfully"
+  },
+  "UPLOAD": {
+    "UPLOADED": "File uploaded successfully"
   }
 }

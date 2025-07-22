@@ -4,7 +4,10 @@
     "IS_EMAIL": "{property} nadurıs email formatında ({value})",
     "MAX_LENGTH": "{property} {constraints.0} belgiden aspaǵan bolıwı kerek",
     "MIN_LENGTH": "{property} keminde {constraints.0} belgiden ibarat bolıwı kerek",
-    "IS_STRING": "{property} tekst formatında bolıwı kerek"
+    "IS_STRING": "{property} tekst formatında bolıwı kerek",
+    "IS_LOCALE": "{property} korrect locale formatında bolıwı kerek",
+    "IS_NOT_EMPTY": "{property} kiritilw shárt",
+    "FILE_SIZE_TOO_LARGE": "Fayl ölçegi juda kóp"
   },
   "AUTH": {
     "INVALID_CREDENTIALS": "Email yamasa parol nadurıs",
@@ -19,5 +22,8 @@
   },
   "USER": {
     "NOT_FOUND": "Foydalanuvchi topilmadi"
+  },
+  "LANGUAGE": {
+    "NOT_FOUND": "Til topilmadi"
   }
 }

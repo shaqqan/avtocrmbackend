@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 
-export abstract class BaseSubscribers {
+export abstract class BaseObserver {
     public beforeInsert(params: Prisma.MiddlewareParams) {
         console.log('beforeInsert', params);
     }

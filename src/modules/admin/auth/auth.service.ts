@@ -7,7 +7,6 @@ import { PrismaService } from '../../../databases/prisma/prisma.service';
 import { SignInDto } from './dto/requests/sign-in.dto';
 import * as bcrypt from 'bcrypt';
 import { SignInResponseDto } from './dto/responses/sign-in.res';
-import { User } from 'generated/prisma';
 import { JwtService } from '@nestjs/jwt';
 import { RedisService } from 'src/databases/redis/redis.service';
 import { randomUUID } from 'node:crypto';
@@ -17,6 +16,7 @@ import { GetMeResponseDto } from './dto/responses/get-me';
 import { SignOutResponseDto } from './dto/responses/sign-out';
 import { RefreshTokenResponseDto } from './dto/responses/refresh-token';
 import { I18nService } from 'nestjs-i18n';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -26,7 +26,7 @@ export class AuthService {
     private readonly redisService: RedisService,
     private readonly configService: ConfigService,
     private readonly i18n: I18nService,
-  ) {}
+  ) { }
 
   async signIn(signInDto: SignInDto): Promise<SignInResponseDto> {
     const { email, password } = signInDto;

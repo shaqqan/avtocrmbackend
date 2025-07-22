@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../node_modules/.prisma/client"
@@ -43,10 +37,10 @@ model Permission {
   id          Int                  @id @default(autoincrement())
   name        String               @unique
   description String?
-  users       UsersOnPermissions[]
-  roles       RolesOnPermissions[]
   createdAt   DateTime             @default(now())
   updatedAt   DateTime             @updatedAt
+  users       UsersOnPermissions[]
+  roles       RolesOnPermissions[]
 
   @@map("permissions")
 }
@@ -55,9 +49,8 @@ model UsersOnRoles {
   userId     Int
   roleId     Int
   assignedAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id])
-  role Role @relation(fields: [roleId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+  role       Role     @relation(fields: [roleId], references: [id])
 
   @@id([userId, roleId])
   @@map("users_on_roles")
@@ -66,10 +59,9 @@ model UsersOnRoles {
 model UsersOnPermissions {
   userId       Int
   permissionId Int
-  assignedAt   DateTime @default(now())
-
-  user       User       @relation(fields: [userId], references: [id])
-  permission Permission @relation(fields: [permissionId], references: [id])
+  assignedAt   DateTime   @default(now())
+  user         User       @relation(fields: [userId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
 
   @@id([userId, permissionId])
   @@map("users_on_permissions")
@@ -78,11 +70,38 @@ model UsersOnPermissions {
 model RolesOnPermissions {
   roleId       Int
   permissionId Int
-  assignedAt   DateTime @default(now())
-
-  role       Role       @relation(fields: [roleId], references: [id])
-  permission Permission @relation(fields: [permissionId], references: [id])
+  assignedAt   DateTime   @default(now())
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
 
   @@id([roleId, permissionId])
   @@map("roles_on_permissions")
+}
+
+model Upload {
+  id           Int        @id @default(autoincrement())
+  name         String
+  originalName String?
+  path         String
+  mimetype     String
+  size         Int
+  type         String
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  languages    Language[]
+
+  @@map("uploads")
+}
+
+model Language {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  locale    String   @unique
+  icon      Upload?  @relation(fields: [iconId], references: [id])
+  iconId    Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("languages")
 }

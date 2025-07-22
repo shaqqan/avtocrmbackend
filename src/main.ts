@@ -4,11 +4,15 @@ import { AppConfig } from './common/configs';
 import { ConfigService, ConfigType } from '@nestjs/config';
 import { setupSwaggerAdmin } from './common/swagger';
 import { ValidationErrorHandler } from './common/pipes';
-import { I18nService, I18nValidationExceptionFilter } from 'nestjs-i18n';
+import { I18nService } from 'nestjs-i18n';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import compression from '@fastify/compress';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
+import fastifyMultipart from '@fastify/multipart';
+import { asset } from './common/utils/asset';
+import fastifyStatic from '@fastify/static';
+import * as path from 'path';
 
 (async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -17,6 +21,7 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
       logger: true,
       caseSensitive: true,
       ignoreTrailingSlash: true,
+      bodyLimit: 1024 * 1024 * 10, // 10MB
     }),
     {
       logger: false,
@@ -30,10 +35,20 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
     },
   );
 
+  global.asset = asset;
+
   const i18n = app.get(I18nService);
-  app.useGlobalPipes(new ValidationErrorHandler(i18n));
-  app.useGlobalFilters(new I18nValidationExceptionFilter());
+  await app.register(fastifyMultipart);
+
+  await app.register(fastifyStatic, {
+    root: path.join(process.cwd(), 'storage'),
+    prefix: '/storage/',
+  });
+
+  // Register global filters and pipes in the correct order
   app.useGlobalFilters(new GlobalExceptionFilter(app.get(ConfigService)));
+  app.useGlobalPipes(new ValidationErrorHandler(i18n));
+
   app.setGlobalPrefix('api');
 
   // Enhanced compression configuration

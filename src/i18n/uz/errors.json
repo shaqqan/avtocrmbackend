@@ -4,7 +4,18 @@
     "IS_EMAIL": "{property} noto'g'ri email formatida ({value})",
     "MAX_LENGTH": "{property} {constraints.0} ta belgidan oshmasligi kerak",
     "MIN_LENGTH": "{property} kamida {constraints.0} ta belgidan iborat bo'lishi kerak",
-    "IS_STRING": "{property} matn formatida bo'lishi kerak"
+    "IS_STRING": "{property} matn formatida bo'lishi kerak",
+    "IS_INT": "{property} butun son formatida bo'lishi kerak",
+    "MIN": "{property} kamida {constraints.0} tadan iborat bo'lishi kerak",
+    "MAX": "{property} {constraints.0} dan oshmasligi kerak",
+    "IS_ENUM": "{property} {constraints.0} dan tashqari qiymatga ega bo'lmasligi kerak",
+    "IS_BOOLEAN": "{property} boolean formatida bo'lishi kerak",
+    "IS_DATE": "{property} sana formatida bo'lishi kerak",
+    "IS_ARRAY": "{property} massiv formatida bo'lishi kerak",
+    "IS_OBJECT": "{property} ob'ekt formatida bo'lishi kerak",
+    "IS_LOCALE": "{property} to'g'ri locale formatida bo'lishi kerak",
+    "IS_NOT_EMPTY": "{property} kiritilishi shart",
+    "FILE_SIZE_TOO_LARGE": "Fayl hajmi juda katta"
   },
   "AUTH": {
     "INVALID_CREDENTIALS": "Email yoki parol noto'g'ri",
@@ -18,5 +29,8 @@
   "FORBIDDEN": {
     "ROLES": "Sizda ushbu amalni bajarish uchun tegishli rol mavjud emas",
     "PERMISSIONS": "Sizda ushbu amalni bajarish uchun tegishli huquqlar mavjud emas"
+  },
+  "LANGUAGE": {
+    "NOT_FOUND": "Til topilmadi"
   }
 }

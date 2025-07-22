@@ -4,7 +4,10 @@
     "IS_EMAIL": "{property} has invalid email format ({value})",
     "MAX_LENGTH": "{property} must not exceed {constraints.0} characters",
     "MIN_LENGTH": "{property} must be at least {constraints.0} characters long",
-    "IS_STRING": "{property} must be a text"
+    "IS_STRING": "{property} must be a text",
+    "IS_LOCALE": "{property} must be a valid locale",
+    "IS_NOT_EMPTY": "{property} is required",
+    "FILE_SIZE_TOO_LARGE": "File size is too large"
   },
   "AUTH": {
     "INVALID_CREDENTIALS": "Invalid email or password",
@@ -18,5 +21,8 @@
   "FORBIDDEN": {
     "ROLES": "You don't have the required role to perform this action",
     "PERMISSIONS": "You don't have the required permissions to perform this action"
+  },
+  "LANGUAGE": {
+    "NOT_FOUND": "Language not found"
   }
 }

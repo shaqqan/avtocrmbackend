@@ -8,5 +8,13 @@
     "CREATE": "{entity} tabıslı jaratıldı",
     "UPDATE": "{entity} tabıslı jańalandı",
     "DELETE": "{entity} tabıslı óshirildi"
+  },
+  "LANGUAGE": {
+    "CREATED": "Til tabıslı jaratıldı",
+    "UPDATED": "Til tabıslı jańalandı",
+    "REMOVED": "Til tabıslı óshirildi"
+  },
+  "UPLOAD": {
+    "UPLOADED": "Fayl tabıslı jaratıldı"
   }
-} 
+}

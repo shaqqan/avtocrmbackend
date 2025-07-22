@@ -1,0 +1,1 @@
+export * from './find-one-language.res.dto';

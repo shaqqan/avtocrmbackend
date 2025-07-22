@@ -8,5 +8,13 @@
     "CREATE": "{entity} muvaffaqiyatli yaratildi",
     "UPDATE": "{entity} muvaffaqiyatli yangilandi",
     "DELETE": "{entity} muvaffaqiyatli o'chirildi"
+  },
+  "LANGUAGE": {
+    "REMOVED": "Til muvaffaqiyatli o'chirildi",
+    "CREATED": "Til muvaffaqiyatli yaratildi",
+    "UPDATED": "Til muvaffaqiyatli yangilandi"
+  },
+  "UPLOAD": {
+    "UPLOADED": "Fayl muvaffaqiyatli yuklandi"
   }
-} 
+}

@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { PermissionSeeder } from './seeders/permission.seeder';
 import { RoleSeeder } from './seeders/role.seeder';
 import { UserSeeder } from './seeders/user.seeder';
+import { LanguageSeeder } from './seeders/language.seeder';
 
 const prisma = new PrismaClient({
     log: ['error', 'warn'],
@@ -14,11 +15,13 @@ async function main() {
         const permissionSeeder = new PermissionSeeder(prisma);
         const roleSeeder = new RoleSeeder(prisma);
         const userSeeder = new UserSeeder(prisma);
+        const languageSeeder = new LanguageSeeder(prisma);
 
         // Run seeders in sequence
         const permissions = await permissionSeeder.seed();
         await roleSeeder.seed(permissions);
         await userSeeder.seed();
+        await languageSeeder.seed();
 
     } catch (error) {
         console.error('\n❌ Seed failed with error:');
@@ -31,12 +34,6 @@ async function main() {
         throw error;
     }
 }
-
-// Add error handling for unhandled rejections
-process.on('unhandledRejection', (reason, promise) => {
-    console.error('Unhandled Rejection at:', promise);
-    console.error('Reason:', reason);
-});
 
 main()
     .catch((e) => {

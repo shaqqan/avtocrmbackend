@@ -15,24 +15,22 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SignInResponseDto } from './dto/responses/sign-in.res';
 import { ApiGlobalResponses } from 'src/common/decorators/swagger';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
-import { User } from 'generated/prisma';
 import { JwtAuthAdminRefreshGuard } from 'src/common/guards/admin/jwt-auth-admin-refresh.guard';
 import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
 import { GetMeResponseDto } from './dto/responses/get-me';
 import { SignOutResponseDto } from './dto/responses/sign-out';
 import { RefreshTokenResponseDto } from './dto/responses/refresh-token';
-import { I18nValidationExceptionFilter } from 'nestjs-i18n';
+import { User } from '@prisma/client';
 
 @Controller('admin/auth')
 @ApiTags('🔐 Authentication')
+@ApiGlobalResponses()
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @Post('sign-in')
   @HttpCode(HttpStatus.OK)
-  @UseFilters(new I18nValidationExceptionFilter())
   @ApiOperation({ summary: 'Sign in to the admin panel' })
-  @ApiGlobalResponses()
   public signIn(@Body() signInDto: SignInDto): Promise<SignInResponseDto> {
     return this.authService.signIn(signInDto);
   }
@@ -42,7 +40,6 @@ export class AuthController {
   @UseGuards(JwtAuthAdminRefreshGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Refresh tokens' })
-  @ApiGlobalResponses()
   public refreshTokens(
     @GetUser() user: User,
   ): Promise<RefreshTokenResponseDto> {
@@ -54,7 +51,6 @@ export class AuthController {
   @UseGuards(JwtAuthAdminAccessGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Sign out' })
-  @ApiGlobalResponses()
   public signOut(@GetUser() user: User): Promise<SignOutResponseDto> {
     return this.authService.signOut(user);
   }
@@ -64,7 +60,6 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get me' })
-  @ApiGlobalResponses()
   public getMe(@GetUser() user: User): Promise<GetMeResponseDto> {
     return this.authService.getMe(user);
   }

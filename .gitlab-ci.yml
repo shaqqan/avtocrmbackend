@@ -11,16 +11,16 @@ variables:
   MESSAGE_THREAD_ID: "$MESSAGE_THREAD_ID"
   PARSE_MODE: "Markdown"
 
-release:
-  stage: release
-  image: node:20-alpine
-  # tags:
-  #   - production
-  script:
-    - npx semantic-release
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-      when: on_success
+# release:
+#   stage: release
+#   image: node:20-alpine
+#   # tags:
+#   #   - production
+#   script:
+#     - npx semantic-release
+#   rules:
+#     - if: '$CI_COMMIT_BRANCH == "main"'
+#       when: on_success
 
 notify_on_merge_request:
   stage: deploy
