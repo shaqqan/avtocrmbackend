@@ -1,91 +1,58 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService, ConfigType } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { I18nService } from 'nestjs-i18n';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { JwtConfig } from 'src/common/configs';
-import { PrismaService } from 'src/databases/prisma/prisma.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from 'src/databases/typeorm/entities/user.entity';
 
 @Injectable()
-export class JwtAdminAccessStrategy extends PassportStrategy(
-  Strategy,
-  'jwt-admin-access-token',
-) {
+export class JwtAdminAccessStrategy extends PassportStrategy(Strategy, 'jwt-admin-access') {
   constructor(
-    private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
-    private readonly i18n: I18nService,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {
-    const config =
-      configService.getOrThrow<ConfigType<typeof JwtConfig>>('jwt');
-    if (!config?.admin.accessSecret) {
+    const config = configService.getOrThrow<ConfigType<typeof JwtConfig>>('jwt');
+    if (!config.admin.accessSecret) {
       throw new Error('JWT_ADMIN_ACCESS_SECRET is not defined');
     }
-
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ignoreExpiration: false,
       secretOrKey: config.admin.accessSecret,
+      audience: config.admin.audience,
+      issuer: config.admin.issuer,
     });
   }
 
-  async validate(payload: { id: number; email: string }) {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id: payload.id,
-        email: payload.email,
-      },
+  async validate(payload: any) {
+    const user = await this.userRepository.findOne({
       select: {
         id: true,
         email: true,
+        firstName: true,
+        lastName: true,
         roles: {
-          select: {
-            role: {
-              select: {
-                id: true,
-                name: true,
-                permissions: {
-                  select: {
-                    permission: {
-                      select: {
-                        id: true,
-                        name: true,
-                      },
-                    },
-                  },
-                },
-              },
-            },
+          name: true,
+          permissions: {
+            name: true,
           },
         },
-        permissions: {
-          select: {
-            permission: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
+      },
+      where: { id: payload.id },
+      relations: {
+        roles: {
+          permissions: true,
         },
       },
     });
 
     if (!user) {
-      throw new UnauthorizedException(this.i18n.t('errors.AUTH.UNAUTHORIZED'));
+      throw new UnauthorizedException();
     }
 
-    const rolePermissions = user.roles.flatMap((r) =>
-      r.role.permissions.map((p) => p.permission.name),
-    );
-    const directPermissions = user.permissions.map((p) => p.permission.name);
-
-    const uniquePermissions = Array.from(
-      new Set([...directPermissions, ...rolePermissions]),
-    );
-
-    return {
-      ...user,
-      permissions: uniquePermissions,
-    };
+    return user;
   }
 }

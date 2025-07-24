@@ -19,7 +19,7 @@ export class BasePaginationDto {
     @Type(() => Number)
     @IsInt({ message: i18nValidationMessage('errors.VALIDATION.IS_INT') })
     @Min(1, { message: i18nValidationMessage('errors.VALIDATION.MIN') })
-    page?: number = 1;
+    page: number = 1;
 
     @ApiPropertyOptional({
         description: 'Number of elements per page',
@@ -33,7 +33,7 @@ export class BasePaginationDto {
     @IsInt({ message: i18nValidationMessage('errors.VALIDATION.IS_INT') })
     @Min(1, { message: i18nValidationMessage('errors.VALIDATION.MIN') })
     @Max(100, { message: i18nValidationMessage('errors.VALIDATION.MAX') })
-    limit?: number = 10;
+    limit: number = 10;
 
     @ApiPropertyOptional({
         description: 'Search text',
@@ -49,7 +49,7 @@ export class BasePaginationDto {
     })
     @IsOptional()
     @IsString({ message: i18nValidationMessage('errors.VALIDATION.IS_STRING') })
-    sortBy?: string;
+    sortBy: string = 'id';
 
     @ApiPropertyOptional({
         description: 'Sorting order',
@@ -59,7 +59,7 @@ export class BasePaginationDto {
     })
     @IsOptional()
     @IsEnum(SortOrder, { message: i18nValidationMessage('errors.VALIDATION.IS_ENUM') })
-    sortOrder?: SortOrder = SortOrder.DESC;
+    sortOrder: SortOrder = SortOrder.DESC;
 
     get skip(): number {
         return ((this.page || 1) - 1) * (this.limit || 10);

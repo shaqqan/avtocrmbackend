@@ -3,5 +3,5 @@ import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
 export class JwtAuthAdminRefreshGuard extends AuthGuard(
-  'jwt-admin-refresh-token',
-) {}
+  'jwt-admin-refresh',
+) { }

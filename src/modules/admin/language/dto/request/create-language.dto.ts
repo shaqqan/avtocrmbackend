@@ -1,6 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsLocale, IsNotEmpty, IsNumber, IsString, MaxLength } from "class-validator";
 import { i18nValidationMessage } from "nestjs-i18n";
+import { Exists, AlreadyExists } from "src/common/decorators/validators";
+import { Language, Upload } from "src/databases/typeorm/entities";
 
 export class CreateLanguageDto {
 
@@ -11,6 +13,7 @@ export class CreateLanguageDto {
     @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
     @MaxLength(255, { message: i18nValidationMessage('validation.MAX_LENGTH') })
     @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+    @AlreadyExists(Language, 'name', { message: i18nValidationMessage('validation.ALREADY_EXISTS') })
     name: string;
 
     @ApiProperty({
@@ -20,6 +23,7 @@ export class CreateLanguageDto {
     @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
     @IsLocale({ message: i18nValidationMessage('validation.IS_LOCALE') })
     @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+    @AlreadyExists(Language, 'locale', { message: i18nValidationMessage('validation.ALREADY_EXISTS') })
     locale: string;
 
     @ApiProperty({
@@ -28,5 +32,6 @@ export class CreateLanguageDto {
     })
     @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
     @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
+    @Exists(Upload, 'id', { message: i18nValidationMessage('validation.UPLOAD_NOT_FOUND') })
     iconId: number;
 }

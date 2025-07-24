@@ -5,8 +5,6 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  Req,
-  UseFilters,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -20,7 +18,7 @@ import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
 import { GetMeResponseDto } from './dto/responses/get-me';
 import { SignOutResponseDto } from './dto/responses/sign-out';
 import { RefreshTokenResponseDto } from './dto/responses/refresh-token';
-import { User } from '@prisma/client';
+import { User } from 'src/databases/typeorm/entities';
 
 @Controller('admin/auth')
 @ApiTags('🔐 Authentication')

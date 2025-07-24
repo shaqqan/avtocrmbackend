@@ -1,21 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Prisma, User } from '@prisma/client';
-
-type UserWithRelations = User & {
-  roles: { role: { name: string } }[];
-  permissions: { permission: { name: string } }[];
-};
+import { User } from 'src/databases/typeorm/entities';
 
 export class GetMeResponseDto {
-  constructor(user: UserWithRelations) {
+  constructor(user: User) {
     this.id = user.id;
     this.email = user.email;
     this.firstName = user.firstName;
     this.lastName = user.lastName;
-    this.roles = user.roles.map((role) => role.role.name);
-    this.permissions = user.permissions.map(
-      (permission) => permission.permission.name,
-    );
+    this.roles = user.roles.map((role) => role.name);
+    this.permissions = user.roles.flatMap((role) => role.permissions.map((permission) => permission.action));
   }
 
   @ApiProperty({ type: Number })

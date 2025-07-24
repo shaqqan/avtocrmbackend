@@ -16,7 +16,6 @@ export class ValidationErrorHandler extends ValidationPipe {
       transformOptions: {
         enableImplicitConversion: true,
       },
-      forbidNonWhitelisted: true,
       forbidUnknownValues: false,
       exceptionFactory: (errors: ValidationError[]) =>
         this.createException(errors),

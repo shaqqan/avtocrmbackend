@@ -2,12 +2,12 @@ import { Module } from '@nestjs/common';
 import { ModulesModule } from './modules/modules.module';
 import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
 import { Configs } from './common/configs';
-import { PrismaModule } from './databases/prisma/prisma.module';
 import { RedisModule } from './databases/redis/redis.module';
 import { HeaderResolver, I18nModule } from 'nestjs-i18n';
 import * as path from 'path';
 import { I18nConfig } from './common/configs/i18n.config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { CustomTypeOrmModule } from './databases/typeorm/typeorm.module';
 
 @Module({
   imports: [
@@ -32,9 +32,9 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     EventEmitterModule.forRoot({
       global: true,
     }),
-    PrismaModule,
-    ModulesModule,
     RedisModule,
+    ModulesModule,
+    CustomTypeOrmModule,
   ],
 })
 export class AppModule { }

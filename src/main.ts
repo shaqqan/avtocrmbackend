@@ -24,7 +24,7 @@ import * as path from 'path';
       bodyLimit: 1024 * 1024 * 10, // 10MB
     }),
     {
-      logger: false,
+      logger: ['error', 'warn', 'verbose', 'debug'],
       cors: {
         origin: true,
         credentials: true,
@@ -46,7 +46,7 @@ import * as path from 'path';
   });
 
   // Register global filters and pipes in the correct order
-  app.useGlobalFilters(new GlobalExceptionFilter(app.get(ConfigService)));
+  app.useGlobalFilters(new GlobalExceptionFilter(app.get(ConfigService), i18n));
   app.useGlobalPipes(new ValidationErrorHandler(i18n));
 
   app.setGlobalPrefix('api');

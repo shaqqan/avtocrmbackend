@@ -3,7 +3,6 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { PrismaService } from '../../../databases/prisma/prisma.service';
 import { SignInDto } from './dto/requests/sign-in.dto';
 import * as bcrypt from 'bcrypt';
 import { SignInResponseDto } from './dto/responses/sign-in.res';
@@ -16,12 +15,15 @@ import { GetMeResponseDto } from './dto/responses/get-me';
 import { SignOutResponseDto } from './dto/responses/sign-out';
 import { RefreshTokenResponseDto } from './dto/responses/refresh-token';
 import { I18nService } from 'nestjs-i18n';
-import { User } from '@prisma/client';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from 'src/databases/typeorm/entities';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prisma: PrismaService,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
     private readonly redisService: RedisService,
     private readonly configService: ConfigService,
@@ -31,21 +33,25 @@ export class AuthService {
   async signIn(signInDto: SignInDto): Promise<SignInResponseDto> {
     const { email, password } = signInDto;
 
-    const user = await this.prisma.user.findUnique({
-      include: {
+    const user = await this.userRepository.findOne({
+      select: {
+        id: true,
+        email: true,
+        password: true,
+        firstName: true,
+        lastName: true,
         roles: {
-          include: {
-            role: true,
-          },
-        },
-        permissions: {
-          include: {
-            permission: true,
+          name: true,
+          permissions: {
+            name: true,
           },
         },
       },
-      where: {
-        email: email,
+      where: { email },
+      relations: {
+        roles: {
+          permissions: true,
+        },
       },
     });
 
@@ -85,19 +91,7 @@ export class AuthService {
   }
 
   async getMe(user: User): Promise<GetMeResponseDto> {
-    const userWithRoles = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        roles: { include: { role: true } },
-        permissions: { include: { permission: true } },
-      },
-    });
-
-    if (!userWithRoles) {
-      throw new NotFoundException(this.i18n.t('errors.USER.NOT_FOUND'));
-    }
-
-    return new GetMeResponseDto(userWithRoles);
+    return new GetMeResponseDto(user);
   }
 
   private async generateTokens(

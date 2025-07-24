@@ -9,11 +9,13 @@ import { BasePaginationDto } from 'src/common/dto/request';
 import { BasePaginationResponseDto } from 'src/common/dto/response/base-pagination.res.dto';
 import { FindOneLanguageResponseDto } from './dto/response';
 import { MessageResponseDto, MessageWithDataResponseDto } from 'src/common/dto/response';
+import { PermissionsEnum } from 'src/common/enums';
+import { RequirePermissions } from 'src/common/decorators/permissions.decorator';
 
 @Controller('admin/languages')
 @UseGuards(JwtAuthAdminAccessGuard)
-@ApiTags('🌐 Language')
 @ApiBearerAuth()
+@ApiTags('🌐 Language')
 @ApiGlobalResponses()
 export class LanguageController {
   constructor(private readonly languageService: LanguageService) { }

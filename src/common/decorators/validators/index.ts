@@ -1,1 +1,2 @@
-export * from './already-exists.validator';
+export * from './exists';
+export * from './already-exists';

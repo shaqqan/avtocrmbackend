@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Language } from "@prisma/client";
+import { Language } from "src/databases/typeorm/entities";
 
 export class FindOneLanguageResponseDto {
     @ApiProperty({

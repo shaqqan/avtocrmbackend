@@ -2,12 +2,13 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
 import { FastifyRequest } from 'fastify';
 import { MessageWithDataResponseDto } from 'src/common/dto/response';
-import { PrismaService } from 'src/databases/prisma/prisma.service';
 import * as path from 'path';
 import * as fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import { UploadFileDto } from './dto/upload-file.dto';
-import { UploadTypeEnum } from 'src/common/enums/admin';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Upload } from 'src/databases/typeorm/entities';
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -16,12 +17,13 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 export class UploadService {
   constructor(
     private readonly i18n: I18nService,
-    private readonly prisma: PrismaService,
+    @InjectRepository(Upload)
+    private readonly uploadRepository: Repository<Upload>,
   ) { }
 
   async uploadFile(
     req: FastifyRequest,
-    { type }: UploadFileDto,
+    { type = 'book' }: UploadFileDto,
   ): Promise<MessageWithDataResponseDto> {
     const file = await req.file();
     if (!file) {
@@ -51,16 +53,16 @@ export class UploadService {
     try {
       fs.writeFileSync(fullPath, buffer);
 
-      const upload = await this.prisma.upload.create({
-        data: {
-          name: filename,
-          originalName: file.filename,
-          path: path.join('storage', type, filename),
-          mimetype: file.mimetype,
-          size: buffer.length,
-          type,
-        },
+      const upload = this.uploadRepository.create({
+        name: filename,
+        originalName: file.filename,
+        path: path.join('storage', type, filename),
+        mimetype: file.mimetype,
+        size: buffer.length,
+        type,
       });
+
+      await this.uploadRepository.save(upload);
 
       return new MessageWithDataResponseDto(this.i18n.t('success.UPLOAD.UPLOADED'), upload);
     } catch (error) {

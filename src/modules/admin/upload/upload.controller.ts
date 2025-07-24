@@ -1,10 +1,9 @@
-import { BadRequestException, Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
-import { MessageResponseDto, MessageWithDataResponseDto } from 'src/common/dto/response';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { MessageWithDataResponseDto } from 'src/common/dto/response';
 import { UploadService } from './upload.service';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UploadFileDto } from './dto/upload-file.dto';
 import { FastifyRequest } from 'fastify';
-import { I18nService } from 'nestjs-i18n';
 import { ApiGlobalResponses } from 'src/common/decorators/swagger';
 import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
 
@@ -15,8 +14,7 @@ import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
 @ApiBearerAuth()
 @ApiGlobalResponses()
 export class UploadController {
-  constructor(
-    private readonly uploadService: UploadService) { }
+  constructor(private readonly uploadService: UploadService) { }
 
   @Post()
   @ApiOperation({ summary: "Uploads a single file" })

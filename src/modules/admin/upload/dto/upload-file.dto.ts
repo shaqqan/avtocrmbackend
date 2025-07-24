@@ -10,7 +10,10 @@ export class UploadFileDto {
     })
     file: any;
 
-    @ApiProperty()
-    @IsEnum(UploadTypeEnum)
-    type: UploadTypeEnum;
+    @ApiProperty({
+        description: 'The type of the file',
+        enum: UploadTypeEnum,
+        example: UploadTypeEnum.LANGUAGE,
+    })
+    type: string;
 }
