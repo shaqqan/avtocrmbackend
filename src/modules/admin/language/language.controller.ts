@@ -20,7 +20,7 @@ export class LanguageController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new language' })
-  create(@Body() createLanguageDto: CreateLanguageDto) {
+  create(@Body() createLanguageDto: CreateLanguageDto): Promise<MessageWithDataResponseDto> {
     return this.languageService.create(createLanguageDto);
   }
 

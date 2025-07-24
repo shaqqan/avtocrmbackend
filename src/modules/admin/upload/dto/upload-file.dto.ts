@@ -1,4 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { IsEnum } from "class-validator";
+import { UploadTypeEnum } from "src/common/enums/admin";
 
 export class UploadFileDto {
     @ApiProperty({
@@ -9,5 +11,6 @@ export class UploadFileDto {
     file: any;
 
     @ApiProperty()
-    type: string;
+    @IsEnum(UploadTypeEnum)
+    type: UploadTypeEnum;
 }

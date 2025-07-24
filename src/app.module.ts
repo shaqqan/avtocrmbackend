@@ -20,7 +20,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
       useFactory: (configService: ConfigService) => ({
         fallbackLanguage:
           configService.getOrThrow<ConfigType<typeof I18nConfig>>('i18n')
-            .fakerLocale || 'en',
+            .fakerLocale,
         loaderOptions: {
           path: path.join(process.cwd(), 'src/i18n/'),
           watch: true,
@@ -37,4 +37,4 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     RedisModule,
   ],
 })
-export class AppModule {}
+export class AppModule { }

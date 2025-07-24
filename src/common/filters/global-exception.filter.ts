@@ -25,7 +25,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
     // Send error report to Telegram for 500 errors
-    if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
+    if (status === HttpStatus.INTERNAL_SERVER_ERROR && process.env.NODE_ENV !== 'locale') {
       const telegramService = new TelegramService(this.configService);
       await telegramService.sendErrorReport(exception, {
         method: request.method,
@@ -41,6 +41,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       return response.status(status).send(validationResponse);
     }
 
+    console.log(exception);
     // Prepare the error response for other types of errors
     const errorResponse = {
       statusCode: status,

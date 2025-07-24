@@ -7,6 +7,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import { UploadFileDto } from './dto/upload-file.dto';
+import { UploadTypeEnum } from 'src/common/enums/admin';
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -20,7 +21,7 @@ export class UploadService {
 
   async uploadFile(
     req: FastifyRequest,
-    { type = 'book' }: UploadFileDto,
+    { type }: UploadFileDto,
   ): Promise<MessageWithDataResponseDto> {
     const file = await req.file();
     if (!file) {
