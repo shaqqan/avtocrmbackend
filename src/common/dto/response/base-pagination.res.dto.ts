@@ -38,12 +38,14 @@ class Meta {
     hasPreviousPage: boolean;
 }
 
-export class BasePaginationResponseDto {
-    constructor(data: any, meta: {
-        total: number;
-        page: number;
-        limit: number;
-    }) {
+export class BasePaginationResponseDto<T> {
+    constructor(
+        public data: T[],
+        public meta: {
+            total: number;
+            page: number;
+            limit: number;
+        }) {
         this.data = data;
         this.meta = {
             total: meta.total,
@@ -52,18 +54,6 @@ export class BasePaginationResponseDto {
             totalPages: Math.ceil(meta.total / meta.limit),
             hasNextPage: meta.page < Math.ceil(meta.total / meta.limit),
             hasPreviousPage: meta.page > 1,
-        };
+        } as Meta;
     }
-
-    @ApiProperty({
-        description: 'Data',
-        isArray: true
-    })
-    data: any;
-
-    @ApiProperty({
-        description: 'Meta',
-        type: Meta,
-    })
-    meta: Meta;
 } 

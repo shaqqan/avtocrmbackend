@@ -15,10 +15,10 @@ export class Language extends BaseEntity {
   @Column({ nullable: true })
   iconId: number;
 
-  @OneToOne(() => Upload, { nullable: true })
+  @ManyToOne(() => Upload, { nullable: true })
   @JoinColumn({ name: 'iconId' })
   icon: Upload;
-
+ 
   @CreateDateColumn()
   createdAt: Date;
 

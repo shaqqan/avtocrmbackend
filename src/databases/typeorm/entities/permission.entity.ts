@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToMany, BaseEntity } from 'typeorm';
 import { Role } from './role.entity';
+import { BookLangEnum } from './book.entity';
 
 @Entity('permissions')
 export class Permission extends BaseEntity {
@@ -15,7 +16,7 @@ export class Permission extends BaseEntity {
   @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn() 
+  @UpdateDateColumn()
   updatedAt: Date;
 
   @DeleteDateColumn()
@@ -23,4 +24,5 @@ export class Permission extends BaseEntity {
 
   @ManyToMany(() => Role, (role) => role.permissions)
   roles: Role[];
-} 
+
+}

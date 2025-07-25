@@ -1,1 +1,1 @@
-export * from './find-one-language.res.dto';
+export * from './language.res.dto';

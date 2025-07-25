@@ -1,13 +1,14 @@
-import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { CreateLanguageDto } from './dto/request/create-language.dto';
 import { UpdateLanguageDto } from './dto/request/update-language.dto';
 import { BasePaginationDto, SortOrder } from 'src/common/dto/request';
 import { BasePaginationResponseDto, MessageResponseDto, MessageWithDataResponseDto } from 'src/common/dto/response/';
 import { I18nService } from 'nestjs-i18n';
-import { FindOneLanguageResponseDto } from './dto/response';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, ILike, Not } from 'typeorm';
+import { Repository, ILike } from 'typeorm';
 import { Language } from 'src/databases/typeorm/entities/language.entity';
+import { LanguageMapper } from './mapper/language.mapper';
+import { LanguageResponseDto } from './dto/response/language.res.dto';
 
 @Injectable()
 export class LanguageService {
@@ -17,27 +18,16 @@ export class LanguageService {
     private i18n: I18nService
   ) { }
 
-  public async create(createLanguageDto: CreateLanguageDto): Promise<MessageWithDataResponseDto> {
-    const { iconId, locale, name } = createLanguageDto;
-
-    const language = await this.languageRepository.create({
-      name,
-      locale,
-      iconId,
-    }).save();
-
-    const languageWithIcon = await this.languageRepository.findOne({
-      where: { id: language.id },
-      relations: { icon: true },
-    });
-
+  public async create(createLanguageDto: CreateLanguageDto): Promise<MessageWithDataResponseDto<LanguageResponseDto>> {
+    const language = LanguageMapper.toEntityFromCreateDto(createLanguageDto);
+    const savedLanguage = await this.languageRepository.save(language);
     return new MessageWithDataResponseDto(
       this.i18n.t('success.LANGUAGE.CREATED'),
-      new FindOneLanguageResponseDto(languageWithIcon)
+      LanguageMapper.toDto(savedLanguage)
     );
   }
 
-  public async findAll({ take, skip, page, limit, sortBy, sortOrder, search }: BasePaginationDto): Promise<BasePaginationResponseDto> {
+  public async findAll({ take, skip, page, limit, sortBy, sortOrder, search }: BasePaginationDto): Promise<BasePaginationResponseDto<LanguageResponseDto>> {
     const allowedSortFields: string[] = ['id', 'name', 'locale', 'createdAt', 'updatedAt'];
 
     if (!allowedSortFields.includes(sortBy)) {
@@ -57,14 +47,14 @@ export class LanguageService {
       take,
     });
 
-    return new BasePaginationResponseDto(languages.map((language) => new FindOneLanguageResponseDto(language)), {
+    return new BasePaginationResponseDto(LanguageMapper.toDtoList(languages), {
       total,
       page: page,
       limit: limit,
     });
   }
 
-  public async findOne(id: number): Promise<FindOneLanguageResponseDto> {
+  public async findOne(id: number): Promise<LanguageResponseDto> {
     const language = await this.languageRepository.findOne({
       where: { id },
       relations: { icon: true },
@@ -74,30 +64,44 @@ export class LanguageService {
       throw new NotFoundException(this.i18n.t('errors.LANGUAGE.NOT_FOUND'));
     }
 
-    return new FindOneLanguageResponseDto(language);
+    return LanguageMapper.toDto(language);
   }
 
-  public async update(id: number, updateLanguageDto: UpdateLanguageDto): Promise<MessageWithDataResponseDto> {
-    const { locale, name } = updateLanguageDto;
-
-    // Check if language already exists
-    await this.languageRepository.update(id, updateLanguageDto);
-
+  public async update(id: number, updateLanguageDto: UpdateLanguageDto): Promise<MessageWithDataResponseDto<LanguageResponseDto>> {
     const language = await this.languageRepository.findOne({
       where: { id },
-      relations: { icon: true },
     });
+
+    if (!language) {
+      throw new NotFoundException(this.i18n.t('errors.LANGUAGE.NOT_FOUND'));
+    }
+
+    const updatedLanguage = LanguageMapper.toEntityFromUpdateDto(updateLanguageDto, language);
+    await this.languageRepository.save(updatedLanguage);
 
     return new MessageWithDataResponseDto(
       this.i18n.t('success.LANGUAGE.UPDATED'),
-      new FindOneLanguageResponseDto(language)
+      LanguageMapper.toDto(updatedLanguage)
     );
   }
 
   public async remove(id: number): Promise<MessageResponseDto> {
-    await this.findOne(id);
+    const language = await this.languageRepository.findOne({
+      where: { id },
+    });
+
+    if (!language) {
+      throw new NotFoundException(this.i18n.t('errors.LANGUAGE.NOT_FOUND'));
+    }
     await this.languageRepository.delete(id);
     return new MessageResponseDto(this.i18n.t('success.LANGUAGE.REMOVED'));
+  }
+
+  public async list(): Promise<LanguageResponseDto[]> {
+    const languages = await this.languageRepository.find({
+      relations: { icon: true },
+    });
+    return LanguageMapper.toDtoList(languages);
   }
 
 }

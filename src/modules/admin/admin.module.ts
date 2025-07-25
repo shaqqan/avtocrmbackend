@@ -6,9 +6,10 @@ import { RoleModule } from './role/role.module';
 import { PermissionModule } from './permission/permission.module';
 import { APP_GUARD } from '@nestjs/core';
 import { PermissionsGuard, RolesGuard } from 'src/common/guards';
+import { BookModule } from './book/book.module';
 
 @Module({
-  imports: [AuthModule, LanguageModule, UploadModule, RoleModule, PermissionModule],
+  imports: [AuthModule, LanguageModule, PermissionModule, RoleModule, UploadModule, BookModule],
   providers: [
     {
       provide: APP_GUARD,

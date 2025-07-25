@@ -7,10 +7,8 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiGlobalResponses } from 'src/common/decorators/swagger';
 import { BasePaginationDto } from 'src/common/dto/request';
 import { BasePaginationResponseDto } from 'src/common/dto/response/base-pagination.res.dto';
-import { FindOneLanguageResponseDto } from './dto/response';
 import { MessageResponseDto, MessageWithDataResponseDto } from 'src/common/dto/response';
-import { PermissionsEnum } from 'src/common/enums';
-import { RequirePermissions } from 'src/common/decorators/permissions.decorator';
+import { LanguageResponseDto } from './dto/response/language.res.dto';
 
 @Controller('admin/languages')
 @UseGuards(JwtAuthAdminAccessGuard)
@@ -22,25 +20,25 @@ export class LanguageController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new language' })
-  create(@Body() createLanguageDto: CreateLanguageDto): Promise<MessageWithDataResponseDto> {
+  create(@Body() createLanguageDto: CreateLanguageDto): Promise<MessageWithDataResponseDto<LanguageResponseDto>> {
     return this.languageService.create(createLanguageDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all languages' })
-  findAll(@Query() query: BasePaginationDto): Promise<BasePaginationResponseDto> {
+  findAll(@Query() query: BasePaginationDto): Promise<BasePaginationResponseDto<LanguageResponseDto>> {
     return this.languageService.findAll(query);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a language by id' })
-  findOne(@Param('id', new ParseIntPipe()) id: number): Promise<FindOneLanguageResponseDto> {
+  findOne(@Param('id', new ParseIntPipe()) id: number): Promise<LanguageResponseDto> {
     return this.languageService.findOne(id);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a language by id' })
-  update(@Param('id', new ParseIntPipe()) id: number, @Body() updateLanguageDto: UpdateLanguageDto): Promise<MessageWithDataResponseDto> {
+  update(@Param('id', new ParseIntPipe()) id: number, @Body() updateLanguageDto: UpdateLanguageDto): Promise<MessageWithDataResponseDto<LanguageResponseDto>> {
     return this.languageService.update(id, updateLanguageDto);
   }
 
@@ -48,6 +46,12 @@ export class LanguageController {
   @ApiOperation({ summary: 'Delete a language by id' })
   remove(@Param('id', new ParseIntPipe()) id: number): Promise<MessageResponseDto> {
     return this.languageService.remove(id);
+  }
+
+  @Get('list')
+  @ApiOperation({ summary: 'Get all languages' })
+  list(): Promise<LanguageResponseDto[]> {
+    return this.languageService.list();
   }
 }
 

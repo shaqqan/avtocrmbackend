@@ -5,10 +5,11 @@ import { MessageWithDataResponseDto } from 'src/common/dto/response';
 import * as path from 'path';
 import * as fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
-import { UploadFileDto } from './dto/upload-file.dto';
+import { UploadFileDto } from './dto/request/upload-file.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Upload } from 'src/databases/typeorm/entities';
+import { UploadResponseDto } from './dto/response/upload.res.dto';
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -24,7 +25,7 @@ export class UploadService {
   async uploadFile(
     req: FastifyRequest,
     { type = 'book' }: UploadFileDto,
-  ): Promise<MessageWithDataResponseDto> {
+  ): Promise<MessageWithDataResponseDto<UploadResponseDto>> {
     const file = await req.file();
     if (!file) {
       throw new BadRequestException(this.i18n.t('errors.VALIDATION.FILE_REQUIRED'));
