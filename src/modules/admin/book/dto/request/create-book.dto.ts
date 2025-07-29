@@ -1,5 +1,6 @@
-import { IsEnum, IsNumber, IsString } from "class-validator";
-import { BookLangEnum, PublishedEnum } from "src/databases/typeorm/entities";
+import { IsArray, IsEnum, IsNumber, IsString } from "class-validator";
+import { Author, BookLangEnum, Genre, Issuer, PublishedEnum } from "src/databases/typeorm/entities";
+import { Exists } from "src/common/decorators/validators";
 
 export class CreateBookDto {
     @IsString()
@@ -49,4 +50,19 @@ export class CreateBookDto {
 
     @IsString()
     cover: string;
+
+    @IsArray()
+    @IsNumber({}, { each: true })
+    @Exists(Author, 'id')
+    authorsIds: number[];
+
+    @IsArray()
+    @IsNumber({}, { each: true })
+    @Exists(Genre, 'id')
+    genresIds: number[];
+
+    @IsArray()
+    @IsNumber({}, { each: true })
+    @Exists(Issuer, 'id')
+    issuersIds: number[];
 }

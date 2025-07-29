@@ -9,12 +9,12 @@ import { BasePaginationDto } from 'src/common/dto/request';
 import { BasePaginationResponseDto } from 'src/common/dto/response/base-pagination.res.dto';
 import { MessageResponseDto, MessageWithDataResponseDto } from 'src/common/dto/response';
 import { LanguageResponseDto } from './dto/response/language.res.dto';
-
+   
 @Controller('admin/languages')
-@UseGuards(JwtAuthAdminAccessGuard)
+@UseGuards(JwtAuthAdminAccessGuard) 
 @ApiBearerAuth()
 @ApiTags('🌐 Language')
-@ApiGlobalResponses()
+@ApiGlobalResponses()  
 export class LanguageController {
   constructor(private readonly languageService: LanguageService) { }
 

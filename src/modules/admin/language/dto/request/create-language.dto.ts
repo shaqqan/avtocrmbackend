@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsLocale, IsNotEmpty, IsNumber, IsString, MaxLength } from "class-validator";
 import { i18nValidationMessage } from "nestjs-i18n";
 import { Exists, AlreadyExists } from "src/common/decorators/validators";
-import { Language, Upload } from "src/databases/typeorm/entities";
+import { Language, File } from "src/databases/typeorm/entities";
 
 export class CreateLanguageDto {
 
@@ -32,6 +32,6 @@ export class CreateLanguageDto {
     })
     @IsNumber({}, { message: i18nValidationMessage('validation.IS_NUMBER') })
     @IsNotEmpty({ message: i18nValidationMessage('validation.IS_NOT_EMPTY') })
-    @Exists(Upload, 'id', { message: i18nValidationMessage('validation.UPLOAD_NOT_FOUND') })
+    @Exists(File, 'id', { message: i18nValidationMessage('validation.FILE_NOT_FOUND') })
     iconId: number;
 }

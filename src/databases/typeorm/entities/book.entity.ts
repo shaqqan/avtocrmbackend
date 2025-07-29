@@ -1,3 +1,4 @@
+import { Author } from "./author.entity";
 import {
     Entity,
     PrimaryGeneratedColumn,
@@ -6,7 +7,14 @@ import {
     UpdateDateColumn,
     BaseEntity,
     DeleteDateColumn,
+    ManyToOne,
+    JoinTable,
+    ManyToMany,
+    AfterLoad,
 } from 'typeorm';
+import { File } from "./file.entity";
+import { Genre } from "./genre.entity";
+import { Issuer } from "./issuer.entity";
 
 export enum BookLangEnum {
     UZ = 'uz',
@@ -69,7 +77,7 @@ export class Book extends BaseEntity {
     @Column({ type: 'tinyint', nullable: true, comment: 'ТОП\\Рекомендуемыми книгами редакцией.' })
     top: number;
 
-    @Column({ type: 'varchar', length: 70, nullable: true })
+    @Column({ type: 'varchar', length: 255, nullable: true })
     cover: string;
 
     @CreateDateColumn()
@@ -80,6 +88,27 @@ export class Book extends BaseEntity {
 
     @DeleteDateColumn({ default: null })
     deletedAt: Date;
+
+    @ManyToMany(() => Author, { nullable: true })
+    @JoinTable()
+    authors: Author[];
+
+    @ManyToMany(() => File, { nullable: true })
+    @JoinTable()
+    files: File[];
+
+    @ManyToMany(() => Genre, { nullable: true })
+    @JoinTable()
+    genres: Genre[];
+
+    @ManyToMany(() => Issuer, { nullable: true })
+    @JoinTable()
+    issuers: Issuer[];
+
+    @AfterLoad()
+    setAuthorsAndFiles() {
+        this.cover = this.cover ? global.asset(this.cover) : null;
+    }
 
     getName(locale?: Omit<BookLangEnum, 'UZ'>): string {
         switch (locale) {

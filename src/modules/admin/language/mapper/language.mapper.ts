@@ -5,14 +5,13 @@ import { UpdateLanguageDto } from "../dto/request/update-language.dto";
 
 export class LanguageMapper {
     static toDto(entity: Language): LanguageResponseDto {
-        const url = entity.icon?.path ? global.asset(entity.icon.path) : null;
         return new LanguageResponseDto(
             entity.id,
             entity.name,
             entity.locale,
-            url,
+            entity.icon?.name,
             entity.createdAt,
-            entity.updatedAt
+            entity.updatedAt,
         );
     }
 

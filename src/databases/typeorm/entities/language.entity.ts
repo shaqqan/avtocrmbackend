@@ -1,6 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToOne, BaseEntity } from 'typeorm';
-import { Upload } from './upload.entity';
-
+import { File } from './file.entity';
 @Entity('languages')
 export class Language extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -15,10 +14,10 @@ export class Language extends BaseEntity {
   @Column({ nullable: true })
   iconId: number;
 
-  @ManyToOne(() => Upload, { nullable: true })
+  @ManyToOne(() => File, { nullable: true })
   @JoinColumn({ name: 'iconId' })
-  icon: Upload;
- 
+  icon: File;
+
   @CreateDateColumn()
   createdAt: Date;
 

@@ -1,19 +1,15 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum } from "class-validator";
-import { UploadTypeEnum } from "src/common/enums/admin";
+import { Transform } from "class-transformer";
+import { FileCategory, FileFormat } from "src/common/enums";
 
 export class UploadFileDto {
-    @ApiProperty({
-        description: 'The file to upload',
-        type: 'string',
-        format: 'binary',
-    })
+    @ApiProperty({ type: 'string', format: 'binary' })
     file: any;
 
-    @ApiProperty({
-        description: 'The type of the file',
-        enum: UploadTypeEnum,
-        example: UploadTypeEnum.LANGUAGE,
-    })
-    type: string;
+    @ApiProperty({ enum: FileCategory })
+    category: FileCategory;
+
+    @ApiProperty({ enum: FileFormat })
+    format: FileFormat;
 }

@@ -3,11 +3,9 @@ import { MessageWithDataResponseDto } from 'src/common/dto/response';
 import { UploadService } from './upload.service';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UploadFileDto } from './dto/request/upload-file.dto';
-import { FastifyRequest } from 'fastify';
+import { FastifyRequest, FastifyBodyParser } from 'fastify';
 import { ApiGlobalResponses } from 'src/common/decorators/swagger';
 import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
-import { UploadResponseDto } from './dto/response/upload.res.dto';
-
 
 @Controller('admin/upload')
 @UseGuards(JwtAuthAdminAccessGuard)
@@ -24,7 +22,9 @@ export class UploadController {
     description: 'File upload',
     type: UploadFileDto,
   })
-  async uploadFile(@Req() req: FastifyRequest, @Body() body: UploadFileDto): Promise<MessageWithDataResponseDto<UploadResponseDto>> {
-    return this.uploadService.uploadFile(req, body);
+  async uploadFileManual(@Req() req: FastifyRequest & { body: any }) {
+    const category = req.body.category;
+    const format = req.body.format;
+    return await this.uploadService.uploadFile(req, { category, format });
   }
 }

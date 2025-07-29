@@ -28,7 +28,7 @@ export const setupSwaggerAdmin = (app: INestApplication): void => {
         'Language preference header. Supported values: uz, ru, en, kaa.',
       schema: {
         type: 'string',
-        example: 'kaa',
+        example: 'uz',
       },
     })
     .build();

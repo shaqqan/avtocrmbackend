@@ -61,6 +61,14 @@ export class BasePaginationDto {
     @IsEnum(SortOrder, { message: i18nValidationMessage('errors.VALIDATION.IS_ENUM') })
     sortOrder: SortOrder = SortOrder.DESC;
 
+    @ApiPropertyOptional({
+        description: 'Filters',
+        example: {
+            name: 'John',
+        },
+    })
+    filters?: Record<string, any>;
+
     get skip(): number {
         return ((this.page || 1) - 1) * (this.limit || 10);
     }

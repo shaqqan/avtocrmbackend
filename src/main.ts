@@ -38,7 +38,18 @@ import * as path from 'path';
   global.asset = asset;
 
   const i18n = app.get(I18nService);
-  await app.register(fastifyMultipart);
+  await app.register(require('@fastify/multipart'), {
+    // Attach fields to request (muhim!)
+    attachFieldsToBody: true,
+    limits: {
+      fieldNameSize: 100,
+      fieldSize: 1000000,
+      fields: 10,
+      fileSize: 10000000, // 10MB
+      files: 5,
+      headerPairs: 2000
+    }
+  });
 
   await app.register(fastifyStatic, {
     root: path.join(process.cwd(), 'storage'),

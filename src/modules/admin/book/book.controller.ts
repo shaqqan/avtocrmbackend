@@ -4,19 +4,20 @@ import { CreateBookDto } from './dto/request/create-book.dto';
 import { UpdateBookDto } from './dto/request/update-book.dto';
 import { BasePaginationDto } from 'src/common/dto/request';
 import { MessageWithDataResponseDto } from 'src/common/dto/response';
-import { BookResponseDto } from './dto/response/book.res.dto';
+import { BookResponseDto, BookResponseMultiLangDto } from './dto/response/book.res.dto';
+import { QueryBookDto } from './dto/request/query-book.dto';
 
-@Controller('book')
+@Controller('admin/book')
 export class BookController {
   constructor(private readonly bookService: BookService) { }
 
   @Post()
-  create(@Body() createBookDto: CreateBookDto): Promise<MessageWithDataResponseDto<BookResponseDto>> {
+  create(@Body() createBookDto: CreateBookDto): Promise<MessageWithDataResponseDto<BookResponseMultiLangDto>> {
     return this.bookService.create(createBookDto);
   }
 
   @Get()
-  findAll(@Query() query: BasePaginationDto) {
+  findAll(@Query() query: QueryBookDto) {
     return this.bookService.findAll(query);
   }
 
