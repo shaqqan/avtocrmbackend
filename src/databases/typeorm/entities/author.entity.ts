@@ -58,6 +58,10 @@ export class Author extends BaseEntity {
         this.cover = global.asset(this.cover);
     }
 
+    getFullName(locale?: string): string {
+        return this[`name_${locale}`] + ' ' + this[`lastName_${locale}`] + ' ' + this[`middleName_${locale}`];
+    }
+
     getName(locale?: string): string {
         return this[`name_${locale}`];
     }

@@ -1,5 +1,7 @@
 import { News } from "src/databases/typeorm/entities";
 import { NewsMultiResponseDto, NewsResponseDto } from "../dto/response/news.res.dto";
+import { CreateNewsDto } from "../dto/request/create-news.dto";
+import { UpdateNewsDto } from "../dto/request/update-news.dto";
 import { I18nContext } from "nestjs-i18n";
 
 export class NewsMapper {
@@ -13,6 +15,7 @@ export class NewsMapper {
             entity.description_ru,
             entity.description_en,
             entity.cover,
+            entity.status,
             entity.createdAt,
             entity.updatedAt,
         );
@@ -25,8 +28,19 @@ export class NewsMapper {
             entity[`title_${locale}`],
             entity[`description_${locale}`],
             entity.cover,
+            entity.status,
             entity.createdAt,
             entity.updatedAt,
         ));
+    }
+
+    static toEntityFromCreateDto(dto: CreateNewsDto): News {
+        const news = new News();
+        Object.assign(news, dto);
+        return news;
+    }
+
+    static toEntityFromUpdateDto(dto: UpdateNewsDto, existingNews: News): News {
+        return Object.assign(existingNews, dto);
     }
 }

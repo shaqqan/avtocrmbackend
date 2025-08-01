@@ -15,6 +15,79 @@
     "UPDATED": "Til muvaffaqiyatli yangilandi"
   },
   "UPLOAD": {
-    "UPLOADED": "Fayl muvaffaqiyatli yuklandi"
+    "UPLOADED": "Fayl muvaffaqiyatli yuklandi",
+    "BATCH_COMPLETED": "Ommaviy yuklash tugadi. {successCount} ta fayl muvaffaqiyatli yuklandi, {failureCount} ta xato",
+    "STATS_RETRIEVED": "Yuklash statistikasi muvaffaqiyatli olindi",
+    "FILE_DELETED": "Fayl muvaffaqiyatli o'chirildi"
+  },
+  "USER": {
+    "CREATED": "Foydalanuvchi muvaffaqiyatli yaratildi",
+    "UPDATED": "Foydalanuvchi muvaffaqiyatli yangilandi",
+    "DELETED": "Foydalanuvchi muvaffaqiyatli o'chirildi"
+  },
+  "ISSUER": {
+    "CREATED": "Nashriyotchi muvaffaqiyatli yaratildi",
+    "UPDATED": "Nashriyotchi muvaffaqiyatli yangilandi",
+    "DELETED": "Nashriyotchi muvaffaqiyatli o'chirildi"
+  },
+  "NEWS": {
+    "CREATED": "Yangilik muvaffaqiyatli yaratildi",
+    "UPDATED": "Yangilik muvaffaqiyatli yangilandi",
+    "DELETED": "Yangilik muvaffaqiyatli o'chirildi"
+  },
+  "HELP": {
+    "CREATED": "Yordam mavzusi muvaffaqiyatli yaratildi",
+    "UPDATED": "Yordam mavzusi muvaffaqiyatli yangilandi",
+    "DELETED": "Yordam mavzusi muvaffaqiyatli o'chirildi"
+  },
+  "REVIEW_BOOK": {
+    "CREATED": "Kitob sharhi muvaffaqiyatli yaratildi",
+    "UPDATED": "Kitob sharhi muvaffaqiyatli yangilandi",
+    "DELETED": "Kitob sharhi muvaffaqiyatli o'chirildi"
+  },
+  "REVIEWS_AUDIOBOOK": {
+    "CREATED": "Audiokitob sharhi muvaffaqiyatli yaratildi",
+    "UPDATED": "Audiokitob sharhi muvaffaqiyatli yangilandi",
+    "DELETED": "Audiokitob sharhi muvaffaqiyatli o'chirildi"
+  },
+  "FEEDBACKS_THEME": {
+    "CREATED": "Fikr-mulohaza mavzusi muvaffaqiyatli yaratildi",
+    "UPDATED": "Fikr-mulohaza mavzusi muvaffaqiyatli yangilandi",
+    "DELETED": "Fikr-mulohaza mavzusi muvaffaqiyatli o'chirildi"
+  },
+  "BOOK": {
+    "CREATED": "Kitob muvaffaqiyatli yaratildi",
+    "UPDATED": "Kitob muvaffaqiyatli yangilandi",
+    "DELETED": "Kitob muvaffaqiyatli o'chirildi"
+  },
+  "AUDIOBOOK": {
+    "CREATED": "Audiokitob muvaffaqiyatli yaratildi",
+    "UPDATED": "Audiokitob muvaffaqiyatli yangilandi",
+    "DELETED": "Audiokitob muvaffaqiyatli o'chirildi"
+  },
+  "FEEDBACK": {
+    "CREATED": "Fikr-mulohaza muvaffaqiyatli yaratildi",
+    "UPDATED": "Fikr-mulohaza muvaffaqiyatli yangilandi",
+    "DELETED": "Fikr-mulohaza muvaffaqiyatli o'chirildi"
+  },
+  "GENRE": {
+    "CREATED": "Janr muvaffaqiyatli yaratildi",
+    "UPDATED": "Janr muvaffaqiyatli yangilandi",
+    "DELETED": "Janr muvaffaqiyatli o'chirildi"
+  },
+  "AUTHOR": {
+    "CREATED": "Muallif muvaffaqiyatli yaratildi",
+    "UPDATED": "Muallif muvaffaqiyatli yangilandi",
+    "DELETED": "Muallif muvaffaqiyatli o'chirildi"
+  },
+  "ROLE": {
+    "CREATED": "Rol muvaffaqiyatli yaratildi",
+    "UPDATED": "Rol muvaffaqiyatli yangilandi",
+    "DELETED": "Rol muvaffaqiyatli o'chirildi"
+  },
+  "PERMISSION": {
+    "CREATED": "Ruxsat muvaffaqiyatli yaratildi",
+    "UPDATED": "Ruxsat muvaffaqiyatli yangilandi",
+    "DELETED": "Ruxsat muvaffaqiyatli o'chirildi"
   }
 }

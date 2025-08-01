@@ -11,10 +11,13 @@ import {
     JoinTable,
     ManyToMany,
     AfterLoad,
+    OneToMany,
 } from 'typeorm';
 import { File } from "./file.entity";
 import { Genre } from "./genre.entity";
 import { Issuer } from "./issuer.entity";
+import { ReviewBook } from "./review-book.entity";
+import { BookAudiobookLink } from "./book-audiobook-link.entity";
 
 export enum BookLangEnum {
     UZ = 'uz',
@@ -104,6 +107,12 @@ export class Book extends BaseEntity {
     @ManyToMany(() => Issuer, { nullable: true })
     @JoinTable()
     issuers: Issuer[];
+
+    @OneToMany(() => ReviewBook, (review) => review.book)
+    reviews: ReviewBook[];
+
+    @OneToMany(() => BookAudiobookLink, (link) => link.book)
+    audiobookLinks: BookAudiobookLink[];
 
     @AfterLoad()
     setAuthorsAndFiles() {

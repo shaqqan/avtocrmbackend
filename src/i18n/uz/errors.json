@@ -13,9 +13,23 @@
     "IS_DATE": "{property} sana formatida bo'lishi kerak",
     "IS_ARRAY": "{property} massiv formatida bo'lishi kerak",
     "IS_OBJECT": "{property} ob'ekt formatida bo'lishi kerak",
+    "IS_NUMBER": "{property} raqam formatida bo'lishi kerak",
     "IS_LOCALE": "{property} to'g'ri locale formatida bo'lishi kerak",
     "IS_NOT_EMPTY": "{property} kiritilishi shart",
-    "FILE_SIZE_TOO_LARGE": "Fayl hajmi juda katta"
+    "FILE_SIZE_TOO_LARGE": "Fayl hajmi juda katta",
+    "ALREADY_EXISTS": "{property} allaqachon mavjud",
+    "FILE_NOT_FOUND": "Fayl topilmadi",
+    "INVALID_SORT_BY": "Noto'g'ri saralash maydoni",
+    "FOREIGN_KEY_CONSTRAINT_FAILED": "Bog'lanish kaliti xatosi",
+    "COLUMN_CANNOT_BE_NULL": "Majburiy maydon bo'sh bo'lishi mumkin emas",
+    "NO_FILES_PROVIDED": "Yuklash uchun fayllar berilmagan",
+    "TOO_MANY_FILES": "Juda ko'p fayllar berilgan. Maksimal ruxsat etilgan: {maxFiles}",
+    "FILE_DELETE_FAILED": "Faylni o'chirishda xato: {error}",
+    "FILE_REQUIRED": "Fayl majburiy",
+    "FILE_UPLOAD_FAILED": "Fayl yuklanishida xato: {error}",
+    "CATEGORY_REQUIRED": "Fayl kategoriyasi majburiy",
+    "FORMAT_REQUIRED": "Fayl formati majburiy",
+    "INVALID_CHAPTER": "Bob raqami 0 dan 9999 gacha bo'lishi kerak"
   },
   "AUTH": {
     "INVALID_CREDENTIALS": "Email yoki parol noto'g'ri",
@@ -24,7 +38,9 @@
     "INVALID_PASSWORD": "Parol noto'g'ri"
   },
   "USER": {
-    "NOT_FOUND": "Foydalanuvchi topilmadi"
+    "NOT_FOUND": "Foydalanuvchi topilmadi",
+    "EMAIL_ALREADY_EXISTS": "Email manzili allaqachon mavjud",
+    "INVALID_ROLES": "Tanlangan rollardan biri yoki bir nechtasi yaroqsiz"
   },
   "FORBIDDEN": {
     "ROLES": "Sizda ushbu amalni bajarish uchun tegishli rol mavjud emas",
@@ -32,5 +48,65 @@
   },
   "LANGUAGE": {
     "NOT_FOUND": "Til topilmadi"
-  }
+  },
+  "ISSUER": {
+    "NOT_FOUND": "Nashriyotchi topilmadi"
+  },
+  "NEWS": {
+    "NOT_FOUND": "Yangilik topilmadi"
+  },
+  "HELP": {
+    "NOT_FOUND": "Yordam mavzusi topilmadi"
+  },
+  "REVIEW_BOOK": {
+    "NOT_FOUND": "Kitob sharhi topilmadi",
+    "BOOK_NOT_FOUND": "Kitob topilmadi",
+    "USER_NOT_FOUND": "Foydalanuvchi topilmadi",
+    "ALREADY_REVIEWED": "Siz bu kitobga allaqachon sharh qoldirgan ekansiz"
+  },
+  "REVIEWS_AUDIOBOOK": {
+    "NOT_FOUND": "Audiokitob sharhi topilmadi",
+    "AUDIOBOOK_NOT_FOUND": "Audiokitob topilmadi",
+    "USER_NOT_FOUND": "Foydalanuvchi topilmadi",
+    "ALREADY_REVIEWED": "Siz bu audiokitobga allaqachon sharh qoldirgan ekansiz"
+  },
+  "FEEDBACKS_THEME": {
+    "NOT_FOUND": "Fikr-mulohaza mavzusi topilmadi"
+  },
+  "BOOK": {
+    "NOT_FOUND": "Kitob topilmadi",
+    "INVALID_AUTHORS": "Tanlangan mualliflardan biri yoki bir nechtasi yaroqsiz",
+    "INVALID_GENRES": "Tanlangan janrlardan biri yoki bir nechtasi yaroqsiz",
+    "INVALID_ISSUERS": "Tanlangan nashriyotchilardan biri yoki bir nechtasi yaroqsiz",
+    "INVALID_FILES": "Tanlangan fayllardan biri yoki bir nechtasi yaroqsiz"
+  },
+  "AUDIOBOOK": {
+    "NOT_FOUND": "Audiokitob topilmadi",
+    "INVALID_AUTHORS": "Tanlangan mualliflardan biri yoki bir nechtasi yaroqsiz",
+    "INVALID_GENRES": "Tanlangan janrlardan biri yoki bir nechtasi yaroqsiz",
+    "INVALID_ISSUERS": "Tanlangan nashriyotchilardan biri yoki bir nechtasi yaroqsiz",
+    "INVALID_FILES": "Tanlangan fayllardan biri yoki bir nechtasi yaroqsiz"
+  },
+  "GENRE": {
+    "NOT_FOUND": "Janr topilmadi",
+    "PARENT_NOT_FOUND": "Ota janr topilmadi",
+    "CANNOT_SET_SELF_AS_PARENT": "Janrni o'zining ota janri sifatida belgilab bo'lmaydi",
+    "CIRCULAR_REFERENCE_DETECTED": "Janr ierarxiyasida aylanma havola aniqlandi"
+  },
+  "AUTHOR": {
+    "NOT_FOUND": "Muallif topilmadi"
+  },
+  "ROLE": {
+    "NOT_FOUND": "Rol topilmadi"
+  },
+  "PERMISSION": {
+    "NOT_FOUND": "Ruxsat topilmadi"
+  },
+  "FEEDBACK": {
+    "NOT_FOUND": "Fikr-mulohaza topilmadi"
+  },
+  "NOT_FOUND": "Resurs topilmadi",
+  "PARENT_GENRE_NOT_FOUND": "Ota janr topilmadi",
+  "CANNOT_SET_SELF_AS_PARENT": "O'zini ota sifatida belgilab bo'lmaydi",
+  "CIRCULAR_REFERENCE_DETECTED": "Aylanma havola aniqlandi"
 }

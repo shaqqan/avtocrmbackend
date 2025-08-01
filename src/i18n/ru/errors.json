@@ -5,9 +5,31 @@
     "MAX_LENGTH": "{property} не должен превышать {constraints.0} символов",
     "MIN_LENGTH": "{property} должен содержать минимум {constraints.0} символов",
     "IS_STRING": "{property} должен быть текстом",
+    "IS_INT": "{property} должен быть числом",
+    "MIN": "{property} должен быть не менее {constraints.0}",
+    "MAX": "{property} не должен превышать {constraints.0}",
+    "IS_ENUM": "{property} должен быть одним из следующих значений: {constraints.0}",
+    "IS_BOOLEAN": "{property} должен быть булевым значением",
+    "IS_DATE": "{property} должен быть действительной датой",
+    "IS_ARRAY": "{property} должен быть массивом",
+    "IS_OBJECT": "{property} должен быть объектом",
+    "IS_NUMBER": "{property} должен быть числом",
     "IS_LOCALE": "{property} должен быть валидным локальным форматом",
     "IS_NOT_EMPTY": "{property} обязателен для заполнения",
-    "FILE_SIZE_TOO_LARGE": "Размер файла слишком большой"
+    "FILE_SIZE_TOO_LARGE": "Размер файла слишком большой",
+    "ALREADY_EXISTS": "{property} уже существует",
+    "FILE_NOT_FOUND": "Файл не найден",
+    "INVALID_SORT_BY": "Неверное поле сортировки",
+    "FOREIGN_KEY_CONSTRAINT_FAILED": "Ошибка ограничения внешнего ключа",
+    "COLUMN_CANNOT_BE_NULL": "Обязательное поле не может быть пустым",
+    "NO_FILES_PROVIDED": "Файлы для загрузки не предоставлены",
+    "TOO_MANY_FILES": "Слишком много файлов. Максимально разрешено: {maxFiles}",
+    "FILE_DELETE_FAILED": "Не удалось удалить файл: {error}",
+    "FILE_REQUIRED": "Файл обязателен",
+    "FILE_UPLOAD_FAILED": "Ошибка загрузки файла: {error}",
+    "CATEGORY_REQUIRED": "Категория файла обязательна",
+    "FORMAT_REQUIRED": "Формат файла обязателен",
+    "INVALID_CHAPTER": "Номер главы должен быть от 0 до 9999"
   },
   "AUTH": {
     "INVALID_CREDENTIALS": "Неверный email или пароль",
@@ -16,7 +38,9 @@
     "INVALID_PASSWORD": "Неверный пароль"
   },
   "USER": {
-    "NOT_FOUND": "Пользователь не найден"
+    "NOT_FOUND": "Пользователь не найден",
+    "EMAIL_ALREADY_EXISTS": "Адрес электронной почты уже существует",
+    "INVALID_ROLES": "Одна или несколько выбранных ролей недействительны"
   },
   "FORBIDDEN": {
     "ROLES": "У вас нет необходимой роли для выполнения этого действия",
@@ -24,5 +48,65 @@
   },
   "LANGUAGE": {
     "NOT_FOUND": "Язык не найден"
-  }
+  },
+  "ISSUER": {
+    "NOT_FOUND": "Издатель не найден"
+  },
+  "NEWS": {
+    "NOT_FOUND": "Новость не найдена"
+  },
+  "HELP": {
+    "NOT_FOUND": "Тема помощи не найдена"
+  },
+  "REVIEW_BOOK": {
+    "NOT_FOUND": "Отзыв о книге не найден",
+    "BOOK_NOT_FOUND": "Книга не найдена",
+    "USER_NOT_FOUND": "Пользователь не найден",
+    "ALREADY_REVIEWED": "Вы уже оставили отзыв о этой книге"
+  },
+  "REVIEWS_AUDIOBOOK": {
+    "NOT_FOUND": "Отзыв об аудиокниге не найден",
+    "AUDIOBOOK_NOT_FOUND": "Аудиокнига не найдена",
+    "USER_NOT_FOUND": "Пользователь не найден",
+    "ALREADY_REVIEWED": "Вы уже оставили отзыв об этой аудиокниге"
+  },
+  "FEEDBACKS_THEME": {
+    "NOT_FOUND": "Тема обратной связи не найдена"
+  },
+  "BOOK": {
+    "NOT_FOUND": "Книга не найдена",
+    "INVALID_AUTHORS": "Один или несколько выбранных авторов недействительны",
+    "INVALID_GENRES": "Один или несколько выбранных жанров недействительны",
+    "INVALID_ISSUERS": "Один или несколько выбранных издателей недействительны",
+    "INVALID_FILES": "Один или несколько выбранных файлов недействительны"
+  },
+  "AUDIOBOOK": {
+    "NOT_FOUND": "Аудиокнига не найдена",
+    "INVALID_AUTHORS": "Один или несколько выбранных авторов недействительны",
+    "INVALID_GENRES": "Один или несколько выбранных жанров недействительны",
+    "INVALID_ISSUERS": "Один или несколько выбранных издателей недействительны",
+    "INVALID_FILES": "Один или несколько выбранных файлов недействительны"
+  },
+  "GENRE": {
+    "NOT_FOUND": "Жанр не найден",
+    "PARENT_NOT_FOUND": "Родительский жанр не найден",
+    "CANNOT_SET_SELF_AS_PARENT": "Нельзя установить жанр как свой собственный родительский",
+    "CIRCULAR_REFERENCE_DETECTED": "Обнаружена циклическая ссылка в иерархии жанров"
+  },
+  "AUTHOR": {
+    "NOT_FOUND": "Автор не найден"
+  },
+  "ROLE": {
+    "NOT_FOUND": "Роль не найдена"
+  },
+  "PERMISSION": {
+    "NOT_FOUND": "Разрешение не найдено"
+  },
+  "FEEDBACK": {
+    "NOT_FOUND": "Обратная связь не найдена"
+  },
+  "NOT_FOUND": "Ресурс не найден",
+  "PARENT_GENRE_NOT_FOUND": "Родительский жанр не найден",
+  "CANNOT_SET_SELF_AS_PARENT": "Нельзя установить как собственный родительский",
+  "CIRCULAR_REFERENCE_DETECTED": "Обнаружена циклическая ссылка"
 }

@@ -1,0 +1,9 @@
+{
+  "IS_STRING": "{property} matn formatida bo'lishi kerak",
+  "MAX_LENGTH": "{property} {constraints.0} ta belgidan oshmasligi kerak",
+  "IS_NOT_EMPTY": "{property} kiritilishi shart",
+  "ALREADY_EXISTS": "{property} allaqachon mavjud",
+  "IS_LOCALE": "{property} to'g'ri locale formatida bo'lishi kerak",
+  "IS_NUMBER": "{property} raqam formatida bo'lishi kerak",
+  "FILE_NOT_FOUND": "Fayl topilmadi"
+}

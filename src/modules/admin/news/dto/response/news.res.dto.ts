@@ -1,18 +1,22 @@
+import { NewsStatus } from "src/databases/typeorm/entities/news.entity";
+
 export class NewsResponseDto {
     constructor(
         public id: number,
         public title: string,
         public description: string,
         public cover: string,
+        public status: NewsStatus,
         public createdAt: Date,
         public updatedAt: Date,
     ) {
-        this.id = this.id;
-        this.title = this.title;
-        this.description = this.description;
-        this.cover = this.cover;
-        this.createdAt = this.createdAt;
-        this.updatedAt = this.updatedAt;
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.cover = cover;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 }
 
@@ -26,6 +30,7 @@ export class NewsMultiResponseDto {
         public description_ru: string,
         public description_en: string,
         public cover: string,
+        public status: NewsStatus,
         public createdAt: Date,
         public updatedAt: Date,
     ) {
@@ -37,6 +42,7 @@ export class NewsMultiResponseDto {
         this.description_ru = description_ru;
         this.description_en = description_en;
         this.cover = cover;
+        this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }

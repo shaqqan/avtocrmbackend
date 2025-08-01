@@ -6,7 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { Help } from 'src/databases/typeorm/entities';
 import { I18nContext, I18nService } from 'nestjs-i18n';
-import { BasePaginationResponseDto } from 'src/common/dto/response';
+import { BasePaginationResponseDto, MessageWithDataResponseDto, MessageResponseDto } from 'src/common/dto/response';
 import { HelpMapper } from './mapper/help.mapper';
 
 @Injectable()
@@ -17,8 +17,9 @@ export class HelpService {
     private readonly i18n: I18nService,
   ) { }
 
-  create(createHelpDto: CreateHelpDto) {
-    return 'This action adds a new help';
+  async create(createHelpDto: CreateHelpDto) {
+    const help = await this.helpRepository.save(HelpMapper.toEntityFromCreateDto(createHelpDto));
+    return new MessageWithDataResponseDto(this.i18n.t('success.HELP.CREATED'), HelpMapper.toDto(help));
   }
 
   public async findAll(query: BasePaginationDto) {
@@ -80,16 +81,31 @@ export class HelpService {
       where: { id },
     });
     if (!help) {
-      throw new NotFoundException(this.i18n.t('errors.NOT_FOUND'));
+      throw new NotFoundException(this.i18n.t('errors.HELP.NOT_FOUND'));
     }
     return HelpMapper.toDto(help);
   }
 
-  update(id: number, updateHelpDto: UpdateHelpDto) {
-    return `This action updates a #${id} help`;
+  async update(id: number, updateHelpDto: UpdateHelpDto) {
+    const help = await this.helpRepository.findOne({ where: { id } });
+    if (!help) {
+      throw new NotFoundException(this.i18n.t('errors.HELP.NOT_FOUND'));
+    }
+
+    const updatedHelp = await this.helpRepository.save({
+      ...help,
+      ...HelpMapper.toEntityFromUpdateDto(updateHelpDto, help)
+    });
+    return new MessageWithDataResponseDto(this.i18n.t('success.HELP.UPDATED'), HelpMapper.toDto(updatedHelp));
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} help`;
+  async remove(id: number) {
+    const help = await this.helpRepository.findOne({ where: { id } });
+    if (!help) {
+      throw new NotFoundException(this.i18n.t('errors.HELP.NOT_FOUND'));
+    }
+
+    await this.helpRepository.delete(id);
+    return new MessageResponseDto(this.i18n.t('success.HELP.DELETED'));
   }
 }

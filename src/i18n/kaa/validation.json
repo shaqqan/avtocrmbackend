@@ -1,0 +1,9 @@
+{
+  "IS_STRING": "{property} tekst formatında bolıwı kerek",
+  "MAX_LENGTH": "{property} {constraints.0} belgiden aspaǵan bolıwı kerek",
+  "IS_NOT_EMPTY": "{property} kiritiliw shárt",
+  "ALREADY_EXISTS": "{property} aldaqashan bar",
+  "IS_LOCALE": "{property} korrect locale formatında bolıwı kerek",
+  "IS_NUMBER": "{property} san formatında bolıwı kerek",
+  "FILE_NOT_FOUND": "Fayl tabılmadı"
+}

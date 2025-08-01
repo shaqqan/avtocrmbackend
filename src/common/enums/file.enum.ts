@@ -4,8 +4,12 @@ export enum FileCategory {
     COVER = 'cover',
     NEWS_IMAGE = 'newsImage',
     AUDIOBOOKS = 'audiobooks',
-
     BOOKS = 'books',
+    
+    // New categories for proper folder structure
+    AUTHOR_COVER = 'authorCover',
+    GENRE_COVER = 'genreCover',
+    LANGUAGE_ICON = 'languageIcon',
 }
 
 export enum FileFormat {

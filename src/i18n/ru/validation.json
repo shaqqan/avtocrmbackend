@@ -1,0 +1,9 @@
+{
+  "IS_STRING": "{property} должен быть текстом",
+  "MAX_LENGTH": "{property} не должен превышать {constraints.0} символов",
+  "IS_NOT_EMPTY": "{property} обязателен для заполнения",
+  "ALREADY_EXISTS": "{property} уже существует",
+  "IS_LOCALE": "{property} должен быть валидным локальным форматом",
+  "IS_NUMBER": "{property} должен быть числом",
+  "FILE_NOT_FOUND": "Файл не найден"
+}

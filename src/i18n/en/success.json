@@ -15,6 +15,79 @@
     "REMOVED": "Language removed successfully"
   },
   "UPLOAD": {
-    "UPLOADED": "File uploaded successfully"
+    "UPLOADED": "File uploaded successfully",
+    "BATCH_COMPLETED": "Batch upload completed. {successCount} files uploaded successfully, {failureCount} failed",
+    "STATS_RETRIEVED": "Upload statistics retrieved successfully",
+    "FILE_DELETED": "File deleted successfully"
+  },
+  "USER": {
+    "CREATED": "User created successfully",
+    "UPDATED": "User updated successfully",
+    "DELETED": "User deleted successfully"
+  },
+  "ISSUER": {
+    "CREATED": "Issuer created successfully",
+    "UPDATED": "Issuer updated successfully",
+    "DELETED": "Issuer deleted successfully"
+  },
+  "NEWS": {
+    "CREATED": "News created successfully",
+    "UPDATED": "News updated successfully",
+    "DELETED": "News deleted successfully"
+  },
+  "HELP": {
+    "CREATED": "Help topic created successfully",
+    "UPDATED": "Help topic updated successfully",
+    "DELETED": "Help topic deleted successfully"
+  },
+  "REVIEW_BOOK": {
+    "CREATED": "Book review created successfully",
+    "UPDATED": "Book review updated successfully",
+    "DELETED": "Book review deleted successfully"
+  },
+  "REVIEWS_AUDIOBOOK": {
+    "CREATED": "Audiobook review created successfully",
+    "UPDATED": "Audiobook review updated successfully",
+    "DELETED": "Audiobook review deleted successfully"
+  },
+  "FEEDBACKS_THEME": {
+    "CREATED": "Feedback theme created successfully",
+    "UPDATED": "Feedback theme updated successfully",
+    "DELETED": "Feedback theme deleted successfully"
+  },
+  "BOOK": {
+    "CREATED": "Book created successfully",
+    "UPDATED": "Book updated successfully",
+    "DELETED": "Book deleted successfully"
+  },
+  "AUDIOBOOK": {
+    "CREATED": "Audiobook created successfully",
+    "UPDATED": "Audiobook updated successfully",
+    "DELETED": "Audiobook deleted successfully"
+  },
+  "FEEDBACK": {
+    "CREATED": "Feedback created successfully",
+    "UPDATED": "Feedback updated successfully",
+    "DELETED": "Feedback deleted successfully"
+  },
+  "GENRE": {
+    "CREATED": "Genre created successfully",
+    "UPDATED": "Genre updated successfully",
+    "DELETED": "Genre deleted successfully"
+  },
+  "AUTHOR": {
+    "CREATED": "Author created successfully",
+    "UPDATED": "Author updated successfully",
+    "DELETED": "Author deleted successfully"
+  },
+  "ROLE": {
+    "CREATED": "Role created successfully",
+    "UPDATED": "Role updated successfully",
+    "DELETED": "Role deleted successfully"
+  },
+  "PERMISSION": {
+    "CREATED": "Permission created successfully",
+    "UPDATED": "Permission updated successfully",
+    "DELETED": "Permission deleted successfully"
   }
 }

@@ -15,6 +15,79 @@
     "REMOVED": "Til tabıslı óshirildi"
   },
   "UPLOAD": {
-    "UPLOADED": "Fayl tabıslı jaratıldı"
+    "UPLOADED": "Fayl tabıslı júklendi",
+    "BATCH_COMPLETED": "Topıqlama júklew tamamlandı. {successCount} fayl tabıslı júklendi, {failureCount} qáte",
+    "STATS_RETRIEVED": "Júklew statistikası tabıslı alındı",
+    "FILE_DELETED": "Fayl tabıslı óshirildi"
+  },
+  "USER": {
+    "CREATED": "Foydalanuvchi tabıslı jaratıldı",
+    "UPDATED": "Foydalanuvchi tabıslı jańalandı",
+    "DELETED": "Foydalanuvchi tabıslı óshirildi"
+  },
+  "ISSUER": {
+    "CREATED": "Nashiriyatshı tabıslı jaratıldı",
+    "UPDATED": "Nashiriyatshı tabıslı jańalandı",
+    "DELETED": "Nashiriyatshı tabıslı óshirildi"
+  },
+  "NEWS": {
+    "CREATED": "Jańalıq tabıslı jaratıldı",
+    "UPDATED": "Jańalıq tabıslı jańalandı",
+    "DELETED": "Jańalıq tabıslı óshirildi"
+  },
+  "HELP": {
+    "CREATED": "Järdem taqırıbı tabıslı jaratıldı",
+    "UPDATED": "Järdem taqırıbı tabıslı jańalandı",
+    "DELETED": "Järdem taqırıbı tabıslı óshirildi"
+  },
+  "REVIEW_BOOK": {
+    "CREATED": "Kitap pićkiri tabıslı jaratıldı",
+    "UPDATED": "Kitap pićkiri tabıslı jańalandı",
+    "DELETED": "Kitap pićkiri tabıslı óshirildi"
+  },
+  "REVIEWS_AUDIOBOOK": {
+    "CREATED": "Audiokitap pićkiri tabıslı jaratıldı",
+    "UPDATED": "Audiokitap pićkiri tabıslı jańalandı",
+    "DELETED": "Audiokitap pićkiri tabıslı óshirildi"
+  },
+  "FEEDBACKS_THEME": {
+    "CREATED": "Pićkir bildiris taqırıbı tabıslı jaratıldı",
+    "UPDATED": "Pićkir bildiris taqırıbı tabıslı jańalandı",
+    "DELETED": "Pićkir bildiris taqırıbı tabıslı óshirildi"
+  },
+  "BOOK": {
+    "CREATED": "Kitap tabıslı jaratıldı",
+    "UPDATED": "Kitap tabıslı jańalandı",
+    "DELETED": "Kitap tabıslı óshirildi"
+  },
+  "AUDIOBOOK": {
+    "CREATED": "Audiokitap tabıslı jaratıldı",
+    "UPDATED": "Audiokitap tabıslı jańalandı",
+    "DELETED": "Audiokitap tabıslı óshirildi"
+  },
+  "FEEDBACK": {
+    "CREATED": "Pićkir bildiris tabıslı jaratıldı",
+    "UPDATED": "Pićkir bildiris tabıslı jańalandı",
+    "DELETED": "Pićkir bildiris tabıslı óshirildi"
+  },
+  "GENRE": {
+    "CREATED": "Janr tabıslı jaratıldı",
+    "UPDATED": "Janr tabıslı jańalandı",
+    "DELETED": "Janr tabıslı óshirildi"
+  },
+  "AUTHOR": {
+    "CREATED": "Awtor tabıslı jaratıldı",
+    "UPDATED": "Awtor tabıslı jańalandı",
+    "DELETED": "Awtor tabıslı óshirildi"
+  },
+  "ROLE": {
+    "CREATED": "Rol tabıslı jaratıldı",
+    "UPDATED": "Rol tabıslı jańalandı",
+    "DELETED": "Rol tabıslı óshirildi"
+  },
+  "PERMISSION": {
+    "CREATED": "Ruxsat tabıslı jaratıldı",
+    "UPDATED": "Ruxsat tabıslı jańalandı",
+    "DELETED": "Ruxsat tabıslı óshirildi"
   }
 }

@@ -5,9 +5,31 @@
     "MAX_LENGTH": "{property} must not exceed {constraints.0} characters",
     "MIN_LENGTH": "{property} must be at least {constraints.0} characters long",
     "IS_STRING": "{property} must be a text",
+    "IS_INT": "{property} must be a number",
+    "MIN": "{property} must be at least {constraints.0}",
+    "MAX": "{property} must not exceed {constraints.0}",
+    "IS_ENUM": "{property} must be one of the following values: {constraints.0}",
+    "IS_BOOLEAN": "{property} must be a boolean value",
+    "IS_DATE": "{property} must be a valid date",
+    "IS_ARRAY": "{property} must be an array",
+    "IS_OBJECT": "{property} must be an object",
+    "IS_NUMBER": "{property} must be a number",
     "IS_LOCALE": "{property} must be a valid locale",
     "IS_NOT_EMPTY": "{property} is required",
-    "FILE_SIZE_TOO_LARGE": "File size is too large"
+    "FILE_SIZE_TOO_LARGE": "File size is too large",
+    "ALREADY_EXISTS": "{property} already exists",
+    "FILE_NOT_FOUND": "File not found",
+    "INVALID_SORT_BY": "Invalid sort field",
+    "FOREIGN_KEY_CONSTRAINT_FAILED": "Foreign key constraint failed",
+    "COLUMN_CANNOT_BE_NULL": "Required field cannot be null",
+    "NO_FILES_PROVIDED": "No files provided for upload",
+    "TOO_MANY_FILES": "Too many files provided. Maximum allowed: {maxFiles}",
+    "FILE_DELETE_FAILED": "Failed to delete file: {error}",
+    "FILE_REQUIRED": "File is required",
+    "FILE_UPLOAD_FAILED": "File upload failed: {error}",
+    "CATEGORY_REQUIRED": "File category is required",
+    "FORMAT_REQUIRED": "File format is required",
+    "INVALID_CHAPTER": "Chapter number must be between 0 and 9999"
   },
   "AUTH": {
     "INVALID_CREDENTIALS": "Invalid email or password",
@@ -16,7 +38,9 @@
     "INVALID_PASSWORD": "Invalid password"
   },
   "USER": {
-    "NOT_FOUND": "User not found"
+    "NOT_FOUND": "User not found",
+    "EMAIL_ALREADY_EXISTS": "Email address already exists",
+    "INVALID_ROLES": "One or more selected roles are invalid"
   },
   "FORBIDDEN": {
     "ROLES": "You don't have the required role to perform this action",
@@ -24,5 +48,65 @@
   },
   "LANGUAGE": {
     "NOT_FOUND": "Language not found"
-  }
+  },
+  "ISSUER": {
+    "NOT_FOUND": "Issuer not found"
+  },
+  "NEWS": {
+    "NOT_FOUND": "News not found"
+  },
+  "HELP": {
+    "NOT_FOUND": "Help topic not found"
+  },
+  "REVIEW_BOOK": {
+    "NOT_FOUND": "Book review not found",
+    "BOOK_NOT_FOUND": "Book not found",
+    "USER_NOT_FOUND": "User not found",
+    "ALREADY_REVIEWED": "You have already reviewed this book"
+  },
+  "REVIEWS_AUDIOBOOK": {
+    "NOT_FOUND": "Audiobook review not found",
+    "AUDIOBOOK_NOT_FOUND": "Audiobook not found",
+    "USER_NOT_FOUND": "User not found",
+    "ALREADY_REVIEWED": "You have already reviewed this audiobook"
+  },
+  "FEEDBACKS_THEME": {
+    "NOT_FOUND": "Feedback theme not found"
+  },
+  "BOOK": {
+    "NOT_FOUND": "Book not found",
+    "INVALID_AUTHORS": "One or more selected authors are invalid",
+    "INVALID_GENRES": "One or more selected genres are invalid",
+    "INVALID_ISSUERS": "One or more selected publishers/issuers are invalid",
+    "INVALID_FILES": "One or more selected files are invalid"
+  },
+  "AUDIOBOOK": {
+    "NOT_FOUND": "Audiobook not found",
+    "INVALID_AUTHORS": "One or more selected authors are invalid",
+    "INVALID_GENRES": "One or more selected genres are invalid",
+    "INVALID_ISSUERS": "One or more selected publishers/issuers are invalid",
+    "INVALID_FILES": "One or more selected files are invalid"
+  },
+  "GENRE": {
+    "NOT_FOUND": "Genre not found",
+    "PARENT_NOT_FOUND": "Parent genre not found",
+    "CANNOT_SET_SELF_AS_PARENT": "Cannot set genre as its own parent",
+    "CIRCULAR_REFERENCE_DETECTED": "Circular reference detected in genre hierarchy"
+  },
+  "AUTHOR": {
+    "NOT_FOUND": "Author not found"
+  },
+  "ROLE": {
+    "NOT_FOUND": "Role not found"
+  },
+  "PERMISSION": {
+    "NOT_FOUND": "Permission not found"
+  },
+  "FEEDBACK": {
+    "NOT_FOUND": "Feedback not found"
+  },
+  "NOT_FOUND": "Resource not found",
+  "PARENT_GENRE_NOT_FOUND": "Parent genre not found",
+  "CANNOT_SET_SELF_AS_PARENT": "Cannot set as own parent",
+  "CIRCULAR_REFERENCE_DETECTED": "Circular reference detected"
 }

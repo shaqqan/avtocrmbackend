@@ -35,12 +35,16 @@ export class BookMapper {
 
     static toEntityFromCreateDto(dto: CreateBookDto): Book {
         const book = new Book();
-        Object.assign(book, dto);
+        // Copy all properties except relationship IDs
+        const { authorsIds, genresIds, issuersIds, filesIds, ...bookData } = dto;
+        Object.assign(book, bookData);
         return book;
     }
 
     static toEntityFromUpdateDto(dto: UpdateBookDto, existingBook: Book): Book {
-        return Object.assign(existingBook, dto);
+        // Copy all properties except relationship IDs
+        const { authorsIds, genresIds, issuersIds, filesIds, ...bookData } = dto;
+        return Object.assign(existingBook, bookData);
     }
 
     static toDtoList(entities: Book[]): BookResponseDto[] {

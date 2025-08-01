@@ -5,9 +5,31 @@
     "MAX_LENGTH": "{property} {constraints.0} belgiden aspaǵan bolıwı kerek",
     "MIN_LENGTH": "{property} keminde {constraints.0} belgiden ibarat bolıwı kerek",
     "IS_STRING": "{property} tekst formatında bolıwı kerek",
+    "IS_INT": "{property} san formatında bolıwı kerek",
+    "MIN": "{property} keminde {constraints.0} bolıwı kerek",
+    "MAX": "{property} {constraints.0} dan aspaǵan bolıwı kerek",
+    "IS_ENUM": "{property} kelesi qıymatlardan biri bolıwı kerek: {constraints.0}",
+    "IS_BOOLEAN": "{property} boolean formatında bolıwı kerek",
+    "IS_DATE": "{property} sana formatında bolıwı kerek",
+    "IS_ARRAY": "{property} massiv formatında bolıwı kerek",
+    "IS_OBJECT": "{property} ob'yekt formatında bolıwı kerek",
+    "IS_NUMBER": "{property} san formatında bolıwı kerek",
     "IS_LOCALE": "{property} korrect locale formatında bolıwı kerek",
     "IS_NOT_EMPTY": "{property} kiritilw shárt",
-    "FILE_SIZE_TOO_LARGE": "Fayl ölçegi juda kóp"
+    "FILE_SIZE_TOO_LARGE": "Fayl ölçegi juda kóp",
+    "ALREADY_EXISTS": "{property} aldaqashan bar",
+    "FILE_NOT_FOUND": "Fayl tabılmadı",
+    "INVALID_SORT_BY": "Nadurıs saralash maydanı",
+    "FOREIGN_KEY_CONSTRAINT_FAILED": "Baylanıs kilitiniń qátesi",
+    "COLUMN_CANNOT_BE_NULL": "Májbúriy maydan bos bolıp bolmaydı",
+    "NO_FILES_PROVIDED": "Júklew ushın fayllar berilmegen",
+    "TOO_MANY_FILES": "Juda kóp fayllar berilgen. Maksimal ruxsat etilgen: {maxFiles}",
+    "FILE_DELETE_FAILED": "Faylnı óshiriwde qáte: {error}",
+    "FILE_REQUIRED": "Fayl májbúriy",
+    "FILE_UPLOAD_FAILED": "Fayl júklewde qáte: {error}",
+    "CATEGORY_REQUIRED": "Fayl kategoriyası májbúriy",
+    "FORMAT_REQUIRED": "Fayl formatı májbúriy",
+    "INVALID_CHAPTER": "Bólik nomerı 0 dan 9999 ǵa shekem bolıwı kerek"
   },
   "AUTH": {
     "INVALID_CREDENTIALS": "Email yamasa parol nadurıs",
@@ -21,9 +43,71 @@
     "PERMISSIONS": "Sizge bul resursqa kiriwge ruxsat berilmeydi"
   },
   "USER": {
-    "NOT_FOUND": "Foydalanuvchi topilmadi"
+    "NOT_FOUND": "Foydalanuvchi topilmadi",
+    "EMAIL_ALREADY_EXISTS": "Email manzili aldaqashan bar",
+    "INVALID_ROLES": "Tańlanǵan rollardan biri yamasa bir neshesi jaramsız"
   },
   "LANGUAGE": {
     "NOT_FOUND": "Til topilmadi"
-  }
+  },
+  "ISSUER": {
+    "NOT_FOUND": "Nashiriyatshı topilmadı"
+  },
+  "NEWS": {
+    "NOT_FOUND": "Jańalıq topilmadı"
+  },
+  "HELP": {
+    "NOT_FOUND": "Järdem taqırıbı topilmadı"
+  },
+  "REVIEW_BOOK": {
+    "NOT_FOUND": "Kitap pićkiri topilmadı",
+    "BOOK_NOT_FOUND": "Kitap topilmadı",
+    "USER_NOT_FOUND": "Foydalanuvchi topilmadı",
+    "ALREADY_REVIEWED": "Siz bu kitapqa aldaqashan pićkir qaldırǵansız"
+  },
+  "REVIEWS_AUDIOBOOK": {
+    "NOT_FOUND": "Audiokitap pićkiri topilmadı",
+    "AUDIOBOOK_NOT_FOUND": "Audiokitap topilmadı",
+    "USER_NOT_FOUND": "Foydalanuvchi topilmadı",
+    "ALREADY_REVIEWED": "Siz bu audiokitapqa aldaqashan pićkir qaldırǵansız"
+  },
+  "FEEDBACKS_THEME": {
+    "NOT_FOUND": "Pićkir bildiris taqırıbı topilmadı"
+  },
+  "BOOK": {
+    "NOT_FOUND": "Kitap topilmadı",
+    "INVALID_AUTHORS": "Tańlanǵan awtorlardan biri yamasa bir neshesi jaramsız",
+    "INVALID_GENRES": "Tańlanǵan janrlardan biri yamasa bir neshesi jaramsız",
+    "INVALID_ISSUERS": "Tańlanǵan nashiriyatshılardan biri yamasa bir neshesi jaramsız",
+    "INVALID_FILES": "Tańlanǵan fayllardan biri yamasa bir neshesi jaramsız"
+  },
+  "AUDIOBOOK": {
+    "NOT_FOUND": "Audiokitap topilmadı",
+    "INVALID_AUTHORS": "Tańlanǵan awtorlardan biri yamasa bir neshesi jaramsız",
+    "INVALID_GENRES": "Tańlanǵan janrlardan biri yamasa bir neshesi jaramsız",
+    "INVALID_ISSUERS": "Tańlanǵan nashiriyatshılardan biri yamasa bir neshesi jaramsız",
+    "INVALID_FILES": "Tańlanǵan fayllardan biri yamasa bir neshesi jaramsız"
+  },
+  "GENRE": {
+    "NOT_FOUND": "Janr tabılmadı",
+    "PARENT_NOT_FOUND": "Ata janr tabılmadı",
+    "CANNOT_SET_SELF_AS_PARENT": "Janrdı óziniń ata janrı retinde belgilewge bolmaydı",
+    "CIRCULAR_REFERENCE_DETECTED": "Janr iyerarxiyasında aylanmalı havola anıqlandı"
+  },
+  "AUTHOR": {
+    "NOT_FOUND": "Awtor tabılmadı"
+  },
+  "ROLE": {
+    "NOT_FOUND": "Rol tabılmadı"
+  },
+  "PERMISSION": {
+    "NOT_FOUND": "Ruxsat tabılmadı"
+  },
+  "FEEDBACK": {
+    "NOT_FOUND": "Pićkir bildiris tabılmadı"
+  },
+  "NOT_FOUND": "Resurs tabılmadı",
+  "PARENT_GENRE_NOT_FOUND": "Ata janr tabılmadı",
+  "CANNOT_SET_SELF_AS_PARENT": "Ózin ata retinde belgilewge bolmaydı",
+  "CIRCULAR_REFERENCE_DETECTED": "Aylanmalı havola anıqlandı"
 }

@@ -7,10 +7,10 @@ export class UserMapper {
     static toDto(entity: User): UserResponseDto {
         return new UserResponseDto(
             entity.id,
-            entity.firstName,
+            entity.name,
             entity.lastName,
             entity.email,
-            entity.roles?.map(role => role.name),
+            entity.roles,
             entity.createdAt,
         );
     }

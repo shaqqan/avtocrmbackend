@@ -38,7 +38,7 @@ export class AuthService {
         id: true,
         email: true,
         password: true,
-        firstName: true,
+        name: true,
         lastName: true,
         roles: {
           name: true,

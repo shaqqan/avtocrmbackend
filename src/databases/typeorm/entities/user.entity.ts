@@ -1,15 +1,17 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, JoinTable, ManyToMany, BaseEntity, AfterLoad } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, JoinTable, ManyToMany, BaseEntity, AfterLoad, OneToMany } from 'typeorm';
 import { Role } from './role.entity';
+import { ReviewBook } from './review-book.entity';
+import { ReviewsAudiobook } from './reviews-audiobook.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  firstName: string;
+  @Column({ nullable: true })
+  name: string;
 
-  @Column()
+  @Column({ nullable: true })
   lastName: string;
 
   @Column({ unique: true })
@@ -34,4 +36,10 @@ export class User extends BaseEntity {
     inverseJoinColumn: { name: 'role_id', referencedColumnName: 'id' },
   })
   roles: Role[];
+
+  @OneToMany(() => ReviewBook, (review) => review.user)
+  reviews: ReviewBook[];
+
+  @OneToMany(() => ReviewsAudiobook, (review) => review.user)
+  reviewsAudiobook: ReviewsAudiobook[];
 } 

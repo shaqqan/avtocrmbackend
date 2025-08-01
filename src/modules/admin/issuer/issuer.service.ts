@@ -6,7 +6,7 @@ import { Issuer } from 'src/databases/typeorm/entities';
 import { ILike, Repository } from 'typeorm';
 import { I18nContext, I18nService } from 'nestjs-i18n';
 import { BasePaginationDto, SortOrder } from 'src/common/dto/request';
-import { BasePaginationResponseDto } from 'src/common/dto/response/base-pagination.res.dto';
+import { BasePaginationResponseDto, MessageWithDataResponseDto, MessageResponseDto } from 'src/common/dto/response';
 import { IssuerMapper } from './mapper/issuer.mapper';
 import { IssuerListMapper } from './mapper/issuer-list.mapper';
 
@@ -18,8 +18,9 @@ export class IssuerService {
     private readonly i18n: I18nService,
   ) { }
 
-  create(createIssuerDto: CreateIssuerDto) {
-    return 'This action adds a new issuer';
+  async create(createIssuerDto: CreateIssuerDto) {
+    const issuer = await this.issuerRepository.save(IssuerMapper.toEntityFromCreateDto(createIssuerDto));
+    return new MessageWithDataResponseDto(this.i18n.t('success.ISSUER.CREATED'), IssuerMapper.toDto(issuer));
   }
 
   public async findAll(query: BasePaginationDto) {
@@ -64,17 +65,32 @@ export class IssuerService {
       where: { id },
     });
     if (!issuer) {
-      throw new NotFoundException(this.i18n.t('errors.NOT_FOUND'));
+      throw new NotFoundException(this.i18n.t('errors.ISSUER.NOT_FOUND'));
     }
     return IssuerMapper.toDto(issuer);
   }
 
-  update(id: number, updateIssuerDto: UpdateIssuerDto) {
-    return `This action updates a #${id} issuer`;
+  async update(id: number, updateIssuerDto: UpdateIssuerDto) {
+    const issuer = await this.issuerRepository.findOne({ where: { id } });
+    if (!issuer) {
+      throw new NotFoundException(this.i18n.t('errors.ISSUER.NOT_FOUND'));
+    }
+
+    const updatedIssuer = await this.issuerRepository.save({
+      ...issuer,
+      ...IssuerMapper.toEntityFromUpdateDto(updateIssuerDto, issuer)
+    });
+    return new MessageWithDataResponseDto(this.i18n.t('success.ISSUER.UPDATED'), IssuerMapper.toDto(updatedIssuer));
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} issuer`;
+  async remove(id: number) {
+    const issuer = await this.issuerRepository.findOne({ where: { id } });
+    if (!issuer) {
+      throw new NotFoundException(this.i18n.t('errors.ISSUER.NOT_FOUND'));
+    }
+
+    await this.issuerRepository.delete(id);
+    return new MessageResponseDto(this.i18n.t('success.ISSUER.DELETED'));
   }
 
   public async list() {

@@ -1,0 +1,9 @@
+{
+  "IS_STRING": "{property} must be a text",
+  "MAX_LENGTH": "{property} must not exceed {constraints.0} characters",
+  "IS_NOT_EMPTY": "{property} is required",
+  "ALREADY_EXISTS": "{property} already exists",
+  "IS_LOCALE": "{property} must be a valid locale",
+  "IS_NUMBER": "{property} must be a number",
+  "FILE_NOT_FOUND": "File not found"
+}

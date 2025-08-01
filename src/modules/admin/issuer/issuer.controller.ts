@@ -1,45 +1,52 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
 import { IssuerService } from './issuer.service';
 import { CreateIssuerDto } from './dto/request/create-issuer.dto';
 import { UpdateIssuerDto } from './dto/request/update-issuer.dto';
 import { BasePaginationDto } from 'src/common/dto/request';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiGlobalResponses } from 'src/common/decorators/swagger';
+import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
 
 @Controller('admin/issuer')
-// @UseGuards(JwtAuthAdminAccessGuard)
+@UseGuards(JwtAuthAdminAccessGuard)
 @ApiTags('🏢 Issuer')
-// @ApiBearerAuth()
+@ApiBearerAuth()
 @ApiGlobalResponses()
 export class IssuerController {
   constructor(private readonly issuerService: IssuerService) {}
 
   @Post()
+  @ApiOperation({ summary: 'Create a new issuer' })
   create(@Body() createIssuerDto: CreateIssuerDto) {
     return this.issuerService.create(createIssuerDto);
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all issuers with pagination' })
   findAll(@Query() query: BasePaginationDto) {
     return this.issuerService.findAll(query);
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get an issuer by ID' })
   findOne(@Param('id') id: string) {
     return this.issuerService.findOne(+id);
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: 'Update an issuer by ID' })
   update(@Param('id') id: string, @Body() updateIssuerDto: UpdateIssuerDto) {
     return this.issuerService.update(+id, updateIssuerDto);
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete an issuer by ID' })
   remove(@Param('id') id: string) {
     return this.issuerService.remove(+id);
   }
 
   @Get('list')
+  @ApiOperation({ summary: 'Get all issuers list' })
   list() {
     return this.issuerService.list();
   }

@@ -5,7 +5,7 @@ export class GetMeResponseDto {
   constructor(user: User) {
     this.id = user.id;
     this.email = user.email;
-    this.firstName = user.firstName;
+    this.name = user.name;
     this.lastName = user.lastName;
     this.roles = user.roles.map((role) => role.name);
     this.permissions = user.roles.flatMap((role) => role.permissions.map((permission) => permission.action));
@@ -18,7 +18,7 @@ export class GetMeResponseDto {
   email: string;
 
   @ApiProperty({ type: String })
-  firstName: string;
+  name: string;
 
   @ApiProperty({ type: String })
   lastName: string;

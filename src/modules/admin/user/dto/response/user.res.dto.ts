@@ -6,7 +6,7 @@ export class UserResponseDto {
         public firstName: string,
         public lastName: string,
         public email: string,
-        public roles: string[],
+        public roles: Role[],
         public createdAt: Date,
     ) {
         this.id = id;

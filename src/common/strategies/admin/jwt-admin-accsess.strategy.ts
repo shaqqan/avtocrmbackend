@@ -32,7 +32,7 @@ export class JwtAdminAccessStrategy extends PassportStrategy(Strategy, 'jwt-admi
       select: {
         id: true,
         email: true,
-        firstName: true,
+        name: true,
         lastName: true,
         roles: {
           name: true,
