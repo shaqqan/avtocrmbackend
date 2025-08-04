@@ -1,4 +1,5 @@
 import { AfterLoad, BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { decodeHTML } from 'entities';
 
 @Entity({ name: 'genres' })
 export class Genre extends BaseEntity {
@@ -44,5 +45,15 @@ export class Genre extends BaseEntity {
     @AfterLoad()
     setCover() {
         this.cover = this.cover ? global.asset(this.cover) : null;
+    }
+
+    @AfterLoad()
+    decodeName() {
+        this.name_uz = this.name_uz ? decodeHTML(this.name_uz) : this.name_uz;
+        this.name_ru = this.name_ru ? decodeHTML(this.name_ru) : this.name_ru;
+        this.name_en = this.name_en ? decodeHTML(this.name_en) : this.name_en;
+        this.description_uz = this.description_uz ? decodeHTML(this.description_uz) : this.description_uz;
+        this.description_ru = this.description_ru ? decodeHTML(this.description_ru) : this.description_ru;
+        this.description_en = this.description_en ? decodeHTML(this.description_en) : this.description_en;
     }
 }

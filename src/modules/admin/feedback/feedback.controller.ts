@@ -10,16 +10,20 @@ import { BasePaginationResponseDto } from 'src/common/dto/response';
 import { FeedbackResponseDto } from './dto/response/feedback-response.dto';
 import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
 import { ApiGlobalResponses } from 'src/common/decorators/swagger';
+import { RequirePermissions } from 'src/common/decorators/permissions.decorator';
+import { PermissionsEnum } from 'src/common/enums';
+import { PermissionsGuard } from 'src/common/guards';
 
 @Controller('admin/feedback')
 @ApiTags('📪 Feedback')
-@UseGuards(JwtAuthAdminAccessGuard)
+@UseGuards(JwtAuthAdminAccessGuard, PermissionsGuard)
 @ApiBearerAuth()
 @ApiGlobalResponses()
 export class FeedbackController {
   constructor(private readonly feedbackService: FeedbackService) { }
 
   @Post()
+  @RequirePermissions(PermissionsEnum.CREATE_FEEDBACK)
   @ApiOperation({ summary: 'Create a new feedback' })
   @ApiResponse({ status: 201, description: 'Feedback created successfully', type: Feedback })
   @ApiResponse({ status: 400, description: 'Bad Request - Invalid input data' })
@@ -28,18 +32,21 @@ export class FeedbackController {
   }
 
   @Get()
+  @RequirePermissions(PermissionsEnum.READ_FEEDBACK)
   @ApiOperation({ summary: 'Get all with pagination feedback' })
   async findAll(@Query() query: BasePaginationDto): Promise<BasePaginationResponseDto<FeedbackResponseDto>> {
     return await this.feedbackService.findAll(query);
   }
 
   @Get(':id')
+  @RequirePermissions(PermissionsEnum.READ_FEEDBACK)
   @ApiOperation({ summary: 'Get feedback by ID' })
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<FeedbackResponseDto> {
     return await this.feedbackService.findOne(id);
   }
 
   @Patch(':id')
+  @RequirePermissions(PermissionsEnum.UPDATE_FEEDBACK)
   @ApiOperation({ summary: 'Update feedback by ID' })
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -49,6 +56,7 @@ export class FeedbackController {
   }
 
   @Delete(':id')
+  @RequirePermissions(PermissionsEnum.DELETE_FEEDBACK)
   @ApiOperation({ summary: 'Delete feedback by ID' })
   async remove(@Param('id', ParseIntPipe) id: number) {
     return await this.feedbackService.remove(id);

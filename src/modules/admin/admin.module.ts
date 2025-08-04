@@ -41,14 +41,6 @@ import { BookAudiobookLinkModule } from './book-audiobook-link/book-audiobook-li
     AudioBookModule, ReviewsAudiobookModule, DashboardModule, BookAudiobookLinkModule
   ],
   providers: [
-    {
-      provide: APP_GUARD,
-      useClass: PermissionsGuard,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
-    },
   ],
 })
 export class AdminModule { }

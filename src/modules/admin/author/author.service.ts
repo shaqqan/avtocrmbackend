@@ -25,11 +25,22 @@ export class AuthorService {
   async findAll(query: BasePaginationDto) {
     const { take, skip, page, limit, sortBy, sortOrder, search } = query;
     const currentLocale = I18nContext.current()?.lang?.split('_')[0] || 'uz';
-    const sortableColumns = ['id', 'name_' + currentLocale, 'lastName_' + currentLocale, 'middleName_' + currentLocale, 'description_' + currentLocale, 'createdAt', 'updatedAt'];
+    const sortableColumns = ['id', 'name', 'lastName', 'middleName', 'description', 'createdAt', 'updatedAt'];
     const searchableColumns = ['name_' + currentLocale, 'lastName_' + currentLocale, 'middleName_' + currentLocale, 'description_' + currentLocale];
 
     if (!sortableColumns.includes(sortBy)) {
       throw new BadRequestException(this.i18n.t('errors.VALIDATION.INVALID_SORT_BY'));
+    }
+
+    let sortColumn = sortBy;
+    if (sortBy === 'name') {
+      sortColumn = 'name_' + currentLocale;
+    } else if (sortBy === 'lastName') {
+      sortColumn = 'lastName_' + currentLocale;
+    } else if (sortBy === 'middleName') {
+      sortColumn = 'middleName_' + currentLocale;
+    } else if (sortBy === 'description') {
+      sortColumn = 'description_' + currentLocale;
     }
 
     const [authors, total] = await this.authorRepository.findAndCount({
@@ -37,7 +48,7 @@ export class AuthorService {
         searchableColumns.map(column => ({ [column]: ILike(`%${search}%`) }))
         : undefined,
       order: {
-        [sortBy]: sortOrder === SortOrder.ASC ? 'ASC' : 'DESC',
+        [sortColumn]: sortOrder,
       },
       skip,
       take,

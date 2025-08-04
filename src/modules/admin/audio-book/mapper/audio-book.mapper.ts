@@ -63,7 +63,7 @@ export class AudioBookMapper {
             entity.published,
             entity.createdAt,
             entity.updatedAt,
-            entity.authors.map(author => author[`name_${locale}`]),
+            entity.authors.map(author => author.getFullName(locale)),
             entity.files?.map(file => file.name),
             entity.genres?.map(genre => genre[`name_${locale}`]),
             entity.issuers?.map(issuer => issuer[`name_${locale}`])

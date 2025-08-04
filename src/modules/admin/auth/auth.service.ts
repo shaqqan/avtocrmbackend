@@ -48,12 +48,8 @@ export class AuthService {
         },
       },
       where: { email },
-      relations: {
-        roles: {
-          permissions: true,
-        },
-      },
     });
+
 
     if (!user) {
       throw new NotFoundException(this.i18n.t('errors.USER.NOT_FOUND'));

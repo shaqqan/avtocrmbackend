@@ -39,6 +39,7 @@ import { Transform, Type } from 'class-transformer';
 import { MessageWithDataResponseDto } from 'src/common/dto/response';
 import { UploadService } from './upload.service';
 import { UploadFileDto } from './dto/request/upload-file.dto';
+import { BatchUploadDto } from './dto/request/batch-upload.dto';
 import { 
   UploadResponseDto, 
   UploadStatsDto, 
@@ -47,6 +48,9 @@ import {
 import { ApiGlobalResponses } from 'src/common/decorators/swagger';
 import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
 import { FileCategory, FileFormat } from 'src/common/enums';
+import { RequirePermissions } from 'src/common/decorators/permissions.decorator';
+import { PermissionsEnum } from 'src/common/enums';
+import { PermissionsGuard } from 'src/common/guards';
 
 // Query DTOs for better validation and documentation
 class UploadStatsQueryDto {
@@ -74,7 +78,7 @@ class BatchUploadQueryDto {
 }
 
 @Controller('admin/upload')
-@UseGuards(JwtAuthAdminAccessGuard)
+@UseGuards(JwtAuthAdminAccessGuard, PermissionsGuard)
 @ApiTags('💾 File Upload Management')
 @ApiBearerAuth()
 @ApiGlobalResponses()
@@ -84,6 +88,7 @@ export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
   @Post()
+  @RequirePermissions(PermissionsEnum.UPLOAD_FILE)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ 
     summary: "Upload a single file",
@@ -139,12 +144,17 @@ export class UploadController {
   }
 
   @Post('batch')
+  @RequirePermissions(PermissionsEnum.UPLOAD_FILE)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ 
     summary: "Upload multiple files in batch",
     description: "Processes multiple files concurrently with controlled concurrency and comprehensive error handling. Returns detailed results for each file."
   })
   @ApiConsumes("multipart/form-data")
+  @ApiBody({
+    description: 'Batch file upload with individual metadata for each file',
+    type: BatchUploadDto,
+  })
   @ApiCreatedResponse({
     description: 'Batch upload completed',
     type: BatchUploadResponseDto
@@ -169,6 +179,7 @@ export class UploadController {
   }
 
   @Get('stats')
+  @RequirePermissions(PermissionsEnum.READ_FILE)
   @ApiOperation({ 
     summary: "Get upload statistics",
     description: "Retrieves comprehensive statistics about uploaded files including storage usage, file distributions, and performance metrics."
@@ -188,6 +199,7 @@ export class UploadController {
   }
 
   @Delete(':id')
+  @RequirePermissions(PermissionsEnum.DELETE_FILE)
   @ApiOperation({ 
     summary: "Delete a file",
     description: "Permanently deletes a file and its metadata from both storage and database with transactional safety."
@@ -219,6 +231,7 @@ export class UploadController {
   }
 
   @Post('cleanup')
+  @RequirePermissions(PermissionsEnum.DELETE_FILE)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ 
     summary: "Clean up expired files",

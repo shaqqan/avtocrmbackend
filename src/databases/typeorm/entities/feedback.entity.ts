@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, PrimaryGeneratedColumn, ManyToOne, Entity, BaseEntity } from "typeorm";
+import { Column, CreateDateColumn, PrimaryGeneratedColumn, ManyToOne, Entity, BaseEntity, AfterLoad } from "typeorm";
 import { FeedbacksTheme } from "./feedbacks-theme.entity";
+import { decodeHTML } from 'entities';
 
 @Entity({ name: 'feedbacks' })
 export class Feedback extends BaseEntity {
@@ -31,4 +32,10 @@ export class Feedback extends BaseEntity {
 
     @CreateDateColumn()
     createdAt: Date;
+
+    @AfterLoad()
+    decodeHTMLName() {
+        this.name = this.name ? decodeHTML(this.name) : this.name;
+        this.message = this.message ? decodeHTML(this.message) : this.message;
+    }
 }

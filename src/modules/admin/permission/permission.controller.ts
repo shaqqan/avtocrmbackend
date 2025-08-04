@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { PermissionService } from './permission.service';
 import { CreatePermissionDto } from './dto/request/create-permission.dto';
@@ -8,8 +8,13 @@ import { ApiGlobalResponses } from 'src/common/decorators/swagger';
 import { BasePaginationDto } from 'src/common/dto/request';
 import { BasePaginationResponseDto, MessageResponseDto, MessageWithDataResponseDto } from 'src/common/dto/response';
 import { PermissionResponseDto } from './dto/response/permission.res.dto';
+import { RequirePermissions } from 'src/common/decorators/permissions.decorator';
+import { PermissionsEnum } from 'src/common/enums';
+import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
+import { PermissionsGuard } from 'src/common/guards';
 
 @Controller('admin/permissions')
+@UseGuards(JwtAuthAdminAccessGuard, PermissionsGuard)
 @ApiTags('🔐 Permission')
 @ApiBearerAuth()
 @ApiGlobalResponses()
@@ -17,18 +22,28 @@ export class PermissionController {
     constructor(private readonly permissionService: PermissionService) { }
 
     @Post()
+    @RequirePermissions(PermissionsEnum.CREATE_PERMISSION)
     @ApiOperation({ summary: 'Create a new permission' })
     create(@Body() createPermissionDto: CreatePermissionDto): Promise<MessageWithDataResponseDto<PermissionResponseDto>> {
         return this.permissionService.create(createPermissionDto);
     }
 
     @Get()
+    @RequirePermissions(PermissionsEnum.READ_PERMISSION)
     @ApiOperation({ summary: 'Get all permissions' })
     findAll(@Query() query: BasePaginationDto): Promise<BasePaginationResponseDto<PermissionResponseDto>> {
         return this.permissionService.findAll(query);
     }
 
+    @Get('list')
+    @RequirePermissions(PermissionsEnum.READ_PERMISSION)
+    @ApiOperation({ summary: 'Get all permissions' })
+    list(): Promise<PermissionResponseDto[]> {
+        return this.permissionService.list();
+    }
+
     @Get(':id')
+    @RequirePermissions(PermissionsEnum.READ_PERMISSION)
     @ApiOperation({ summary: 'Get a permission by id' })
     @ApiResponse({ status: 200, type: Permission })
     findOne(@Param('id', ParseIntPipe) id: number): Promise<PermissionResponseDto> {
@@ -36,6 +51,7 @@ export class PermissionController {
     }
 
     @Patch(':id')
+    @RequirePermissions(PermissionsEnum.UPDATE_PERMISSION)
     @ApiOperation({ summary: 'Update a permission' })
     @ApiResponse({ status: 200, type: Permission })
     update(
@@ -46,15 +62,11 @@ export class PermissionController {
     }
 
     @Delete(':id')
+    @RequirePermissions(PermissionsEnum.DELETE_PERMISSION)
     @ApiOperation({ summary: 'Delete a permission' })
     @ApiResponse({ status: 204 })
     remove(@Param('id', ParseIntPipe) id: number): Promise<MessageResponseDto> {
         return this.permissionService.remove(id);
     }
 
-    @Get('list')
-    @ApiOperation({ summary: 'Get all permissions' })
-    list(): Promise<PermissionResponseDto[]> {
-        return this.permissionService.list();
-    }
 } 

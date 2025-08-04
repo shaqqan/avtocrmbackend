@@ -1,4 +1,5 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { AfterLoad, BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { decodeHTML } from 'entities';
 
 @Entity({ name: 'helps' })
 export class Help extends BaseEntity {
@@ -25,4 +26,14 @@ export class Help extends BaseEntity {
 
     @CreateDateColumn()
     createdAt: Date;
+
+    @AfterLoad()
+    decodeHTMLName() {
+        this.name_uz = this.name_uz ? decodeHTML(this.name_uz) : this.name_uz;
+        this.name_ru = this.name_ru ? decodeHTML(this.name_ru) : this.name_ru;
+        this.name_en = this.name_en ? decodeHTML(this.name_en) : this.name_en;
+        this.description_uz = this.description_uz ? decodeHTML(this.description_uz) : this.description_uz;
+        this.description_ru = this.description_ru ? decodeHTML(this.description_ru) : this.description_ru;
+        this.description_en = this.description_en ? decodeHTML(this.description_en) : this.description_en;
+    }
 }

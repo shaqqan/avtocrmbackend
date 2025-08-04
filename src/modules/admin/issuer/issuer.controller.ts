@@ -6,9 +6,12 @@ import { BasePaginationDto } from 'src/common/dto/request';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiGlobalResponses } from 'src/common/decorators/swagger';
 import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
+import { RequirePermissions } from 'src/common/decorators/permissions.decorator';
+import { PermissionsEnum } from 'src/common/enums';
+import { PermissionsGuard } from 'src/common/guards';
 
 @Controller('admin/issuer')
-@UseGuards(JwtAuthAdminAccessGuard)
+@UseGuards(JwtAuthAdminAccessGuard, PermissionsGuard)
 @ApiTags('🏢 Issuer')
 @ApiBearerAuth()
 @ApiGlobalResponses()
@@ -16,38 +19,44 @@ export class IssuerController {
   constructor(private readonly issuerService: IssuerService) {}
 
   @Post()
+  @RequirePermissions(PermissionsEnum.CREATE_ISSUER)
   @ApiOperation({ summary: 'Create a new issuer' })
   create(@Body() createIssuerDto: CreateIssuerDto) {
     return this.issuerService.create(createIssuerDto);
   }
 
   @Get()
+  @RequirePermissions(PermissionsEnum.READ_ISSUER)
   @ApiOperation({ summary: 'Get all issuers with pagination' })
   findAll(@Query() query: BasePaginationDto) {
     return this.issuerService.findAll(query);
   }
 
+  @Get('list')
+  @RequirePermissions(PermissionsEnum.READ_ISSUER)
+  @ApiOperation({ summary: 'Get all issuers list' })
+  list() {
+    return this.issuerService.list();
+  }
+
   @Get(':id')
+  @RequirePermissions(PermissionsEnum.READ_ISSUER)
   @ApiOperation({ summary: 'Get an issuer by ID' })
   findOne(@Param('id') id: string) {
     return this.issuerService.findOne(+id);
   }
 
   @Patch(':id')
+  @RequirePermissions(PermissionsEnum.UPDATE_ISSUER)
   @ApiOperation({ summary: 'Update an issuer by ID' })
   update(@Param('id') id: string, @Body() updateIssuerDto: UpdateIssuerDto) {
     return this.issuerService.update(+id, updateIssuerDto);
   }
 
   @Delete(':id')
+  @RequirePermissions(PermissionsEnum.DELETE_ISSUER)
   @ApiOperation({ summary: 'Delete an issuer by ID' })
   remove(@Param('id') id: string) {
     return this.issuerService.remove(+id);
-  }
-
-  @Get('list')
-  @ApiOperation({ summary: 'Get all issuers list' })
-  list() {
-    return this.issuerService.list();
   }
 }

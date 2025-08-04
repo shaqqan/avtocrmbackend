@@ -1,4 +1,5 @@
 import { BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Entity, AfterLoad } from "typeorm";
+import { decodeHTML } from 'entities';
 
 export enum NewsStatus {
     ACTIVE = 'Активно',
@@ -27,7 +28,7 @@ export class News extends BaseEntity {
 
     @Column({ type: 'text' })
     description_en: string;
- 
+
     @Column()
     cover: string;
 
@@ -48,5 +49,15 @@ export class News extends BaseEntity {
     @AfterLoad()
     afterLoad() {
         this.cover = this.cover ? global.asset(this.cover) : null;
+    }
+
+    @AfterLoad()
+    decodeName() {
+        this.title_uz = this.title_uz ? decodeHTML(this.title_uz) : this.title_uz;
+        this.title_ru = this.title_ru ? decodeHTML(this.title_ru) : this.title_ru;
+        this.title_en = this.title_en ? decodeHTML(this.title_en) : this.title_en;
+        this.description_uz = this.description_uz ? decodeHTML(this.description_uz) : this.description_uz;
+        this.description_ru = this.description_ru ? decodeHTML(this.description_ru) : this.description_ru;
+        this.description_en = this.description_en ? decodeHTML(this.description_en) : this.description_en;
     }
 }

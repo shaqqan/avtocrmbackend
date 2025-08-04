@@ -9,9 +9,12 @@ import { QueryBookDto } from './dto/request/query-book.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiGlobalResponses } from 'src/common/decorators/swagger';
 import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
+import { RequirePermissions } from 'src/common/decorators/permissions.decorator';
+import { PermissionsEnum } from 'src/common/enums';
+import { PermissionsGuard } from 'src/common/guards';
 
 @Controller('admin/book')
-@UseGuards(JwtAuthAdminAccessGuard)
+@UseGuards(JwtAuthAdminAccessGuard, PermissionsGuard)
 @ApiTags('📚 Books')
 @ApiBearerAuth()
 @ApiGlobalResponses()
@@ -19,30 +22,35 @@ export class BookController {
   constructor(private readonly bookService: BookService) { }
 
   @Post()
+  @RequirePermissions(PermissionsEnum.CREATE_BOOK)
   @ApiOperation({ summary: 'Create a new book' })
   create(@Body() createBookDto: CreateBookDto): Promise<MessageWithDataResponseDto<BookResponseMultiLangDto>> {
     return this.bookService.create(createBookDto);
   }
 
   @Get()
+  @RequirePermissions(PermissionsEnum.READ_BOOK)
   @ApiOperation({ summary: 'Get all books with pagination' })
   findAll(@Query() query: QueryBookDto) {
     return this.bookService.findAll(query);
   }
 
   @Get(':id')
+  @RequirePermissions(PermissionsEnum.READ_BOOK)
   @ApiOperation({ summary: 'Get a book by ID' })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.bookService.findOne(id);
   }
 
   @Patch(':id')
+  @RequirePermissions(PermissionsEnum.UPDATE_BOOK)
   @ApiOperation({ summary: 'Update a book by ID' })
   update(@Param('id', ParseIntPipe) id: number, @Body() updateBookDto: UpdateBookDto) {
     return this.bookService.update(id, updateBookDto);
   }
 
   @Delete(':id')
+  @RequirePermissions(PermissionsEnum.DELETE_BOOK)
   @ApiOperation({ summary: 'Delete a book by ID' })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.bookService.remove(id);

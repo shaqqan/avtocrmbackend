@@ -47,9 +47,9 @@ export class BookResponseMultiLangDto {
         public description_uz: string,
         public description_ru: string,
         public description_en: string,
-        public descriptionShort_uz: string,
-        public descriptionShort_ru: string,
-        public descriptionShort_en: string,
+        public description_short_uz: string,
+        public description_short_ru: string,
+        public description_short_en: string,
         public lang: BookLangEnum,
         public ISBN: string,
         public top: number,
@@ -70,9 +70,9 @@ export class BookResponseMultiLangDto {
         this.description_uz = description_uz;
         this.description_ru = description_ru;
         this.description_en = description_en;
-        this.descriptionShort_uz = descriptionShort_uz;
-        this.descriptionShort_ru = descriptionShort_ru;
-        this.descriptionShort_en = descriptionShort_en;
+        this.description_short_uz = description_short_uz;
+        this.description_short_ru = description_short_ru;
+        this.description_short_en = description_short_en;
         this.lang = lang;
         this.ISBN = ISBN;
         this.top = top;

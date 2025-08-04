@@ -18,7 +18,7 @@ import * as path from 'path';
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({
-      logger: true,
+      logger: false,
       caseSensitive: true,
       ignoreTrailingSlash: true,
       bodyLimit: 1024 * 1024 * 10, // 10MB

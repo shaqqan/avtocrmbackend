@@ -8,9 +8,12 @@ import { QueryAudioBookDto } from './dto/request/query-audio-book.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ApiGlobalResponses } from 'src/common/decorators/swagger';
 import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
+import { RequirePermissions } from 'src/common/decorators/permissions.decorator';
+import { PermissionsEnum } from 'src/common/enums';
+import { PermissionsGuard } from 'src/common/guards';
 
 @Controller('admin/audio-book')
-@UseGuards(JwtAuthAdminAccessGuard)
+@UseGuards(JwtAuthAdminAccessGuard, PermissionsGuard)
 @ApiTags('🔉 AudioBooks')
 @ApiBearerAuth()
 @ApiGlobalResponses()
@@ -18,6 +21,7 @@ export class AudioBookController {
   constructor(private readonly audioBookService: AudioBookService) { }
 
   @Post()
+  @RequirePermissions(PermissionsEnum.CREATE_AUDIOBOOK)
   @ApiOperation({ summary: 'Create a new audio book' })
   @ApiResponse({ status: 201, description: 'Audio book created successfully' })
   create(@Body() createAudioBookDto: CreateAudioBookDto): Promise<MessageWithDataResponseDto<AudioBookResponseMultiLangDto>> {
@@ -25,6 +29,7 @@ export class AudioBookController {
   }
 
   @Get()
+  @RequirePermissions(PermissionsEnum.READ_AUDIOBOOK)
   @ApiOperation({ summary: 'Get all audio books with pagination and search' })
   @ApiResponse({ status: 200, description: 'Audio books retrieved successfully' })
   findAll(@Query() query: QueryAudioBookDto) {
@@ -32,6 +37,7 @@ export class AudioBookController {
   }
 
   @Get(':id')
+  @RequirePermissions(PermissionsEnum.READ_AUDIOBOOK)
   @ApiOperation({ summary: 'Get audio book by ID' })
   @ApiResponse({ status: 200, description: 'Audio book found' })
   @ApiResponse({ status: 404, description: 'Audio book not found' })
@@ -40,6 +46,7 @@ export class AudioBookController {
   }
 
   @Patch(':id')
+  @RequirePermissions(PermissionsEnum.UPDATE_AUDIOBOOK)
   @ApiOperation({ summary: 'Update audio book by ID' })
   @ApiResponse({ status: 200, description: 'Audio book updated successfully' })
   @ApiResponse({ status: 404, description: 'Audio book not found' })
@@ -48,6 +55,7 @@ export class AudioBookController {
   }
 
   @Delete(':id')
+  @RequirePermissions(PermissionsEnum.DELETE_AUDIOBOOK)
   @ApiOperation({ summary: 'Delete audio book by ID' })
   @ApiResponse({ status: 200, description: 'Audio book deleted successfully' })
   @ApiResponse({ status: 404, description: 'Audio book not found' })

@@ -42,11 +42,6 @@ export class JwtAdminAccessStrategy extends PassportStrategy(Strategy, 'jwt-admi
         },
       },
       where: { id: payload.id },
-      relations: {
-        roles: {
-          permissions: true,
-        },
-      },
     });
 
     if (!user) {

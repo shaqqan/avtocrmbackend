@@ -108,7 +108,8 @@ export class BookAudiobookLinkService {
         // Apply sorting
         const allowedSortFields = ['id', 'createdAt', 'updatedAt', 'priority', 'linkType', 'status'];
         const sortField = allowedSortFields.includes(sortBy) ? sortBy : 'createdAt';
-        queryBuilder.orderBy(`link.${sortField}`, sortOrder as 'ASC' | 'DESC');
+        const normalizedSortOrder = (sortOrder?.toString().toUpperCase() === 'ASC') ? 'ASC' : 'DESC';
+        queryBuilder.orderBy(`link.${sortField}`, normalizedSortOrder);
         queryBuilder.addOrderBy('link.priority', 'ASC'); // Secondary sort by priority
 
         // Apply pagination

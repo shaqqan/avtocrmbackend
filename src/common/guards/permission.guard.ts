@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { I18nService } from 'nestjs-i18n';
-import type { PermissionsEnum } from '../enums';
+import { Role, type PermissionsEnum } from '../enums';
 import { PERMISSIONS_KEY } from '../constants';
 
 @Injectable()
@@ -35,6 +35,10 @@ export class PermissionsGuard implements CanActivate {
       throw new ForbiddenException(this.i18n.t('errors.FORBIDDEN.PERMISSIONS'));
     }
 
+    // Check if user has SUPER_ADMIN role
+    if (user.roles?.some((role) => role.name === Role.SUPER_ADMIN)) {
+      return true;
+    }
 
     // Get permissions from user's roles
     const rolePermissions = user.roles?.flatMap(

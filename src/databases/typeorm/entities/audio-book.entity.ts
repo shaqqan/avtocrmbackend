@@ -16,6 +16,7 @@ import { Issuer } from './issuer.entity';
 import { File } from './file.entity';
 import { ReviewsAudiobook } from './reviews-audiobook.entity';
 import { BookAudiobookLink } from './book-audiobook-link.entity';
+import { decodeHTML  } from 'entities';
 
 export enum AudioBookLangEnum {
     UZ = 'uz',
@@ -122,6 +123,19 @@ export class AudioBook extends BaseEntity {
     @AfterLoad()
     setCover() {
         this.cover = this.cover ? global.asset(this.cover) : null;
+    }
+
+    @AfterLoad()
+    decodeName() {
+        this.name_uz = this.name_uz ? decodeHTML(this.name_uz) : this.name_uz;
+        this.name_ru = this.name_ru ? decodeHTML(this.name_ru) : this.name_ru;
+        this.name_en = this.name_en ? decodeHTML(this.name_en) : this.name_en;
+        this.description_uz = this.description_uz ? decodeHTML(this.description_uz) : this.description_uz;
+        this.description_ru = this.description_ru ? decodeHTML(this.description_ru) : this.description_ru;
+        this.description_en = this.description_en ? decodeHTML(this.description_en) : this.description_en;
+        this.description_short_uz = this.description_short_uz ? decodeHTML(this.description_short_uz) : this.description_short_uz;
+        this.description_short_ru = this.description_short_ru ? decodeHTML(this.description_short_ru) : this.description_short_ru;
+        this.description_short_en = this.description_short_en ? decodeHTML(this.description_short_en) : this.description_short_en;
     }
 
     getName(locale?: Omit<AudioBookLangEnum, 'UZ'>): string {

@@ -107,23 +107,31 @@ export class UploadService {
     const chunks = this.chunkArray(files, concurrencyLimit);
 
     for (const chunk of chunks) {
-      const promises = chunk.map(async (fileData: any) => {
+      const promises = chunk.map(async (fileItem: any) => {
         try {
+          // Extract file and metadata from each file item
+          const fileData = fileItem.file || fileItem; // Support both formats
+          const metadata = {
+            category: options.category,
+            format: options.format,
+            chapter: this.extractNumericValue(fileItem.chapter),
+            duration: this.extractNumericValue(fileItem.duration),
+            lang: this.extractStringValue(fileItem.lang),
+            isActive: this.extractBooleanValue(fileItem.isActive) ?? true
+          };
+
           const mockRequest = {
             body: { file: fileData }
           } as any;
 
-          const result = await this.uploadFileUseCase.execute(mockRequest, {
-            category: options.category,
-            format: options.format
-          });
+          const result = await this.uploadFileUseCase.execute(mockRequest, metadata);
 
           totalSize += result.data.size;
           return result.data;
         } catch (error) {
-          this.logger.error(`Batch upload file failed: ${fileData?.filename || 'unknown'}`, error.stack);
+          this.logger.error(`Batch upload file failed: ${fileItem?.filename || fileItem?.file?.filename || 'unknown'}`, error.stack);
           errors.push({
-            filename: fileData?.filename || 'unknown',
+            filename: fileItem?.filename || fileItem?.file?.filename || 'unknown',
             error: error.message || 'Unknown error'
           });
           return null;
@@ -340,5 +348,73 @@ export class UploadService {
       chunks.push(array.slice(i, i + chunkSize));
     }
     return chunks;
+  }
+
+  /**
+   * Extract numeric value from multipart data
+   */
+  private extractNumericValue(field: any): number | undefined {
+    if (!field) return undefined;
+    
+    // Handle Fastify multipart format
+    if (typeof field === 'object' && field.value !== undefined) {
+      const numValue = Number(field.value);
+      return !isNaN(numValue) ? numValue : undefined;
+    }
+    
+    // Handle direct value
+    if (typeof field === 'string') {
+      const numValue = Number(field);
+      return !isNaN(numValue) ? numValue : undefined;
+    }
+
+    if (typeof field === 'number') {
+      return field;
+    }
+    
+    return undefined;
+  }
+
+  /**
+   * Extract string value from multipart data
+   */
+  private extractStringValue(field: any): string | undefined {
+    if (!field) return undefined;
+    
+    // Handle Fastify multipart format
+    if (typeof field === 'object' && field.value !== undefined) {
+      return String(field.value);
+    }
+    
+    // Handle direct value
+    if (typeof field === 'string') {
+      return field;
+    }
+    
+    return undefined;
+  }
+
+  /**
+   * Extract boolean value from multipart data
+   */
+  private extractBooleanValue(field: any): boolean | undefined {
+    if (!field) return undefined;
+    
+    // Handle Fastify multipart format
+    if (typeof field === 'object' && field.value !== undefined) {
+      const value = field.value;
+      if (typeof value === 'boolean') return value;
+      if (typeof value === 'string') {
+        return value.toLowerCase() === 'true';
+      }
+    }
+    
+    // Handle direct value
+    if (typeof field === 'boolean') return field;
+    if (typeof field === 'string') {
+      return field.toLowerCase() === 'true';
+    }
+    
+    return undefined;
   }
 }

@@ -1,28 +1,24 @@
 import { DataSource } from "typeorm";
 import { Permission, Role } from "../entities";
+import { Role as RoleEnum } from "src/common/enums";
 
 export class RoleSeeder {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(private readonly dataSource: DataSource) { }
 
   async seed() {
     // Get all permissions
     const permissions = await this.dataSource.manager.find(Permission);
 
-    // Find or create admin role
-    let adminRole = await this.dataSource.manager.findOne(Role, {
-      where: { name: 'admin' },
-      relations: ['permissions']
+    const adminRole = await this.dataSource.manager.findOne(Role, {
+      where: { name: RoleEnum.SUPER_ADMIN }
     });
 
     if (!adminRole) {
-      adminRole = await this.dataSource.manager.save(Role, {
-        name: 'admin',
+      const newRole = this.dataSource.manager.create(Role, {
+        name: RoleEnum.SUPER_ADMIN,
         permissions: permissions,
       });
-    } else {
-      // Update permissions for existing admin role
-      adminRole.permissions = permissions;
-      await this.dataSource.manager.save(adminRole);
+      await this.dataSource.manager.save(newRole);
     }
 
     console.log('✅ Roles seeded');
