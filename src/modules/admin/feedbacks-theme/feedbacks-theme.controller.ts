@@ -18,32 +18,32 @@ export class FeedbacksThemeController {
   @Post()
   @ApiOperation({ summary: 'Create a new feedback theme' })
   @ApiResponse({ status: 201, description: 'Feedback theme created successfully' })
-  create(@Body() createFeedbacksThemeDto: CreateFeedbacksThemeDto) {
+  async create(@Body() createFeedbacksThemeDto: CreateFeedbacksThemeDto) {
     return this.feedbacksThemeService.create(createFeedbacksThemeDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all feedback themes with pagination' })
   @ApiResponse({ status: 200, description: 'Feedback themes retrieved successfully' })
-  findAll(@Query() query: BasePaginationDto) {
+  async findAll(@Query() query: BasePaginationDto) {
     return this.feedbacksThemeService.findAll(query);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a feedback theme by ID' })
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.feedbacksThemeService.findOne(+id);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a feedback theme by ID' })
-  update(@Param('id') id: string, @Body() updateFeedbacksThemeDto: UpdateFeedbacksThemeDto) {
+  async update(@Param('id') id: string, @Body() updateFeedbacksThemeDto: UpdateFeedbacksThemeDto) {
     return this.feedbacksThemeService.update(+id, updateFeedbacksThemeDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a feedback theme by ID' })
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.feedbacksThemeService.remove(+id);
   }
 }

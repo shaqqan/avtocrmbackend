@@ -1,4 +1,4 @@
-import { Injectable, Logger, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException, NotFoundException, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { I18nService } from 'nestjs-i18n';
@@ -19,7 +19,7 @@ import { FileValidationService } from './infrastructure/services/validation.serv
 import { UploadResponseDto, UploadStatsDto, BatchUploadResponseDto } from './dto/response/upload.res.dto';
 import { UploadMapper } from './mapper/upload.mapper';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class UploadService {
   private readonly logger = new Logger(UploadService.name);
 

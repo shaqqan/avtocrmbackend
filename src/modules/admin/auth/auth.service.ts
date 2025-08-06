@@ -1,6 +1,7 @@
 import {
   Injectable,
   NotFoundException,
+  Scope,
   UnauthorizedException,
 } from '@nestjs/common';
 import { SignInDto } from './dto/requests/sign-in.dto';
@@ -19,7 +20,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/databases/typeorm/entities';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class AuthService {
   constructor(
     @InjectRepository(User)

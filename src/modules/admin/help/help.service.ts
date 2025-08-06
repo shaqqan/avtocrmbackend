@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { CreateHelpDto } from './dto/request/create-help.dto';
 import { UpdateHelpDto } from './dto/request/update-help.dto';
 import { BasePaginationDto } from 'src/common/dto/request';
@@ -9,7 +9,7 @@ import { I18nContext, I18nService } from 'nestjs-i18n';
 import { BasePaginationResponseDto, MessageWithDataResponseDto, MessageResponseDto } from 'src/common/dto/response';
 import { HelpMapper } from './mapper/help.mapper';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class HelpService {
   constructor(
     @InjectRepository(Help)

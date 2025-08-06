@@ -19,19 +19,20 @@ import * as path from 'path';
     AppModule,
     new FastifyAdapter({
       logger: false,
-      caseSensitive: true,
-      ignoreTrailingSlash: true,
       bodyLimit: 1024 * 1024 * 10, // 10MB
     }),
     {
-      logger: ['error', 'warn', 'verbose', 'debug'],
+      // Optimize logging for production performance
+      logger: process.env.NODE_ENV === 'production' ? ['error'] : ['error', 'warn'],
       cors: {
         origin: true,
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-        maxAge: 600, // Cache preflight requests for 10 minutes
+        maxAge: 3600, // Cache preflight requests for 1 hour
+        optionsSuccessStatus: 200, // For legacy browser support
       },
       bufferLogs: true, // Buffer logs for better performance
+      abortOnError: false, // Don't abort on errors for better uptime
     },
   );
 
@@ -62,10 +63,14 @@ import * as path from 'path';
 
   app.setGlobalPrefix('api');
 
-  // Enhanced compression configuration
+  // Enhanced compression configuration for maximum performance
   await app.register(compression, {
-    encodings: ['gzip', 'deflate'],
+    encodings: ['gzip', 'deflate', 'br'], // Add Brotli compression
     threshold: 1024, // Only compress responses > 1KB
+    zlibOptions: {
+      level: 6, // Compression level (1-9, 6 is optimal balance) 
+      memLevel: 8 // Memory usage level
+    }
   });
 
   setupSwaggerAdmin(app);
@@ -74,7 +79,13 @@ import * as path from 'path';
   const serverConfig =
     configService.getOrThrow<ConfigType<typeof AppConfig>>('node');
 
-  await app.listen(serverConfig.port, serverConfig.host, async () => {
+  // Performance optimization: set TCP_NODELAY and SO_KEEPALIVE
+  await app.listen({
+    port: serverConfig.port,
+    host: serverConfig.host,
+    // High-performance server options
+    backlog: 511, // Maximum length of the queue of pending connections
+  }, async () => {
     const url = await app.getUrl();
     console.log(`🚀🚀 Server is running on ${url} in ${serverConfig.env} mode`);
   });

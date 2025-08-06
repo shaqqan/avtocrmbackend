@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { CreateUserDto } from './dto/request/create-user.dto';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,7 +10,7 @@ import { BasePaginationResponseDto, MessageResponseDto, MessageWithDataResponseD
 import { UserMapper } from './mapper/user.mapper';
 import * as bcrypt from 'bcrypt';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class UserService {
   constructor(
     @InjectRepository(User)
@@ -92,9 +92,6 @@ export class UserService {
     }
 
     const [users, total] = await this.userRepository.findAndCount({
-      relations: {
-        roles: true,
-      },
       select: {
         id: true,
         name: true,

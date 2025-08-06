@@ -21,35 +21,35 @@ export class NewsController {
   @Post()
   @RequirePermissions(PermissionsEnum.CREATE_NEWS)
   @ApiOperation({ summary: 'Create a new news' })
-  create(@Body() createNewsDto: CreateNewsDto) {
+  async create(@Body() createNewsDto: CreateNewsDto) {
     return this.newsService.create(createNewsDto);
   }
 
   @Get()
   @RequirePermissions(PermissionsEnum.READ_NEWS)
   @ApiOperation({ summary: 'Get all news with pagination' })
-  findAll(@Query() query: BasePaginationDto) {
+  async findAll(@Query() query: BasePaginationDto) {
     return this.newsService.findAll(query);
   }
 
   @Get(':id')
   @RequirePermissions(PermissionsEnum.READ_NEWS)
   @ApiOperation({ summary: 'Get a news by ID' })
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.newsService.findOne(id);
   }
 
   @Patch(':id')
   @RequirePermissions(PermissionsEnum.UPDATE_NEWS)
   @ApiOperation({ summary: 'Update a news by ID' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateNewsDto: UpdateNewsDto) {
+  async update(@Param('id', ParseIntPipe) id: number, @Body() updateNewsDto: UpdateNewsDto) {
     return this.newsService.update(id, updateNewsDto);
   }
 
   @Delete(':id')
   @RequirePermissions(PermissionsEnum.DELETE_NEWS)
   @ApiOperation({ summary: 'Delete a news by ID' })
-  remove(@Param('id', ParseIntPipe) id: number) {
+  async remove(@Param('id', ParseIntPipe) id: number) {
     return this.newsService.remove(id);
   }
 }

@@ -21,35 +21,35 @@ export class ReviewsAudiobookController {
   @Post()
   @RequirePermissions(PermissionsEnum.CREATE_AUDIOBOOK_REVIEW)
   @ApiOperation({ summary: 'Create a new review audiobook' })
-  create(@Body() createReviewsAudiobookDto: CreateReviewsAudiobookDto) {
+  async create(@Body() createReviewsAudiobookDto: CreateReviewsAudiobookDto) {
     return this.reviewsAudiobookService.create(createReviewsAudiobookDto);
   }
 
   @Get()
   @RequirePermissions(PermissionsEnum.READ_AUDIOBOOK_REVIEW)
   @ApiOperation({ summary: 'Get all review audiobooks with pagination' })
-  findAll(@Query() query: BasePaginationDto) {
+  async findAll(@Query() query: BasePaginationDto) {
     return this.reviewsAudiobookService.findAll(query);
   }
 
   @Get(':id')
   @RequirePermissions(PermissionsEnum.READ_AUDIOBOOK_REVIEW)
   @ApiOperation({ summary: 'Get a review audiobook by ID' })
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.reviewsAudiobookService.findOne(id);
   }
 
   @Patch(':id')
   @RequirePermissions(PermissionsEnum.UPDATE_AUDIOBOOK_REVIEW)
   @ApiOperation({ summary: 'Update a review audiobook by ID' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateReviewsAudiobookDto: UpdateReviewsAudiobookDto) {
+  async update(@Param('id', ParseIntPipe) id: number, @Body() updateReviewsAudiobookDto: UpdateReviewsAudiobookDto) {
     return this.reviewsAudiobookService.update(id, updateReviewsAudiobookDto);
   }
 
   @Delete(':id')
   @RequirePermissions(PermissionsEnum.DELETE_AUDIOBOOK_REVIEW)
   @ApiOperation({ summary: 'Delete a review audiobook by ID' })
-  remove(@Param('id', ParseIntPipe) id: number) {
+  async remove(@Param('id', ParseIntPipe) id: number) {
     return this.reviewsAudiobookService.remove(id);
   }
 }

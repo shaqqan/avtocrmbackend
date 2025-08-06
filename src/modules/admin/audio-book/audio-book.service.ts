@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { CreateAudioBookDto } from './dto/request/create-audio-book.dto';
 import { UpdateAudioBookDto } from './dto/request/update-audio-book.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,7 +11,7 @@ import { AudioBookMapper } from './mapper/audio-book.mapper';
 import { BasePaginationResponseDto, MessageResponseDto, MessageWithDataResponseDto } from 'src/common/dto/response';
 import { QueryAudioBookDto } from './dto/request/query-audio-book.dto';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class AudioBookService {
   constructor(
     @InjectRepository(AudioBook)
@@ -73,7 +73,7 @@ export class AudioBookService {
     audioBook.files = files;
 
     const savedAudioBook = await this.audioBookRepository.save(audioBook);
-    
+
     // Fetch the saved audiobook with relations for response
     const audioBookWithRelations = await this.audioBookRepository.findOne({
       where: { id: savedAudioBook.id },
@@ -81,7 +81,7 @@ export class AudioBookService {
     });
 
     return new MessageWithDataResponseDto(
-      this.i18n.t('success.AUDIOBOOK.CREATED'), 
+      this.i18n.t('success.AUDIOBOOK.CREATED'),
       AudioBookMapper.toDto(audioBookWithRelations!)
     );
   }
@@ -89,6 +89,8 @@ export class AudioBookService {
   async findAll(query: QueryAudioBookDto) {
     const { take, skip, page, limit, sortBy, sortOrder, search } = query;
     const currentLocale = I18nContext.current()?.lang?.split('_')[0] || 'uz';
+
+    console.log(I18nContext.current()?.lang);
 
     const allowedSortFields: string[] = [
       'id',
@@ -183,7 +185,7 @@ export class AudioBookService {
       where: { id },
       relations: { authors: true, genres: true, issuers: true, files: true }
     });
-    
+
     if (!audioBook) {
       throw new NotFoundException(this.i18n.t('errors.AUDIOBOOK.NOT_FOUND'));
     }
@@ -248,7 +250,7 @@ export class AudioBookService {
     updatedAudioBookData.files = files;
 
     const savedAudioBook = await this.audioBookRepository.save(updatedAudioBookData);
-    
+
     // Fetch the updated audiobook with relations
     const audioBookWithRelations = await this.audioBookRepository.findOne({
       where: { id: savedAudioBook.id },
@@ -256,7 +258,7 @@ export class AudioBookService {
     });
 
     return new MessageWithDataResponseDto(
-      this.i18n.t('success.AUDIOBOOK.UPDATED'), 
+      this.i18n.t('success.AUDIOBOOK.UPDATED'),
       AudioBookMapper.toDto(audioBookWithRelations!)
     );
   }
@@ -275,7 +277,7 @@ export class AudioBookService {
    */
   async getLinkedBooks(audiobookId: number) {
     const links = await this.bookAudiobookLinkRepository.find({
-      where: { 
+      where: {
         audiobookId,
         status: LinkStatusEnum.ACTIVE // Only get active links
       },
@@ -305,7 +307,7 @@ export class AudioBookService {
    */
   async hasLinkedBooks(audiobookId: number): Promise<boolean> {
     const count = await this.bookAudiobookLinkRepository.count({
-      where: { 
+      where: {
         audiobookId,
         status: LinkStatusEnum.ACTIVE
       }

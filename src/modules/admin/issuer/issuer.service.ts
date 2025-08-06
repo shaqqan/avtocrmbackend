@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { CreateIssuerDto } from './dto/request/create-issuer.dto';
 import { UpdateIssuerDto } from './dto/request/update-issuer.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,7 +10,7 @@ import { BasePaginationResponseDto, MessageWithDataResponseDto, MessageResponseD
 import { IssuerMapper } from './mapper/issuer.mapper';
 import { IssuerListMapper } from './mapper/issuer-list.mapper';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class IssuerService {
   constructor(
     @InjectRepository(Issuer)

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { CreateGenreDto } from './dto/request/create-genre.dto';
 import { UpdateGenreDto } from './dto/request/update-genre.dto';
 import { BasePaginationDto, SortOrder } from 'src/common/dto/request';
@@ -10,7 +10,7 @@ import { BasePaginationResponseDto, MessageResponseDto, MessageWithDataResponseD
 import { GenreMapper } from './mapper/gender.mapper';
 import { GenreListMapper } from './mapper/gender-list.mapper';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class GenresService {
   constructor(
     @InjectRepository(Genre)

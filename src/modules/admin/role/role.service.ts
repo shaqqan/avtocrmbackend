@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { CreateRoleDto } from './dto/request/create-role.dto';
 import { UpdateRoleDto } from './dto/request/update-role.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,7 +12,7 @@ import { AssignPermissionDto } from './dto/request/assign-permission.dto';
 import { RoleMapper } from './mapper/role.mapper';
 import { RoleResponseDto } from './dto/response/role.res.dto';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class RoleService {
   constructor(
     @InjectRepository(Role)

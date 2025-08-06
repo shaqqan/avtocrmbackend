@@ -115,6 +115,13 @@ export class Book extends BaseEntity {
     @OneToMany(() => BookAudiobookLink, (link) => link.book)
     audiobookLinks: BookAudiobookLink[];
 
+    getAvgRating(): number {
+        if (this.reviews.length === 0) {
+            return 5.0;
+        }
+        return this.reviews.reduce((acc, review) => acc + Number(review.rating), 0) / this.reviews.length;
+    }
+
     @AfterLoad()
     setAuthorsAndFiles() {
         this.cover = this.cover ? global.asset(this.cover) : null;

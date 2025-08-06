@@ -15,7 +15,12 @@ import { QueryFailedError } from 'typeorm';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
-  constructor(private readonly configService: ConfigService, private readonly i18n) { }
+  private telegramService: TelegramService;
+  
+  constructor(private readonly configService: ConfigService, private readonly i18n) { 
+    // Pre-initialize TelegramService to avoid creating new instances on every error
+    this.telegramService = new TelegramService(this.configService);
+  }
 
   async catch(exception: Error, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -60,15 +65,22 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       });
     }
 
-    // Send error report to Telegram for 500 errors
+    // Send error report to Telegram for 500 errors (fire-and-forget to avoid blocking response)
     if (status === HttpStatus.INTERNAL_SERVER_ERROR && process.env.NODE_ENV !== 'locale') {
       console.log(exception);
-      const telegramService = new TelegramService(this.configService);
-      await telegramService.sendErrorReport(exception, {
-        method: request.method,
-        url: request.url,
-        headers: request.headers,
-        body: request.body,
+      // Use setImmediate to avoid blocking the response
+      setImmediate(async () => {
+        try {
+          await this.telegramService.sendErrorReport(exception, {
+            method: request.method,
+            url: request.url,
+            headers: request.headers,
+            body: request.body,
+          });
+        } catch (telegramError) {
+          // Log telegram errors without affecting the main response
+          console.error('Failed to send Telegram error report:', telegramError);
+        }
       });
     }
 

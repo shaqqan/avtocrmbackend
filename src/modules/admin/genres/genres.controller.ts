@@ -22,7 +22,7 @@ export class GenresController {
   @RequirePermissions(PermissionsEnum.CREATE_GENRE)
   @ApiOperation({ summary: 'Create a new genre' })
   @ApiResponse({ status: 201, description: 'Genre created successfully' })
-  create(@Body() createGenreDto: CreateGenreDto) {
+  async create(@Body() createGenreDto: CreateGenreDto) {
     return this.genresService.create(createGenreDto);
   }
 
@@ -30,35 +30,35 @@ export class GenresController {
   @RequirePermissions(PermissionsEnum.READ_GENRE)
   @ApiOperation({ summary: 'Get all genres with pagination' })
   @ApiResponse({ status: 200, description: 'Genres retrieved successfully' })
-  findAll(@Query() query: BasePaginationDto) {
+  async findAll(@Query() query: BasePaginationDto) {
     return this.genresService.findAll(query);
   }
 
   @Get('list')
   @RequirePermissions(PermissionsEnum.READ_GENRE)
   @ApiOperation({ summary: 'Get all genres list' })
-  list() {
+  async list() {
     return this.genresService.list();
   }
 
   @Get(':id')
   @RequirePermissions(PermissionsEnum.READ_GENRE)
   @ApiOperation({ summary: 'Get a genre by ID' })
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.genresService.findOne(id);
   }
 
   @Patch(':id')
   @RequirePermissions(PermissionsEnum.UPDATE_GENRE)
   @ApiOperation({ summary: 'Update a genre by ID' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateGenreDto: UpdateGenreDto) {
+  async update(@Param('id', ParseIntPipe) id: number, @Body() updateGenreDto: UpdateGenreDto) {
     return this.genresService.update(id, updateGenreDto);
   }
 
   @Delete(':id')
   @RequirePermissions(PermissionsEnum.DELETE_GENRE)
   @ApiOperation({ summary: 'Delete a genre by ID' })
-  remove(@Param('id', ParseIntPipe) id: number) {
+  async remove(@Param('id', ParseIntPipe) id: number) {
     return this.genresService.remove(id);
   }
 }

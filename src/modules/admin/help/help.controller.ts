@@ -17,31 +17,31 @@ export class HelpController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new help' })
-  create(@Body() createHelpDto: CreateHelpDto) {
+  async create(@Body() createHelpDto: CreateHelpDto) {
     return this.helpService.create(createHelpDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all helps with pagination' })
-  findAll(@Query() query: BasePaginationDto) {
+  async findAll(@Query() query: BasePaginationDto) {
     return this.helpService.findAll(query);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a help by ID' })
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.helpService.findOne(id);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a help by ID' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateHelpDto: UpdateHelpDto) {
+  async update(@Param('id', ParseIntPipe) id: number, @Body() updateHelpDto: UpdateHelpDto) {
     return this.helpService.update(id, updateHelpDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a help by ID' })
-  remove(@Param('id', ParseIntPipe) id: number) {
+  async remove(@Param('id', ParseIntPipe) id: number) {
     return this.helpService.remove(id);
   }
 }

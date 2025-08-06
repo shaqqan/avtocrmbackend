@@ -24,7 +24,7 @@ export class AudioBookController {
   @RequirePermissions(PermissionsEnum.CREATE_AUDIOBOOK)
   @ApiOperation({ summary: 'Create a new audio book' })
   @ApiResponse({ status: 201, description: 'Audio book created successfully' })
-  create(@Body() createAudioBookDto: CreateAudioBookDto): Promise<MessageWithDataResponseDto<AudioBookResponseMultiLangDto>> {
+  async create(@Body() createAudioBookDto: CreateAudioBookDto): Promise<MessageWithDataResponseDto<AudioBookResponseMultiLangDto>> {
     return this.audioBookService.create(createAudioBookDto);
   }
 
@@ -32,7 +32,7 @@ export class AudioBookController {
   @RequirePermissions(PermissionsEnum.READ_AUDIOBOOK)
   @ApiOperation({ summary: 'Get all audio books with pagination and search' })
   @ApiResponse({ status: 200, description: 'Audio books retrieved successfully' })
-  findAll(@Query() query: QueryAudioBookDto) {
+  async findAll(@Query() query: QueryAudioBookDto) {
     return this.audioBookService.findAll(query);
   }
 
@@ -41,7 +41,7 @@ export class AudioBookController {
   @ApiOperation({ summary: 'Get audio book by ID' })
   @ApiResponse({ status: 200, description: 'Audio book found' })
   @ApiResponse({ status: 404, description: 'Audio book not found' })
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.audioBookService.findOne(id);
   }
 
@@ -50,7 +50,7 @@ export class AudioBookController {
   @ApiOperation({ summary: 'Update audio book by ID' })
   @ApiResponse({ status: 200, description: 'Audio book updated successfully' })
   @ApiResponse({ status: 404, description: 'Audio book not found' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateAudioBookDto: UpdateAudioBookDto) {
+  async update(@Param('id', ParseIntPipe) id: number, @Body() updateAudioBookDto: UpdateAudioBookDto) {
     return this.audioBookService.update(id, updateAudioBookDto);
   }
 
@@ -59,7 +59,7 @@ export class AudioBookController {
   @ApiOperation({ summary: 'Delete audio book by ID' })
   @ApiResponse({ status: 200, description: 'Audio book deleted successfully' })
   @ApiResponse({ status: 404, description: 'Audio book not found' })
-  remove(@Param('id', ParseIntPipe) id: number) {
+  async remove(@Param('id', ParseIntPipe) id: number) {
     return this.audioBookService.remove(id);
   }
 }

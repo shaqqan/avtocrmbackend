@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { CreateNewsDto } from './dto/request/create-news.dto';
 import { UpdateNewsDto } from './dto/request/update-news.dto';
 import { BasePaginationDto } from 'src/common/dto/request';
@@ -9,7 +9,7 @@ import { I18nContext, I18nService } from 'nestjs-i18n';
 import { NewsMapper } from './mapper/news.mapper';
 import { BasePaginationResponseDto, MessageWithDataResponseDto, MessageResponseDto } from 'src/common/dto/response';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class NewsService {
   constructor(
     @InjectRepository(News)

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Like, Repository } from 'typeorm';
 import { Permission } from '../../../databases/typeorm/entities/permission.entity';
@@ -10,7 +10,7 @@ import { BasePaginationDto, SortOrder } from 'src/common/dto/request';
 import { PermissionMapper } from './mapper/permission.mapper';
 import { PermissionResponseDto } from './dto/response/permission.res.dto';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class PermissionService {
     constructor(
         @InjectRepository(Permission)

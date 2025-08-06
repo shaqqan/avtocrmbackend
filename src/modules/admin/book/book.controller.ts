@@ -24,35 +24,35 @@ export class BookController {
   @Post()
   @RequirePermissions(PermissionsEnum.CREATE_BOOK)
   @ApiOperation({ summary: 'Create a new book' })
-  create(@Body() createBookDto: CreateBookDto): Promise<MessageWithDataResponseDto<BookResponseMultiLangDto>> {
+  async create(@Body() createBookDto: CreateBookDto): Promise<MessageWithDataResponseDto<BookResponseMultiLangDto>> {
     return this.bookService.create(createBookDto);
   }
 
   @Get()
   @RequirePermissions(PermissionsEnum.READ_BOOK)
   @ApiOperation({ summary: 'Get all books with pagination' })
-  findAll(@Query() query: QueryBookDto) {
+  async findAll(@Query() query: QueryBookDto) {
     return this.bookService.findAll(query);
   }
 
   @Get(':id')
   @RequirePermissions(PermissionsEnum.READ_BOOK)
   @ApiOperation({ summary: 'Get a book by ID' })
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.bookService.findOne(id);
   }
 
   @Patch(':id')
   @RequirePermissions(PermissionsEnum.UPDATE_BOOK)
   @ApiOperation({ summary: 'Update a book by ID' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateBookDto: UpdateBookDto) {
+  async update(@Param('id', ParseIntPipe) id: number, @Body() updateBookDto: UpdateBookDto) {
     return this.bookService.update(id, updateBookDto);
   }
 
   @Delete(':id')
   @RequirePermissions(PermissionsEnum.DELETE_BOOK)
   @ApiOperation({ summary: 'Delete a book by ID' })
-  remove(@Param('id', ParseIntPipe) id: number) {
+  async remove(@Param('id', ParseIntPipe) id: number) {
     return this.bookService.remove(id);
   }
 }

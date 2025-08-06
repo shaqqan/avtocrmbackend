@@ -21,42 +21,42 @@ export class AuthorController {
   @Post()
   @RequirePermissions(PermissionsEnum.CREATE_AUTHOR)
   @ApiOperation({ summary: 'Create a new author' })
-  create(@Body() createAuthorDto: CreateAuthorDto) {
+  async create(@Body() createAuthorDto: CreateAuthorDto) {
     return this.authorService.create(createAuthorDto);
   }
 
   @Get()
   @RequirePermissions(PermissionsEnum.READ_AUTHOR)
   @ApiOperation({ summary: 'Get all authors with pagination' })
-  findAll(@Query() query: BasePaginationDto) {
+  async findAll(@Query() query: BasePaginationDto) {
     return this.authorService.findAll(query);
   }
 
   @Get('list')
   @RequirePermissions(PermissionsEnum.READ_AUTHOR)
   @ApiOperation({ summary: 'Get all authors list' })
-  list() {
+  async list() {
     return this.authorService.list();
   }
 
   @Get(':id')
   @RequirePermissions(PermissionsEnum.READ_AUTHOR)
   @ApiOperation({ summary: 'Get an author by ID' })
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.authorService.findOne(id);
   }
 
   @Patch(':id')
   @RequirePermissions(PermissionsEnum.UPDATE_AUTHOR)
   @ApiOperation({ summary: 'Update an author by ID' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateAuthorDto: UpdateAuthorDto) {
+  async update(@Param('id', ParseIntPipe) id: number, @Body() updateAuthorDto: UpdateAuthorDto) {
     return this.authorService.update(id, updateAuthorDto);
   }
 
   @Delete(':id')
   @RequirePermissions(PermissionsEnum.DELETE_AUTHOR)
   @ApiOperation({ summary: 'Delete an author by ID' })
-  remove(@Param('id', ParseIntPipe) id: number) {
+  async remove(@Param('id', ParseIntPipe) id: number) {
     return this.authorService.remove(id);
   }
 }

@@ -18,7 +18,7 @@ export const setupSwaggerAdmin = (app: INestApplication): void => {
     .setContact('Kitob.uz Support Team', 'https://kitob.uz', 'support@kitob.uz')
     .setLicense('Proprietary License', 'https://kitob.uz')
     .addServer('http://127.0.0.1:3000', 'Local Development Server')
-    .addServer('http://10.95.3.18:3000', 'Wi-Fi Network')
+    .addServer('http://10.95.3.15:3000', 'Wi-Fi Network')
     .addServer('https://api.kitob.uz', 'Production Server')
     .addGlobalParameters({
       name: 'x-lang',

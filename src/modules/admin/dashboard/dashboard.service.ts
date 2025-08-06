@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AudioBook, Author, Book, Genre, Issuer, News, ReviewBook, ReviewsAudiobook } from 'src/databases/typeorm/entities';
 import { I18nContext } from 'nestjs-i18n';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class DashboardService {
   constructor(
     @InjectRepository(Book)

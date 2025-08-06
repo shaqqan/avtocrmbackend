@@ -29,7 +29,7 @@ export class AuthController {
   @Post('sign-in')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Sign in to the admin panel' })
-  public signIn(@Body() signInDto: SignInDto): Promise<SignInResponseDto> {
+  async signIn(@Body() signInDto: SignInDto): Promise<SignInResponseDto> {
     return this.authService.signIn(signInDto);
   }
 
@@ -38,7 +38,7 @@ export class AuthController {
   @UseGuards(JwtAuthAdminRefreshGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Refresh tokens' })
-  public refreshTokens(
+  async refreshTokens(
     @GetUser() user: User,
   ): Promise<RefreshTokenResponseDto> {
     return this.authService.refreshTokens(user);
@@ -49,7 +49,7 @@ export class AuthController {
   @UseGuards(JwtAuthAdminAccessGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Sign out' })
-  public signOut(@GetUser() user: User): Promise<SignOutResponseDto> {
+  async signOut(@GetUser() user: User): Promise<SignOutResponseDto> {
     return this.authService.signOut(user);
   }
 
@@ -58,7 +58,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get me' })
-  public getMe(@GetUser() user: User): Promise<GetMeResponseDto> {
+  async getMe(@GetUser() user: User): Promise<GetMeResponseDto> {
     return this.authService.getMe(user);
   }
 }

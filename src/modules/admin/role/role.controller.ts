@@ -24,21 +24,21 @@ export class RoleController {
   @Post()
   @RequirePermissions(PermissionsEnum.CREATE_ROLE)
   @ApiOperation({ summary: 'Create a new role' })
-  create(@Body() createRoleDto: CreateRoleDto): Promise<MessageWithDataResponseDto<RoleResponseDto>> {
+  async create(@Body() createRoleDto: CreateRoleDto): Promise<MessageWithDataResponseDto<RoleResponseDto>> {
     return this.roleService.create(createRoleDto);
   }
 
   @Get()
   @RequirePermissions(PermissionsEnum.READ_ROLE)
   @ApiOperation({ summary: 'Get all roles' })
-  findAll(@Query() query: BasePaginationDto): Promise<BasePaginationResponseDto<RoleResponseDto>> {
+  async findAll(@Query() query: BasePaginationDto): Promise<BasePaginationResponseDto<RoleResponseDto>> {
     return this.roleService.findAll(query);
   }
 
   @Get('list')
   @RequirePermissions(PermissionsEnum.READ_ROLE)
   @ApiOperation({ summary: 'Get all roles' })
-  list(): Promise<RoleResponseDto[]> {
+  async list(): Promise<RoleResponseDto[]> {
     return this.roleService.list();
   }
 
@@ -46,28 +46,28 @@ export class RoleController {
   @RequirePermissions(PermissionsEnum.UPDATE_ROLE)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Assign permissions to a role' })
-  assignPermissions(@Param('id', ParseIntPipe) id: number, @Body() assignPermissionDto: AssignPermissionDto): Promise<MessageResponseDto> {
+  async assignPermissions(@Param('id', ParseIntPipe) id: number, @Body() assignPermissionDto: AssignPermissionDto): Promise<MessageResponseDto> {
     return this.roleService.assignPermissions(+id, assignPermissionDto);
   }
 
   @Get(':id')
   @RequirePermissions(PermissionsEnum.READ_ROLE)
   @ApiOperation({ summary: 'Get a role by id' })
-  findOne(@Param('id', ParseIntPipe) id: number): Promise<RoleResponseDto> {
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<RoleResponseDto> {
     return this.roleService.findOne(+id);
   }
 
   @Patch(':id')
   @RequirePermissions(PermissionsEnum.UPDATE_ROLE)
   @ApiOperation({ summary: 'Update a role by id' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateRoleDto: UpdateRoleDto): Promise<MessageWithDataResponseDto<RoleResponseDto>> {
+  async update(@Param('id', ParseIntPipe) id: number, @Body() updateRoleDto: UpdateRoleDto): Promise<MessageWithDataResponseDto<RoleResponseDto>> {
     return this.roleService.update(+id, updateRoleDto);
   }
 
   @Delete(':id')
   @RequirePermissions(PermissionsEnum.DELETE_ROLE)
   @ApiOperation({ summary: 'Delete a role by id' })
-  remove(@Param('id', ParseIntPipe) id: number): Promise<MessageResponseDto> {
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<MessageResponseDto> {
     return this.roleService.remove(+id);
   }
 

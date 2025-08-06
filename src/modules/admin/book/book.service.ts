@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { CreateBookDto } from './dto/request/create-book.dto';
 import { UpdateBookDto } from './dto/request/update-book.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,7 +11,7 @@ import { BookMapper } from './mapper/book.mapper';
 import { BasePaginationResponseDto, MessageResponseDto, MessageWithDataResponseDto } from 'src/common/dto/response';
 import { QueryBookDto } from './dto/request/query-book.dto';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class BookService {
   constructor(
     @InjectRepository(Book)

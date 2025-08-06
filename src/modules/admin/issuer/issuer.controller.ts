@@ -21,42 +21,42 @@ export class IssuerController {
   @Post()
   @RequirePermissions(PermissionsEnum.CREATE_ISSUER)
   @ApiOperation({ summary: 'Create a new issuer' })
-  create(@Body() createIssuerDto: CreateIssuerDto) {
+  async create(@Body() createIssuerDto: CreateIssuerDto) {
     return this.issuerService.create(createIssuerDto);
   }
 
   @Get()
   @RequirePermissions(PermissionsEnum.READ_ISSUER)
   @ApiOperation({ summary: 'Get all issuers with pagination' })
-  findAll(@Query() query: BasePaginationDto) {
+  async findAll(@Query() query: BasePaginationDto) {
     return this.issuerService.findAll(query);
   }
 
   @Get('list')
   @RequirePermissions(PermissionsEnum.READ_ISSUER)
   @ApiOperation({ summary: 'Get all issuers list' })
-  list() {
+  async list() {
     return this.issuerService.list();
   }
 
   @Get(':id')
   @RequirePermissions(PermissionsEnum.READ_ISSUER)
   @ApiOperation({ summary: 'Get an issuer by ID' })
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.issuerService.findOne(+id);
   }
 
   @Patch(':id')
   @RequirePermissions(PermissionsEnum.UPDATE_ISSUER)
   @ApiOperation({ summary: 'Update an issuer by ID' })
-  update(@Param('id') id: string, @Body() updateIssuerDto: UpdateIssuerDto) {
+  async update(@Param('id') id: string, @Body() updateIssuerDto: UpdateIssuerDto) {
     return this.issuerService.update(+id, updateIssuerDto);
   }
 
   @Delete(':id')
   @RequirePermissions(PermissionsEnum.DELETE_ISSUER)
   @ApiOperation({ summary: 'Delete an issuer by ID' })
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.issuerService.remove(+id);
   }
 }

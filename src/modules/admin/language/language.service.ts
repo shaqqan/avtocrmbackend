@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Scope } from '@nestjs/common';
 import { CreateLanguageDto } from './dto/request/create-language.dto';
 import { UpdateLanguageDto } from './dto/request/update-language.dto';
 import { BasePaginationDto, SortOrder } from 'src/common/dto/request';
@@ -10,7 +10,7 @@ import { Language } from 'src/databases/typeorm/entities/language.entity';
 import { LanguageMapper } from './mapper/language.mapper';
 import { LanguageResponseDto } from './dto/response/language.res.dto';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class LanguageService {
   constructor(
     @InjectRepository(Language)

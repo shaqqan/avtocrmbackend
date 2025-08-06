@@ -24,21 +24,21 @@ export class PermissionController {
     @Post()
     @RequirePermissions(PermissionsEnum.CREATE_PERMISSION)
     @ApiOperation({ summary: 'Create a new permission' })
-    create(@Body() createPermissionDto: CreatePermissionDto): Promise<MessageWithDataResponseDto<PermissionResponseDto>> {
+    async create(@Body() createPermissionDto: CreatePermissionDto): Promise<MessageWithDataResponseDto<PermissionResponseDto>> {
         return this.permissionService.create(createPermissionDto);
     }
 
     @Get()
     @RequirePermissions(PermissionsEnum.READ_PERMISSION)
     @ApiOperation({ summary: 'Get all permissions' })
-    findAll(@Query() query: BasePaginationDto): Promise<BasePaginationResponseDto<PermissionResponseDto>> {
+    async findAll(@Query() query: BasePaginationDto): Promise<BasePaginationResponseDto<PermissionResponseDto>> {
         return this.permissionService.findAll(query);
     }
 
     @Get('list')
     @RequirePermissions(PermissionsEnum.READ_PERMISSION)
     @ApiOperation({ summary: 'Get all permissions' })
-    list(): Promise<PermissionResponseDto[]> {
+    async list(): Promise<PermissionResponseDto[]> {
         return this.permissionService.list();
     }
 
@@ -46,7 +46,7 @@ export class PermissionController {
     @RequirePermissions(PermissionsEnum.READ_PERMISSION)
     @ApiOperation({ summary: 'Get a permission by id' })
     @ApiResponse({ status: 200, type: Permission })
-    findOne(@Param('id', ParseIntPipe) id: number): Promise<PermissionResponseDto> {
+    async findOne(@Param('id', ParseIntPipe) id: number): Promise<PermissionResponseDto> {
         return this.permissionService.findOne(id);
     }
 
@@ -54,7 +54,7 @@ export class PermissionController {
     @RequirePermissions(PermissionsEnum.UPDATE_PERMISSION)
     @ApiOperation({ summary: 'Update a permission' })
     @ApiResponse({ status: 200, type: Permission })
-    update(
+    async update(
         @Param('id', ParseIntPipe) id: number,
         @Body() updatePermissionDto: UpdatePermissionDto,
     ): Promise<MessageWithDataResponseDto<PermissionResponseDto>> {
@@ -65,7 +65,7 @@ export class PermissionController {
     @RequirePermissions(PermissionsEnum.DELETE_PERMISSION)
     @ApiOperation({ summary: 'Delete a permission' })
     @ApiResponse({ status: 204 })
-    remove(@Param('id', ParseIntPipe) id: number): Promise<MessageResponseDto> {
+    async remove(@Param('id', ParseIntPipe) id: number): Promise<MessageResponseDto> {
         return this.permissionService.remove(id);
     }
 

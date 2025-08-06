@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { I18nService } from 'nestjs-i18n';
@@ -14,7 +14,7 @@ import { MessageWithDataResponseDto } from '../../../common/dto/response/message
 import { MessageResponseDto } from '../../../common/dto/response/message.res.dto';
 import { BasePaginationResponseDto } from '../../../common/dto/response/base-pagination.res.dto';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class BookAudiobookLinkService {
     constructor(
         @InjectRepository(BookAudiobookLink)

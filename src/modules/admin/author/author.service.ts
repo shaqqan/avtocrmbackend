@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { CreateAuthorDto } from './dto/request/create-author.dto';
 import { UpdateAuthorDto } from './dto/request/update-author.dto';
 import { BasePaginationDto, SortOrder } from 'src/common/dto/request';
@@ -10,7 +10,7 @@ import { I18nContext, I18nService } from 'nestjs-i18n';
 import { AuthorMapper } from './mapper/author.mapper';
 import { AuthorListMapper } from './mapper/author-list.mapper';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class AuthorService {
   constructor(
     @InjectRepository(Author)

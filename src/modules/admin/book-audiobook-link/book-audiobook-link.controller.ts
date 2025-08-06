@@ -53,7 +53,7 @@ export class BookAudiobookLinkController {
         description: 'Book-audiobook link created successfully',
         type: BookAudiobookLinkResponseDto,
     })
-    create(@Body() createLinkDto: CreateBookAudiobookLinkDto): Promise<MessageWithDataResponseDto<BookAudiobookLinkResponseDto>> {
+    async create(@Body() createLinkDto: CreateBookAudiobookLinkDto): Promise<MessageWithDataResponseDto<BookAudiobookLinkResponseDto>> {
         return this.linkService.create(createLinkDto);
     }
 
@@ -67,7 +67,7 @@ export class BookAudiobookLinkController {
         description: 'List of book-audiobook links retrieved successfully',
         type: BasePaginationResponseDto<BookAudiobookLinkResponseDto>,
     })
-    findAll(@Query() query: QueryBookAudiobookLinkDto): Promise<BasePaginationResponseDto<BookAudiobookLinkResponseDto>> {
+    async findAll(@Query() query: QueryBookAudiobookLinkDto): Promise<BasePaginationResponseDto<BookAudiobookLinkResponseDto>> {
         return this.linkService.findAll(query);
     }
 
@@ -82,7 +82,7 @@ export class BookAudiobookLinkController {
         description: 'Linked audiobooks retrieved successfully',
         type: [BookAudiobookLinkSummaryDto],
     })
-    findAudiobooksForBook(@Param('bookId', ParseIntPipe) bookId: number): Promise<BookAudiobookLinkSummaryDto[]> {
+    async findAudiobooksForBook(@Param('bookId', ParseIntPipe) bookId: number): Promise<BookAudiobookLinkSummaryDto[]> {
         return this.linkService.findLinksByBookId(bookId);
     }
 
@@ -97,7 +97,7 @@ export class BookAudiobookLinkController {
         description: 'Linked books retrieved successfully',
         type: [BookAudiobookLinkSummaryDto],
     })
-    findBooksForAudiobook(@Param('audiobookId', ParseIntPipe) audiobookId: number): Promise<BookAudiobookLinkSummaryDto[]> {
+    async findBooksForAudiobook(@Param('audiobookId', ParseIntPipe) audiobookId: number): Promise<BookAudiobookLinkSummaryDto[]> {
         return this.linkService.findLinksByAudiobookId(audiobookId);
     }
 
@@ -127,7 +127,7 @@ export class BookAudiobookLinkController {
         description: 'Book-audiobook link updated successfully',
         type: BookAudiobookLinkResponseDto,
     })
-    update(
+    async update(
         @Param('id', ParseIntPipe) id: number,
         @Body() updateLinkDto: UpdateBookAudiobookLinkDto,
     ): Promise<MessageWithDataResponseDto<BookAudiobookLinkResponseDto>> {
@@ -146,7 +146,7 @@ export class BookAudiobookLinkController {
         description: 'Book-audiobook link deleted successfully',
         type: MessageResponseDto,
     })
-    remove(@Param('id', ParseIntPipe) id: number): Promise<MessageResponseDto> {
+    async remove(@Param('id', ParseIntPipe) id: number): Promise<MessageResponseDto> {
         return this.linkService.remove(id);
     }
 }

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { CreateReviewBookDto } from './dto/request/create-review-book.dto';
 import { UpdateReviewBookDto } from './dto/request/update-review-book.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,7 +9,7 @@ import { BasePaginationDto } from 'src/common/dto/request';
 import { BasePaginationResponseDto, MessageWithDataResponseDto, MessageResponseDto } from 'src/common/dto/response';
 import { ReviewMapper } from './mapper/review.mapper';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class ReviewBookService {
   constructor(
     @InjectRepository(ReviewBook)

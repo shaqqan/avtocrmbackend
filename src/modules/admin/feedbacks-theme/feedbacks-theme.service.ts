@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { CreateFeedbacksThemeDto } from './dto/request/create-feedbacks-theme.dto';
 import { UpdateFeedbacksThemeDto } from './dto/request/update-feedbacks-theme.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,7 +9,7 @@ import { BasePaginationDto } from 'src/common/dto/request';
 import { BasePaginationResponseDto, MessageWithDataResponseDto, MessageResponseDto } from 'src/common/dto/response';
 import { FeedbacksThemeMapper } from './mapper/feedbacks-theme.mapper';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class FeedbacksThemeService {
   constructor(
     @InjectRepository(FeedbacksTheme)

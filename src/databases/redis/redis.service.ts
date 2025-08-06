@@ -197,4 +197,32 @@ export class RedisService implements OnModuleDestroy, OnApplicationBootstrap, On
     }
     return value;
   }
+
+  /**
+   * Delete keys matching a pattern for cache invalidation
+   * @param pattern - The pattern to match (e.g., "user:*")
+   */
+  async deletePattern(pattern: string): Promise<void> {
+    const fullPattern = this.buildKey(pattern);
+    const keys = await this.redisClient.keys(fullPattern);
+    
+    if (keys.length > 0) {
+      // Use pipeline for better performance when deleting multiple keys
+      const pipeline = this.redisClient.pipeline();
+      keys.forEach(key => pipeline.del(key));
+      await pipeline.exec();
+    }
+  }
+
+  /**
+   * Check if Redis is connected and responsive
+   */
+  async healthCheck(): Promise<boolean> {
+    try {
+      await this.redisClient.ping();
+      return true;
+    } catch {
+      return false;
+    }
+  }
 }

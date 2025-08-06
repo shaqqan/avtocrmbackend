@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository, SelectQueryBuilder } from 'typeorm';
 import { CreateFeedbackDto } from './dto/request/create-feedback.dto';
@@ -19,7 +19,7 @@ export interface PaginatedResult<T> {
   totalPages: number;
 }
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class FeedbackService {
   constructor(
     @InjectRepository(Feedback)

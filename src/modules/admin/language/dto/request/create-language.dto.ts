@@ -8,7 +8,8 @@ export class CreateLanguageDto {
 
     @ApiProperty({
         description: 'The name of the language',
-        example: 'English',
+        example: 'Beka',
+        maxLength: 255,
     })
     @IsString({ message: i18nValidationMessage('validation.IS_STRING') })
     @MaxLength(255, { message: i18nValidationMessage('validation.MAX_LENGTH') })

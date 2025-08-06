@@ -21,35 +21,35 @@ export class UserController {
   @Post()
   @RequirePermissions(PermissionsEnum.CREATE_USER)
   @ApiOperation({ summary: 'Create a new user' })
-  create(@Body() createUserDto: CreateUserDto) {
+  async create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
   @Get()
   @RequirePermissions(PermissionsEnum.READ_USER)
   @ApiOperation({ summary: 'Get all users with pagination' })
-  findAll(@Query() query: BasePaginationDto) {
+  async findAll(@Query() query: BasePaginationDto) {
     return this.userService.findAll(query);
   }
 
   @Get(':id')
   @RequirePermissions(PermissionsEnum.READ_USER)
   @ApiOperation({ summary: 'Get a user by ID' })
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findOne(id);
   }
 
   @Patch(':id')
   @RequirePermissions(PermissionsEnum.UPDATE_USER)
   @ApiOperation({ summary: 'Update a user by ID' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
+  async update(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')
   @RequirePermissions(PermissionsEnum.DELETE_USER)
   @ApiOperation({ summary: 'Delete a user by ID' })
-  remove(@Param('id', ParseIntPipe) id: number) {
+  async remove(@Param('id', ParseIntPipe) id: number) {
     return this.userService.remove(id);
   }
 }
