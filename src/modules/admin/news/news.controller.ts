@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { NewsService } from './news.service';
 import { CreateNewsDto } from './dto/request/create-news.dto';
 import { UpdateNewsDto } from './dto/request/update-news.dto';
@@ -16,7 +27,7 @@ import { PermissionsGuard } from 'src/common/guards';
 @ApiBearerAuth()
 @ApiGlobalResponses()
 export class NewsController {
-  constructor(private readonly newsService: NewsService) { }
+  constructor(private readonly newsService: NewsService) {}
 
   @Post()
   @RequirePermissions(PermissionsEnum.CREATE_NEWS)
@@ -42,7 +53,10 @@ export class NewsController {
   @Patch(':id')
   @RequirePermissions(PermissionsEnum.UPDATE_NEWS)
   @ApiOperation({ summary: 'Update a news by ID' })
-  async update(@Param('id', ParseIntPipe) id: number, @Body() updateNewsDto: UpdateNewsDto) {
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateNewsDto: UpdateNewsDto,
+  ) {
     return this.newsService.update(id, updateNewsDto);
   }
 

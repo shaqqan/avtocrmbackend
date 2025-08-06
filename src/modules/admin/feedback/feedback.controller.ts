@@ -1,5 +1,26 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, HttpCode, HttpStatus, ValidationPipe, Query, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+  HttpCode,
+  HttpStatus,
+  ValidationPipe,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiQuery,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { FeedbackService, PaginatedResult } from './feedback.service';
 import { CreateFeedbackDto } from './dto/request/create-feedback.dto';
 import { UpdateFeedbackDto } from './dto/request/update-feedback.dto';
@@ -20,12 +41,16 @@ import { PermissionsGuard } from 'src/common/guards';
 @ApiBearerAuth()
 @ApiGlobalResponses()
 export class FeedbackController {
-  constructor(private readonly feedbackService: FeedbackService) { }
+  constructor(private readonly feedbackService: FeedbackService) {}
 
   @Post()
   @RequirePermissions(PermissionsEnum.CREATE_FEEDBACK)
   @ApiOperation({ summary: 'Create a new feedback' })
-  @ApiResponse({ status: 201, description: 'Feedback created successfully', type: Feedback })
+  @ApiResponse({
+    status: 201,
+    description: 'Feedback created successfully',
+    type: Feedback,
+  })
   @ApiResponse({ status: 400, description: 'Bad Request - Invalid input data' })
   async create(@Body(ValidationPipe) createFeedbackDto: CreateFeedbackDto) {
     return await this.feedbackService.create(createFeedbackDto);
@@ -34,14 +59,18 @@ export class FeedbackController {
   @Get()
   @RequirePermissions(PermissionsEnum.READ_FEEDBACK)
   @ApiOperation({ summary: 'Get all with pagination feedback' })
-  async findAll(@Query() query: BasePaginationDto): Promise<BasePaginationResponseDto<FeedbackResponseDto>> {
+  async findAll(
+    @Query() query: BasePaginationDto,
+  ): Promise<BasePaginationResponseDto<FeedbackResponseDto>> {
     return await this.feedbackService.findAll(query);
   }
 
   @Get(':id')
   @RequirePermissions(PermissionsEnum.READ_FEEDBACK)
   @ApiOperation({ summary: 'Get feedback by ID' })
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<FeedbackResponseDto> {
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<FeedbackResponseDto> {
     return await this.feedbackService.findOne(id);
   }
 
@@ -50,7 +79,7 @@ export class FeedbackController {
   @ApiOperation({ summary: 'Update feedback by ID' })
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body(ValidationPipe) updateFeedbackDto: UpdateFeedbackDto
+    @Body(ValidationPipe) updateFeedbackDto: UpdateFeedbackDto,
   ) {
     return await this.feedbackService.update(id, updateFeedbackDto);
   }

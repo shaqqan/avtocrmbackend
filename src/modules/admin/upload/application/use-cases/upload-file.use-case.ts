@@ -38,24 +38,26 @@ export class UploadFileUseCase {
     private readonly dataSource: DataSource,
     private readonly storageService: StorageService,
     private readonly validationService: FileValidationService,
-    private readonly i18n: I18nService
+    private readonly i18n: I18nService,
   ) {}
 
   async execute(
     req: FastifyRequest,
-    uploadRequest: IUploadFileRequest
+    uploadRequest: IUploadFileRequest,
   ): Promise<MessageWithDataResponseDto<UploadResponseDto>> {
     const startTime = Date.now();
     let queryRunner: QueryRunner | null = null;
-    let storedFilePath: string | null = null; 
+    let storedFilePath: string | null = null;
 
     try {
       // Extract file from Fastify multipart request
       const body = req.body as any;
       const fileData = body.file;
-      
+
       if (!fileData) {
-        throw new BadRequestException(this.i18n.t('errors.VALIDATION.FILE_REQUIRED'));
+        throw new BadRequestException(
+          this.i18n.t('errors.VALIDATION.FILE_REQUIRED'),
+        );
       }
 
       // Create upload request value object
@@ -71,10 +73,12 @@ export class UploadFileUseCase {
         uploadRequest.titleEn,
         uploadRequest.chapter || 0,
         uploadRequest.duration || 0,
-        uploadRequest.lang || 'uzb'
+        uploadRequest.lang || 'uzb',
       );
 
-      this.logger.log(`Starting upload for file: ${uploadRequestVO.filename} (${uploadRequestVO.category})`);
+      this.logger.log(
+        `Starting upload for file: ${uploadRequestVO.filename} (${uploadRequestVO.category})`,
+      );
 
       // Get file stream from Fastify multipart
       const fileStream = await this.getFileStreamFromMultipart(fileData);
@@ -86,7 +90,7 @@ export class UploadFileUseCase {
         fileBuffer.length,
         uploadRequestVO.filename,
         uploadRequestVO.category,
-        uploadRequestVO.format
+        uploadRequestVO.format,
       );
 
       // Create database transaction
@@ -101,16 +105,21 @@ export class UploadFileUseCase {
           filename: uploadRequestVO.filename,
           mimetype: uploadRequestVO.mimetype,
           size: fileBuffer.length,
-          encoding: uploadRequestVO.encoding || 'binary'
+          encoding: uploadRequestVO.encoding || 'binary',
         },
-        uploadRequestVO.getStoragePath()
+        uploadRequestVO.getStoragePath(),
       );
 
       storedFilePath = storageResult.path;
 
       // Create database record
-      const fileEntity = queryRunner.manager.create(File, 
-        UploadMapper.fromUploadRequestToEntity(uploadRequestVO, storageResult.path, storageResult.size)
+      const fileEntity = queryRunner.manager.create(
+        File,
+        UploadMapper.fromUploadRequestToEntity(
+          uploadRequestVO,
+          storageResult.path,
+          storageResult.size,
+        ),
       );
 
       const savedEntity = await queryRunner.manager.save(File, fileEntity);
@@ -136,19 +145,20 @@ export class UploadFileUseCase {
         savedEntity.lang,
         savedEntity.isActive,
         savedEntity.createdAt,
-        storageResult.checksum
+        storageResult.checksum,
       );
 
       const responseDto = UploadMapper.fromUploadResultToDto(uploadResult);
-      
+
       const processingTime = Date.now() - startTime;
-      this.logger.log(`File upload completed successfully: ${savedEntity.id} (${processingTime}ms)`);
+      this.logger.log(
+        `File upload completed successfully: ${savedEntity.id} (${processingTime}ms)`,
+      );
 
       return new MessageWithDataResponseDto(
         this.i18n.t('success.UPLOAD.UPLOADED'),
-        responseDto
+        responseDto,
       );
-
     } catch (error) {
       this.logger.error(`Upload failed: ${error.message}`, error.stack);
 
@@ -157,7 +167,10 @@ export class UploadFileUseCase {
         try {
           await queryRunner.rollbackTransaction();
         } catch (rollbackError) {
-          this.logger.error(`Transaction rollback failed: ${rollbackError.message}`, rollbackError.stack);
+          this.logger.error(
+            `Transaction rollback failed: ${rollbackError.message}`,
+            rollbackError.stack,
+          );
         }
       }
 
@@ -167,7 +180,10 @@ export class UploadFileUseCase {
           await this.storageService.deleteFile(storedFilePath);
           this.logger.log(`Cleaned up file after error: ${storedFilePath}`);
         } catch (cleanupError) {
-          this.logger.error(`File cleanup failed: ${cleanupError.message}`, cleanupError.stack);
+          this.logger.error(
+            `File cleanup failed: ${cleanupError.message}`,
+            cleanupError.stack,
+          );
         }
       }
 
@@ -178,17 +194,19 @@ export class UploadFileUseCase {
 
       throw new BadRequestException(
         this.i18n.t('errors.VALIDATION.FILE_UPLOAD_FAILED', {
-          args: { reason: error.message }
-        })
+          args: { reason: error.message },
+        }),
       );
-
     } finally {
       // Release query runner
       if (queryRunner) {
         try {
           await queryRunner.release();
         } catch (releaseError) {
-          this.logger.error(`Query runner release failed: ${releaseError.message}`, releaseError.stack);
+          this.logger.error(
+            `Query runner release failed: ${releaseError.message}`,
+            releaseError.stack,
+          );
         }
       }
     }
@@ -197,13 +215,13 @@ export class UploadFileUseCase {
   private async getFileStreamFromMultipart(fileData: any): Promise<Readable> {
     // Create a readable stream from the buffer
     const readable = new Readable({
-      read() {}
+      read() {},
     });
-    
+
     const buffer = await fileData.toBuffer();
     readable.push(buffer);
     readable.push(null); // End of stream
-    
+
     return readable;
   }
 
@@ -212,23 +230,33 @@ export class UploadFileUseCase {
    */
   private validateUploadRequest(request: IUploadFileRequest): void {
     if (!request.category) {
-      throw new BadRequestException(this.i18n.t('errors.VALIDATION.CATEGORY_REQUIRED'));
+      throw new BadRequestException(
+        this.i18n.t('errors.VALIDATION.CATEGORY_REQUIRED'),
+      );
     }
 
     if (!request.format) {
-      throw new BadRequestException(this.i18n.t('errors.VALIDATION.FORMAT_REQUIRED'));
+      throw new BadRequestException(
+        this.i18n.t('errors.VALIDATION.FORMAT_REQUIRED'),
+      );
     }
 
     if (request.chapter !== undefined && request.chapter < 0) {
-      throw new BadRequestException(this.i18n.t('errors.VALIDATION.INVALID_CHAPTER'));
+      throw new BadRequestException(
+        this.i18n.t('errors.VALIDATION.INVALID_CHAPTER'),
+      );
     }
 
     if (request.duration !== undefined && request.duration < 0) {
-      throw new BadRequestException(this.i18n.t('errors.VALIDATION.INVALID_DURATION'));
+      throw new BadRequestException(
+        this.i18n.t('errors.VALIDATION.INVALID_DURATION'),
+      );
     }
 
     if (request.lang && request.lang.length !== 3) {
-      throw new BadRequestException(this.i18n.t('errors.VALIDATION.INVALID_LANGUAGE_CODE'));
+      throw new BadRequestException(
+        this.i18n.t('errors.VALIDATION.INVALID_LANGUAGE_CODE'),
+      );
     }
   }
 
@@ -245,7 +273,7 @@ export class UploadFileUseCase {
     return {
       totalProcessed: 0,
       averageProcessingTime: 0,
-      successRate: 100
+      successRate: 100,
     };
   }
 }

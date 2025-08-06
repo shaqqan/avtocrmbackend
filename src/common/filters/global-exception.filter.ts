@@ -16,8 +16,11 @@ import { QueryFailedError } from 'typeorm';
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   private telegramService: TelegramService;
-  
-  constructor(private readonly configService: ConfigService, private readonly i18n) { 
+
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly i18n,
+  ) {
     // Pre-initialize TelegramService to avoid creating new instances on every error
     this.telegramService = new TelegramService(this.configService);
   }
@@ -47,7 +50,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       if (error.code === 'ER_NO_REFERENCED_ROW_2') {
         return response.status(HttpStatus.BAD_REQUEST).send({
           statusCode: HttpStatus.BAD_REQUEST,
-          message: this.i18n.t('errors.VALIDATION.FOREIGN_KEY_CONSTRAINT_FAILED'),
+          message: this.i18n.t(
+            'errors.VALIDATION.FOREIGN_KEY_CONSTRAINT_FAILED',
+          ),
         });
       }
 
@@ -66,7 +71,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     }
 
     // Send error report to Telegram for 500 errors (fire-and-forget to avoid blocking response)
-    if (status === HttpStatus.INTERNAL_SERVER_ERROR && process.env.NODE_ENV !== 'locale') {
+    if (
+      status === HttpStatus.INTERNAL_SERVER_ERROR &&
+      process.env.NODE_ENV !== 'locale'
+    ) {
       console.log(exception);
       // Use setImmediate to avoid blocking the response
       setImmediate(async () => {
@@ -93,7 +101,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     // Prepare the error response for other types of errors
     const errorResponse = {
       statusCode: status,
-      message: process.env.NODE_ENV === 'development' ? exception.message : 'Internal server error',
+      message:
+        process.env.NODE_ENV === 'development'
+          ? exception.message
+          : 'Internal server error',
     };
 
     // If it's an HTTP exception, include any additional response data

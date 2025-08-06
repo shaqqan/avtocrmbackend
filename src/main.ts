@@ -23,7 +23,8 @@ import * as path from 'path';
     }),
     {
       // Optimize logging for production performance
-      logger: process.env.NODE_ENV === 'production' ? ['error'] : ['error', 'warn'],
+      logger:
+        process.env.NODE_ENV === 'production' ? ['error'] : ['error', 'warn'],
       cors: {
         origin: true,
         credentials: true,
@@ -48,8 +49,8 @@ import * as path from 'path';
       fields: 10,
       fileSize: 10000000, // 10MB
       files: 5,
-      headerPairs: 2000
-    }
+      headerPairs: 2000,
+    },
   });
 
   await app.register(fastifyStatic, {
@@ -68,9 +69,9 @@ import * as path from 'path';
     encodings: ['gzip', 'deflate', 'br'], // Add Brotli compression
     threshold: 1024, // Only compress responses > 1KB
     zlibOptions: {
-      level: 6, // Compression level (1-9, 6 is optimal balance) 
-      memLevel: 8 // Memory usage level
-    }
+      level: 6, // Compression level (1-9, 6 is optimal balance)
+      memLevel: 8, // Memory usage level
+    },
   });
 
   setupSwaggerAdmin(app);
@@ -80,13 +81,18 @@ import * as path from 'path';
     configService.getOrThrow<ConfigType<typeof AppConfig>>('node');
 
   // Performance optimization: set TCP_NODELAY and SO_KEEPALIVE
-  await app.listen({
-    port: serverConfig.port,
-    host: serverConfig.host,
-    // High-performance server options
-    backlog: 511, // Maximum length of the queue of pending connections
-  }, async () => {
-    const url = await app.getUrl();
-    console.log(`🚀🚀 Server is running on ${url} in ${serverConfig.env} mode`);
-  });
+  await app.listen(
+    {
+      port: serverConfig.port,
+      host: serverConfig.host,
+      // High-performance server options
+      backlog: 511, // Maximum length of the queue of pending connections
+    },
+    async () => {
+      const url = await app.getUrl();
+      console.log(
+        `🚀🚀 Server is running on ${url} in ${serverConfig.env} mode`,
+      );
+    },
+  );
 })();

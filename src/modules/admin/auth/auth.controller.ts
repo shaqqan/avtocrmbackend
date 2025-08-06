@@ -24,7 +24,7 @@ import { User } from 'src/databases/typeorm/entities';
 @ApiTags('🔐 Authentication')
 @ApiGlobalResponses()
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Post('sign-in')
   @HttpCode(HttpStatus.OK)
@@ -38,9 +38,7 @@ export class AuthController {
   @UseGuards(JwtAuthAdminRefreshGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Refresh tokens' })
-  async refreshTokens(
-    @GetUser() user: User,
-  ): Promise<RefreshTokenResponseDto> {
+  async refreshTokens(@GetUser() user: User): Promise<RefreshTokenResponseDto> {
     return this.authService.refreshTokens(user);
   }
 

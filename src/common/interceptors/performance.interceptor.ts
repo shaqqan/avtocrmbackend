@@ -21,15 +21,19 @@ export class PerformanceInterceptor implements NestInterceptor {
       tap(() => {
         const endTime = Date.now();
         const duration = endTime - startTime;
-        
+
         // Log slow requests (> 10ms)
         if (duration > 10) {
-          console.warn(`🐌 Slow request: ${request.method} ${request.url} - ${duration}ms`);
+          console.warn(
+            `🐌 Slow request: ${request.method} ${request.url} - ${duration}ms`,
+          );
         }
-        
+
         // Log extremely fast requests for optimization verification
         if (process.env.NODE_ENV === 'development' && duration <= 5) {
-          console.log(`⚡ Fast request: ${request.method} ${request.url} - ${duration}ms`);
+          console.log(
+            `⚡ Fast request: ${request.method} ${request.url} - ${duration}ms`,
+          );
         }
       }),
     );

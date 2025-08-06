@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { HelpService } from './help.service';
 import { CreateHelpDto } from './dto/request/create-help.dto';
 import { UpdateHelpDto } from './dto/request/update-help.dto';
@@ -13,7 +24,7 @@ import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
 @ApiBearerAuth()
 @ApiGlobalResponses()
 export class HelpController {
-  constructor(private readonly helpService: HelpService) { }
+  constructor(private readonly helpService: HelpService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new help' })
@@ -35,7 +46,10 @@ export class HelpController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a help by ID' })
-  async update(@Param('id', ParseIntPipe) id: number, @Body() updateHelpDto: UpdateHelpDto) {
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateHelpDto: UpdateHelpDto,
+  ) {
     return this.helpService.update(id, updateHelpDto);
   }
 

@@ -1,4 +1,10 @@
-import { Injectable, Logger, BadRequestException, NotFoundException, Scope } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  BadRequestException,
+  NotFoundException,
+  Scope,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { I18nService } from 'nestjs-i18n';
@@ -9,14 +15,21 @@ import { MessageWithDataResponseDto } from 'src/common/dto/response';
 import { FileCategory, FileFormat } from 'src/common/enums';
 
 // Application Layer
-import { UploadFileUseCase, IUploadFileRequest } from './application/use-cases/upload-file.use-case';
+import {
+  UploadFileUseCase,
+  IUploadFileRequest,
+} from './application/use-cases/upload-file.use-case';
 
 // Infrastructure Layer
 import { StorageService } from './infrastructure/services/storage.service';
 import { FileValidationService } from './infrastructure/services/validation.service';
 
 // DTOs and Mappers
-import { UploadResponseDto, UploadStatsDto, BatchUploadResponseDto } from './dto/response/upload.res.dto';
+import {
+  UploadResponseDto,
+  UploadStatsDto,
+  BatchUploadResponseDto,
+} from './dto/response/upload.res.dto';
 import { UploadMapper } from './mapper/upload.mapper';
 
 @Injectable({ scope: Scope.REQUEST })
@@ -30,7 +43,7 @@ export class UploadService {
     private readonly i18n: I18nService,
     private readonly uploadFileUseCase: UploadFileUseCase,
     private readonly storageService: StorageService,
-    private readonly validationService: FileValidationService
+    private readonly validationService: FileValidationService,
   ) {}
 
   /**
@@ -38,8 +51,8 @@ export class UploadService {
    */
   async uploadFile(
     req: FastifyRequest,
-    uploadData: { 
-      category: FileCategory; 
+    uploadData: {
+      category: FileCategory;
       format: FileFormat;
       titleUz?: string;
       titleRu?: string;
@@ -48,9 +61,11 @@ export class UploadService {
       duration?: number;
       lang?: string;
       isActive?: boolean;
-    }
+    },
   ): Promise<MessageWithDataResponseDto<UploadResponseDto>> {
-    this.logger.log(`Upload request received: ${uploadData.category}/${uploadData.format}`);
+    this.logger.log(
+      `Upload request received: ${uploadData.category}/${uploadData.format}`,
+    );
 
     const uploadRequest: IUploadFileRequest = {
       category: uploadData.category,
@@ -61,7 +76,7 @@ export class UploadService {
       chapter: uploadData.chapter,
       duration: uploadData.duration,
       lang: uploadData.lang,
-      isActive: uploadData.isActive ?? true
+      isActive: uploadData.isActive ?? true,
     };
 
     return await this.uploadFileUseCase.execute(req, uploadRequest);
@@ -76,25 +91,29 @@ export class UploadService {
       category: FileCategory;
       format: FileFormat;
       maxFiles?: number;
-    }
+    },
   ): Promise<MessageWithDataResponseDto<BatchUploadResponseDto>> {
     const startTime = Date.now();
     const maxFiles = options.maxFiles || 10;
-    
+
     this.logger.log(`Batch upload started: max ${maxFiles} files`);
 
     const body = req.body as any;
-    const files = Array.isArray(body.files) ? body.files : [body.files].filter(Boolean);
+    const files = Array.isArray(body.files)
+      ? body.files
+      : [body.files].filter(Boolean);
 
     if (!files || files.length === 0) {
-      throw new BadRequestException(this.i18n.t('errors.VALIDATION.NO_FILES_PROVIDED'));
+      throw new BadRequestException(
+        this.i18n.t('errors.VALIDATION.NO_FILES_PROVIDED'),
+      );
     }
 
     if (files.length > maxFiles) {
       throw new BadRequestException(
         this.i18n.t('errors.VALIDATION.TOO_MANY_FILES', {
-          args: { max: maxFiles, received: files.length }
-        })
+          args: { max: maxFiles, received: files.length },
+        }),
       );
     }
 
@@ -117,29 +136,40 @@ export class UploadService {
             chapter: this.extractNumericValue(fileItem.chapter),
             duration: this.extractNumericValue(fileItem.duration),
             lang: this.extractStringValue(fileItem.lang),
-            isActive: this.extractBooleanValue(fileItem.isActive) ?? true
+            isActive: this.extractBooleanValue(fileItem.isActive) ?? true,
           };
 
           const mockRequest = {
-            body: { file: fileData }
+            body: { file: fileData },
           } as any;
 
-          const result = await this.uploadFileUseCase.execute(mockRequest, metadata);
+          const result = await this.uploadFileUseCase.execute(
+            mockRequest,
+            metadata,
+          );
 
           totalSize += result.data.size;
           return result.data;
         } catch (error) {
-          this.logger.error(`Batch upload file failed: ${fileItem?.filename || fileItem?.file?.filename || 'unknown'}`, error.stack);
+          this.logger.error(
+            `Batch upload file failed: ${fileItem?.filename || fileItem?.file?.filename || 'unknown'}`,
+            error.stack,
+          );
           errors.push({
-            filename: fileItem?.filename || fileItem?.file?.filename || 'unknown',
-            error: error.message || 'Unknown error'
+            filename:
+              fileItem?.filename || fileItem?.file?.filename || 'unknown',
+            error: error.message || 'Unknown error',
           });
           return null;
         }
       });
 
       const chunkResults = await Promise.all(promises);
-      results.push(...chunkResults.filter((result): result is UploadResponseDto => result !== null));
+      results.push(
+        ...chunkResults.filter(
+          (result): result is UploadResponseDto => result !== null,
+        ),
+      );
     }
 
     const processingTime = Date.now() - startTime;
@@ -150,16 +180,18 @@ export class UploadService {
       successCount: results.length,
       failureCount: errors.length,
       totalSize,
-      processingTime
+      processingTime,
     });
 
-    this.logger.log(`Batch upload completed: ${results.length}/${files.length} successful (${processingTime}ms)`);
+    this.logger.log(
+      `Batch upload completed: ${results.length}/${files.length} successful (${processingTime}ms)`,
+    );
 
     return new MessageWithDataResponseDto(
       this.i18n.t('success.UPLOAD.BATCH_COMPLETED', {
-        args: { successful: results.length, total: files.length }
+        args: { successful: results.length, total: files.length },
       }),
-      response
+      response,
     );
   }
 
@@ -169,9 +201,11 @@ export class UploadService {
   async getUploadStats(
     category?: FileCategory,
     dateFrom?: Date,
-    dateTo?: Date
+    dateTo?: Date,
   ): Promise<MessageWithDataResponseDto<UploadStatsDto>> {
-    this.logger.log(`Getting upload stats: category=${category}, dateFrom=${dateFrom}, dateTo=${dateTo}`);
+    this.logger.log(
+      `Getting upload stats: category=${category}, dateFrom=${dateFrom}, dateTo=${dateTo}`,
+    );
 
     const queryBuilder = this.fileRepository.createQueryBuilder('file');
 
@@ -194,49 +228,64 @@ export class UploadService {
     const storageStats = await this.storageService.getStorageStats();
 
     // Aggregate by category
-    const filesByCategory = files.reduce((acc, file) => {
-      acc[file.category] = (acc[file.category] || 0) + 1;
-      return acc;
-    }, {} as Record<FileCategory, number>);
+    const filesByCategory = files.reduce(
+      (acc, file) => {
+        acc[file.category] = (acc[file.category] || 0) + 1;
+        return acc;
+      },
+      {} as Record<FileCategory, number>,
+    );
 
     // Aggregate by format
-    const filesByFormat = files.reduce((acc, file) => {
-      acc[file.format] = (acc[file.format] || 0) + 1;
-      return acc;
-    }, {} as Record<FileFormat, number>);
+    const filesByFormat = files.reduce(
+      (acc, file) => {
+        acc[file.format] = (acc[file.format] || 0) + 1;
+        return acc;
+      },
+      {} as Record<FileFormat, number>,
+    );
 
-    const averageFileSize = totalFiles > 0 ? Math.round(totalSize / totalFiles) : 0;
-    const latestUpload = files.length > 0 
-      ? files.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0].createdAt
-      : undefined;
+    const averageFileSize =
+      totalFiles > 0 ? Math.round(totalSize / totalFiles) : 0;
+    const latestUpload =
+      files.length > 0
+        ? files.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0]
+            .createdAt
+        : undefined;
 
     const statsDto = new UploadStatsDto({
       totalFiles,
       totalSize,
       totalSizeFormatted: UploadMapper.formatFileSize(totalSize),
       availableSpace: storageStats.availableSpace,
-      availableSpaceFormatted: UploadMapper.formatFileSize(storageStats.availableSpace),
+      availableSpaceFormatted: UploadMapper.formatFileSize(
+        storageStats.availableSpace,
+      ),
       filesByCategory,
       filesByFormat,
       averageFileSize,
-      latestUpload
+      latestUpload,
     });
 
     return new MessageWithDataResponseDto(
       this.i18n.t('success.UPLOAD.STATS_RETRIEVED'),
-      statsDto
+      statsDto,
     );
   }
 
   /**
    * Delete a file and clean up storage
    */
-  async deleteFile(fileId: number): Promise<MessageWithDataResponseDto<{ success: boolean }>> {
+  async deleteFile(
+    fileId: number,
+  ): Promise<MessageWithDataResponseDto<{ success: boolean }>> {
     this.logger.log(`Deleting file: ${fileId}`);
 
     const file = await this.fileRepository.findOne({ where: { id: fileId } });
     if (!file) {
-      throw new NotFoundException(this.i18n.t('errors.VALIDATION.FILE_NOT_FOUND'));
+      throw new NotFoundException(
+        this.i18n.t('errors.VALIDATION.FILE_NOT_FOUND'),
+      );
     }
 
     const queryRunner = this.dataSource.createQueryRunner();
@@ -256,16 +305,15 @@ export class UploadService {
 
       return new MessageWithDataResponseDto(
         this.i18n.t('success.UPLOAD.FILE_DELETED'),
-        { success: true }
+        { success: true },
       );
-
     } catch (error) {
       await queryRunner.rollbackTransaction();
       this.logger.error(`File deletion failed: ${error.message}`, error.stack);
       throw new BadRequestException(
         this.i18n.t('errors.VALIDATION.FILE_DELETE_FAILED', {
-          args: { reason: error.message }
-        })
+          args: { reason: error.message },
+        }),
       );
     } finally {
       await queryRunner.release();
@@ -275,7 +323,10 @@ export class UploadService {
   /**
    * Clean up expired files (if expiration logic is implemented)
    */
-  async cleanupExpiredFiles(): Promise<{ deletedCount: number; freedSpace: number }> {
+  async cleanupExpiredFiles(): Promise<{
+    deletedCount: number;
+    freedSpace: number;
+  }> {
     this.logger.log('Starting expired files cleanup');
 
     // For now, this is a placeholder since the File entity doesn't have expiration
@@ -286,7 +337,7 @@ export class UploadService {
 
     return {
       deletedCount: 0,
-      freedSpace: 0
+      freedSpace: 0,
     };
   }
 
@@ -307,34 +358,34 @@ export class UploadService {
     try {
       // Check storage
       const storageStats = await this.storageService.getStorageStats();
-      
+
       // Check database
       const fileCount = await this.fileRepository.count();
-      
+
       return {
         status: 'healthy',
         storage: {
           accessible: true,
-          stats: storageStats
+          stats: storageStats,
         },
         database: {
           accessible: true,
-          connectionCount: fileCount
-        }
+          connectionCount: fileCount,
+        },
       };
     } catch (error) {
       this.logger.error(`Health check failed: ${error.message}`, error.stack);
-      
+
       return {
         status: 'unhealthy',
         storage: {
           accessible: false,
-          stats: null
+          stats: null,
         },
         database: {
           accessible: false,
-          connectionCount: 0
-        }
+          connectionCount: 0,
+        },
       };
     }
   }
@@ -355,13 +406,13 @@ export class UploadService {
    */
   private extractNumericValue(field: any): number | undefined {
     if (!field) return undefined;
-    
+
     // Handle Fastify multipart format
     if (typeof field === 'object' && field.value !== undefined) {
       const numValue = Number(field.value);
       return !isNaN(numValue) ? numValue : undefined;
     }
-    
+
     // Handle direct value
     if (typeof field === 'string') {
       const numValue = Number(field);
@@ -371,7 +422,7 @@ export class UploadService {
     if (typeof field === 'number') {
       return field;
     }
-    
+
     return undefined;
   }
 
@@ -380,17 +431,17 @@ export class UploadService {
    */
   private extractStringValue(field: any): string | undefined {
     if (!field) return undefined;
-    
+
     // Handle Fastify multipart format
     if (typeof field === 'object' && field.value !== undefined) {
       return String(field.value);
     }
-    
+
     // Handle direct value
     if (typeof field === 'string') {
       return field;
     }
-    
+
     return undefined;
   }
 
@@ -399,7 +450,7 @@ export class UploadService {
    */
   private extractBooleanValue(field: any): boolean | undefined {
     if (!field) return undefined;
-    
+
     // Handle Fastify multipart format
     if (typeof field === 'object' && field.value !== undefined) {
       const value = field.value;
@@ -408,13 +459,13 @@ export class UploadService {
         return value.toLowerCase() === 'true';
       }
     }
-    
+
     // Handle direct value
     if (typeof field === 'boolean') return field;
     if (typeof field === 'string') {
       return field.toLowerCase() === 'true';
     }
-    
+
     return undefined;
   }
 }

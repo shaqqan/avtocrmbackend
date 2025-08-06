@@ -9,4 +9,4 @@ import { ReviewBook, Book, User } from 'src/databases/typeorm/entities';
   controllers: [ReviewBookController],
   providers: [ReviewBookService],
 })
-export class ReviewBookModule { }
+export class ReviewBookModule {}

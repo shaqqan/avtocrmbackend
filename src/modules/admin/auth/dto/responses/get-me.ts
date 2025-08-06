@@ -8,7 +8,9 @@ export class GetMeResponseDto {
     this.name = user.name;
     this.lastName = user.lastName;
     this.roles = user.roles.map((role) => role.name);
-    this.permissions = user.roles.flatMap((role) => role.permissions.map((permission) => permission.action));
+    this.permissions = user.roles.flatMap((role) =>
+      role.permissions.map((permission) => permission.action),
+    );
   }
 
   @ApiProperty({ type: Number })

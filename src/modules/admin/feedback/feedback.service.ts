@@ -7,9 +7,14 @@ import { QueryFeedbackDto } from './dto/request/query-feedback.dto';
 import { Feedback } from 'src/databases/typeorm/entities';
 import { BasePaginationDto } from 'src/common/dto/request';
 import { I18nContext, I18nService } from 'nestjs-i18n';
-import { BasePaginationResponseDto, MessageResponseDto, MessageWithDataResponseDto } from 'src/common/dto/response';
+import {
+  BasePaginationResponseDto,
+  MessageResponseDto,
+  MessageWithDataResponseDto,
+} from 'src/common/dto/response';
 import { FeedbackMapper } from './mapper/feedback.mapper';
 import { FeedbackResponseDto } from './dto/response/feedback-response.dto';
+import { currentLocale } from 'src/common/utils';
 
 export interface PaginatedResult<T> {
   data: T[];
@@ -25,27 +30,38 @@ export class FeedbackService {
     @InjectRepository(Feedback)
     private readonly feedbackRepository: Repository<Feedback>,
     private readonly i18n: I18nService,
-  ) { }
+  ) {}
 
   async create(createFeedbackDto: CreateFeedbackDto) {
     const feedback = await this.feedbackRepository.save(createFeedbackDto);
-    return new MessageWithDataResponseDto(this.i18n.t('success.FEEDBACK.CREATED'), FeedbackMapper.toDto(feedback));
+    return new MessageWithDataResponseDto(
+      this.i18n.t('success.FEEDBACK.CREATED'),
+      FeedbackMapper.toDto(feedback),
+    );
   }
 
   async findAll(query: BasePaginationDto) {
-    const { take, skip, page, limit, sortBy = 'createdAt', sortOrder = 'DESC', search } = query;
-    const currentLocale = I18nContext.current()?.lang?.split('_')[0] || 'uz';
+    const {
+      take,
+      skip,
+      page,
+      limit,
+      sortBy = 'createdAt',
+      sortOrder = 'DESC',
+      search,
+    } = query;
+    const locale = currentLocale();
 
     const allowedSortFields = ['id', 'name', 'createdAt', 'updatedAt'];
 
     // Validate sortBy field
-    const validSortBy = allowedSortFields.includes(sortBy) ? sortBy : 'createdAt';
+    const validSortBy = allowedSortFields.includes(sortBy)
+      ? sortBy
+      : 'createdAt';
 
     const whereConditions: any[] = [];
     if (search) {
-      whereConditions.push(
-        { [`name_${currentLocale}`]: ILike(`%${search}%`) }
-      );
+      whereConditions.push({ [`name_${locale}`]: ILike(`%${search}%`) });
     }
 
     const [data, total] = await this.feedbackRepository.findAndCount({
@@ -58,14 +74,11 @@ export class FeedbackService {
       skip,
     });
 
-    return new BasePaginationResponseDto(
-      FeedbackMapper.toDtoList(data),
-      {
-        total,
-        page,
-        limit,
-      }
-    );
+    return new BasePaginationResponseDto(FeedbackMapper.toDtoList(data), {
+      total,
+      page,
+      limit,
+    });
   }
 
   async findOne(id: number): Promise<FeedbackResponseDto> {
@@ -88,11 +101,17 @@ export class FeedbackService {
     }
 
     await this.feedbackRepository.update(id, updateFeedbackDto);
-    const updatedFeedback = await this.feedbackRepository.findOne({ where: { id }, relations: { feedbacksTheme: true } });
+    const updatedFeedback = await this.feedbackRepository.findOne({
+      where: { id },
+      relations: { feedbacksTheme: true },
+    });
     if (!updatedFeedback) {
-      throw new NotFoundException(this.i18n.t('errors.FEEDBACK.NOT_FOUND')); 
+      throw new NotFoundException(this.i18n.t('errors.FEEDBACK.NOT_FOUND'));
     }
-    return new MessageWithDataResponseDto(this.i18n.t('success.FEEDBACK.UPDATED'), FeedbackMapper.toDto(updatedFeedback));
+    return new MessageWithDataResponseDto(
+      this.i18n.t('success.FEEDBACK.UPDATED'),
+      FeedbackMapper.toDto(updatedFeedback),
+    );
   }
 
   async remove(id: number) {
@@ -107,5 +126,4 @@ export class FeedbackService {
     await this.feedbackRepository.delete(id);
     return new MessageResponseDto(this.i18n.t('success.FEEDBACK.DELETED'));
   }
-
 }

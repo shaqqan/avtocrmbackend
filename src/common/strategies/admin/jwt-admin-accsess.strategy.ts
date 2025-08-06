@@ -8,13 +8,17 @@ import { Repository } from 'typeorm';
 import { User } from 'src/databases/typeorm/entities/user.entity';
 
 @Injectable()
-export class JwtAdminAccessStrategy extends PassportStrategy(Strategy, 'jwt-admin-access') {
+export class JwtAdminAccessStrategy extends PassportStrategy(
+  Strategy,
+  'jwt-admin-access',
+) {
   constructor(
     private readonly configService: ConfigService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {
-    const config = configService.getOrThrow<ConfigType<typeof JwtConfig>>('jwt');
+    const config =
+      configService.getOrThrow<ConfigType<typeof JwtConfig>>('jwt');
     if (!config.admin.accessSecret) {
       throw new Error('JWT_ADMIN_ACCESS_SECRET is not defined');
     }

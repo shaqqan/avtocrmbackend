@@ -2,7 +2,16 @@ import { Module } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
 import { DashboardController } from './dashboard.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AudioBook, Author, Book, Genre, Issuer, News, ReviewBook, ReviewsAudiobook } from 'src/databases/typeorm/entities';
+import {
+  AudioBook,
+  Author,
+  Book,
+  Genre,
+  Issuer,
+  News,
+  ReviewBook,
+  ReviewsAudiobook,
+} from 'src/databases/typeorm/entities';
 
 @Module({
   imports: [
@@ -14,7 +23,7 @@ import { AudioBook, Author, Book, Genre, Issuer, News, ReviewBook, ReviewsAudiob
       Issuer,
       News,
       ReviewBook,
-      ReviewsAudiobook
+      ReviewsAudiobook,
     ]),
   ],
   controllers: [DashboardController],

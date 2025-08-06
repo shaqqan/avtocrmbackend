@@ -9,4 +9,4 @@ import { FeedbacksTheme } from 'src/databases/typeorm/entities';
   controllers: [FeedbacksThemeController],
   providers: [FeedbacksThemeService],
 })
-export class FeedbacksThemeModule { }
+export class FeedbacksThemeModule {}

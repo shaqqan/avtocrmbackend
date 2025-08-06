@@ -9,4 +9,4 @@ import { Help } from 'src/databases/typeorm/entities';
   controllers: [HelpController],
   providers: [HelpService],
 })
-export class HelpModule { }
+export class HelpModule {}

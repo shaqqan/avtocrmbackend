@@ -9,14 +9,18 @@ import { Repository } from 'typeorm';
 import { User } from 'src/databases/typeorm/entities/user.entity';
 
 @Injectable()
-export class JwtAdminRefreshStrategy extends PassportStrategy(Strategy, 'jwt-admin-refresh') {
+export class JwtAdminRefreshStrategy extends PassportStrategy(
+  Strategy,
+  'jwt-admin-refresh',
+) {
   constructor(
     private readonly configService: ConfigService,
     private readonly redisService: RedisService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {
-    const config = configService.getOrThrow<ConfigType<typeof JwtConfig>>('jwt');
+    const config =
+      configService.getOrThrow<ConfigType<typeof JwtConfig>>('jwt');
     if (!config.admin.refreshSecret) {
       throw new Error('JWT_ADMIN_REFRESH_SECRET is not defined');
     }

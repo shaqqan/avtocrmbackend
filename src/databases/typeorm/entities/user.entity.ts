@@ -1,4 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, JoinTable, ManyToMany, BaseEntity, AfterLoad, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+  JoinTable,
+  ManyToMany,
+  BaseEntity,
+  AfterLoad,
+  OneToMany,
+} from 'typeorm';
 import { Role } from './role.entity';
 import { ReviewBook } from './review-book.entity';
 import { ReviewsAudiobook } from './reviews-audiobook.entity';
@@ -42,4 +54,4 @@ export class User extends BaseEntity {
 
   @OneToMany(() => ReviewsAudiobook, (review) => review.user)
   reviewsAudiobook: ReviewsAudiobook[];
-} 
+}

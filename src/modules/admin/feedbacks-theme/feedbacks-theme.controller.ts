@@ -1,9 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { FeedbacksThemeService } from './feedbacks-theme.service';
 import { CreateFeedbacksThemeDto } from './dto/request/create-feedbacks-theme.dto';
 import { UpdateFeedbacksThemeDto } from './dto/request/update-feedbacks-theme.dto';
 import { BasePaginationDto } from 'src/common/dto/request';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ApiGlobalResponses } from 'src/common/decorators/swagger';
 import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
 
@@ -17,14 +32,20 @@ export class FeedbacksThemeController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new feedback theme' })
-  @ApiResponse({ status: 201, description: 'Feedback theme created successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'Feedback theme created successfully',
+  })
   async create(@Body() createFeedbacksThemeDto: CreateFeedbacksThemeDto) {
     return this.feedbacksThemeService.create(createFeedbacksThemeDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all feedback themes with pagination' })
-  @ApiResponse({ status: 200, description: 'Feedback themes retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Feedback themes retrieved successfully',
+  })
   async findAll(@Query() query: BasePaginationDto) {
     return this.feedbacksThemeService.findAll(query);
   }
@@ -37,7 +58,10 @@ export class FeedbacksThemeController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a feedback theme by ID' })
-  async update(@Param('id') id: string, @Body() updateFeedbacksThemeDto: UpdateFeedbacksThemeDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateFeedbacksThemeDto: UpdateFeedbacksThemeDto,
+  ) {
     return this.feedbacksThemeService.update(+id, updateFeedbacksThemeDto);
   }
 

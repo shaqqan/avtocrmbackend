@@ -40,7 +40,7 @@ export const setupSwaggerAdmin = (app: INestApplication): void => {
   SwaggerModule.setup(swagger.urlAdmin || '/api-docs', app, document, {
     swaggerOptions: {
       persistAuthorization: true,
-      displayRequestDuration: true, 
+      displayRequestDuration: true,
     },
     explorer: true,
     jsonDocumentUrl: '/admin/api-docs-json/',

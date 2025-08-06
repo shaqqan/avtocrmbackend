@@ -3,4 +3,4 @@ import { PermissionsEnum } from '../enums';
 import { PERMISSIONS_KEY } from '../constants';
 
 export const RequirePermissions = (...permissions: PermissionsEnum[]) =>
-  SetMetadata(PERMISSIONS_KEY, permissions);  
+  SetMetadata(PERMISSIONS_KEY, permissions);

@@ -3,10 +3,10 @@ import { StatisticsService } from './statistics.service';
 
 @Controller('core/statistics')
 export class StatisticsController {
-  constructor(private readonly statisticsService: StatisticsService) { }
+  constructor(private readonly statisticsService: StatisticsService) {}
 
   @Get()
-  statistics() {
+  async statistics() {
     return this.statisticsService.statistics();
   }
 }

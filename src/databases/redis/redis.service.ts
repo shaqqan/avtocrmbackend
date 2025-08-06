@@ -1,35 +1,70 @@
-import { Injectable, OnApplicationBootstrap, OnApplicationShutdown, OnModuleDestroy } from '@nestjs/common';
+import {
+  Injectable,
+  OnApplicationBootstrap,
+  OnApplicationShutdown,
+  OnModuleDestroy,
+} from '@nestjs/common';
 import { Redis } from 'ioredis';
 import { ConfigService, ConfigType } from '@nestjs/config';
 import { RedisConfig } from 'src/common/configs';
 
 @Injectable()
-export class RedisService implements OnModuleDestroy, OnApplicationBootstrap, OnApplicationShutdown {
+export class RedisService
+  implements OnModuleDestroy, OnApplicationBootstrap, OnApplicationShutdown
+{
   private redisClient: Redis;
 
   private readonly prefix = 'kitob_uz_';
   private readonly defaultTTL = 3600; // 1 hour default TTL
 
-  constructor(private readonly configService: ConfigService) { }
+  constructor(private readonly configService: ConfigService) {}
+
   onApplicationBootstrap() {
-    const redisConfig = this.configService.getOrThrow<ConfigType<typeof RedisConfig>>('redis');
+    const redisConfig =
+      this.configService.getOrThrow<ConfigType<typeof RedisConfig>>('redis');
     this.redisClient = new Redis({
       host: redisConfig.host || 'localhost',
       port: redisConfig.port || 6379,
       password: redisConfig.password,
+      // Performance optimizations
+      lazyConnect: true,
+      maxRetriesPerRequest: 3,
+      enableReadyCheck: false,
+      // Connection pooling
+      family: 4, // IPv4
+      // Performance settings
+      keepAlive: 30000,
+      connectTimeout: 10000,
+      commandTimeout: 5000,
+      // Pipeline optimization
+      enableOfflineQueue: false,
+    });
+
+    // Handle connection events
+    this.redisClient.on('connect', () => {
+      console.log('✅ Redis connected');
+    });
+
+    this.redisClient.on('error', (error) => {
+      console.error('❌ Redis connection error:', error);
+    });
+
+    this.redisClient.on('ready', () => {
+      console.log('🚀 Redis ready for operations');
     });
   }
 
   onApplicationShutdown(signal?: string) {
-    return this.redisClient.quit();
+    console.log(`Redis service shutting down with signal: ${signal}`);
+    if (this.redisClient) {
+      this.redisClient.disconnect();
+    }
   }
 
-  /**
-   * Called when the module is being destroyed.
-   * Properly closes the Redis connection.
-   */
   async onModuleDestroy(): Promise<void> {
-    await this.redisClient.quit();
+    if (this.redisClient) {
+      await this.redisClient.quit();
+    }
   }
 
   /**
@@ -56,13 +91,18 @@ export class RedisService implements OnModuleDestroy, OnApplicationBootstrap, On
    * @returns A Promise that resolves to the value associated with the key.
    */
   async get<T = any>(key: string): Promise<T | null> {
-    const value = await this.redisClient.get(this.buildKey(key));
-    if (!value) return null;
-
     try {
-      return JSON.parse(value) as T;
-    } catch {
-      return value as unknown as T;
+      const value = await this.redisClient.get(this.buildKey(key));
+      if (!value) return null;
+
+      try {
+        return JSON.parse(value) as T;
+      } catch {
+        return value as unknown as T;
+      }
+    } catch (error) {
+      console.error('Redis get error:', error);
+      return null;
     }
   }
 
@@ -78,18 +118,35 @@ export class RedisService implements OnModuleDestroy, OnApplicationBootstrap, On
     value: any,
     ttl: number = this.defaultTTL,
   ): Promise<void> {
-    const serializedValue =
-      typeof value === 'object' ? JSON.stringify(value) : String(value);
+    try {
+      const serializedValue =
+        typeof value === 'object' ? JSON.stringify(value) : String(value);
 
-    if (ttl > 0) {
-      await this.redisClient.set(
-        this.buildKey(key),
-        serializedValue,
-        'EX',
-        ttl,
-      );
-    } else {
-      await this.redisClient.set(this.buildKey(key), serializedValue);
+      if (ttl > 0) {
+        await this.redisClient.set(
+          this.buildKey(key),
+          serializedValue,
+          'EX',
+          ttl,
+        );
+      } else {
+        await this.redisClient.set(this.buildKey(key), serializedValue);
+      }
+    } catch (error) {
+      console.error('Redis set error:', error);
+    }
+  }
+
+  /**
+   * Deletes a key from Redis.
+   * @param key - The key to delete.
+   * @returns A Promise that resolves when the key is deleted.
+   */
+  async delete(key: string): Promise<void> {
+    try {
+      await this.redisClient.del(this.buildKey(key));
+    } catch (error) {
+      console.error('Redis delete error:', error);
     }
   }
 
@@ -101,18 +158,13 @@ export class RedisService implements OnModuleDestroy, OnApplicationBootstrap, On
   async deleteMany(keys: string[]): Promise<void> {
     if (keys.length === 0) return;
 
-    const pipeline = this.redisClient.pipeline();
-    keys.forEach((key) => pipeline.del(this.buildKey(key)));
-    await pipeline.exec();
-  }
-
-  /**
-   * Deletes a single key from Redis.
-   * @param key - The key to delete.
-   * @returns A Promise that resolves when the key is deleted.
-   */
-  async delete(key: string): Promise<void> {
-    await this.redisClient.del(this.buildKey(key));
+    try {
+      const pipeline = this.redisClient.pipeline();
+      keys.forEach((key) => pipeline.del(this.buildKey(key)));
+      await pipeline.exec();
+    } catch (error) {
+      console.error('Redis deleteMany error:', error);
+    }
   }
 
   /**
@@ -127,19 +179,23 @@ export class RedisService implements OnModuleDestroy, OnApplicationBootstrap, On
   ): Promise<void> {
     if (entries.length === 0) return;
 
-    const pipeline = this.redisClient.pipeline();
+    try {
+      const pipeline = this.redisClient.pipeline();
 
-    entries.forEach(({ key, value }) => {
-      const serializedValue =
-        typeof value === 'object' ? JSON.stringify(value) : String(value);
-      if (ttl > 0) {
-        pipeline.set(this.buildKey(key), serializedValue, 'EX', ttl);
-      } else {
-        pipeline.set(this.buildKey(key), serializedValue);
-      }
-    });
+      entries.forEach(({ key, value }) => {
+        const serializedValue =
+          typeof value === 'object' ? JSON.stringify(value) : String(value);
+        if (ttl > 0) {
+          pipeline.set(this.buildKey(key), serializedValue, 'EX', ttl);
+        } else {
+          pipeline.set(this.buildKey(key), serializedValue);
+        }
+      });
 
-    await pipeline.exec();
+      await pipeline.exec();
+    } catch (error) {
+      console.error('Redis setMany error:', error);
+    }
   }
 
   /**
@@ -150,20 +206,25 @@ export class RedisService implements OnModuleDestroy, OnApplicationBootstrap, On
   async getMany<T = any>(keys: string[]): Promise<(T | null)[]> {
     if (keys.length === 0) return [];
 
-    const pipeline = this.redisClient.pipeline();
-    keys.forEach((key) => pipeline.get(this.buildKey(key)));
+    try {
+      const pipeline = this.redisClient.pipeline();
+      keys.forEach((key) => pipeline.get(this.buildKey(key)));
 
-    const results = await pipeline.exec();
-    return (
-      results?.map(([err, value]) => {
-        if (err || !value) return null;
-        try {
-          return JSON.parse(value as string) as T;
-        } catch {
-          return value as unknown as T;
-        }
-      }) ?? []
-    );
+      const results = await pipeline.exec();
+      return (
+        results?.map(([err, value]) => {
+          if (err || !value) return null;
+          try {
+            return JSON.parse(value as string) as T;
+          } catch {
+            return value as unknown as T;
+          }
+        }) ?? []
+      );
+    } catch (error) {
+      console.error('Redis getMany error:', error);
+      return new Array(keys.length).fill(null);
+    }
   }
 
   /**
@@ -191,11 +252,16 @@ export class RedisService implements OnModuleDestroy, OnApplicationBootstrap, On
    * @param ttl - Optional TTL in seconds
    */
   async increment(key: string, ttl: number = this.defaultTTL): Promise<number> {
-    const value = await this.redisClient.incr(this.buildKey(key));
-    if (ttl > 0) {
-      await this.redisClient.expire(this.buildKey(key), ttl);
+    try {
+      const value = await this.redisClient.incr(this.buildKey(key));
+      if (ttl > 0) {
+        await this.redisClient.expire(this.buildKey(key), ttl);
+      }
+      return value;
+    } catch (error) {
+      console.error('Redis increment error:', error);
+      return 0;
     }
-    return value;
   }
 
   /**
@@ -203,14 +269,18 @@ export class RedisService implements OnModuleDestroy, OnApplicationBootstrap, On
    * @param pattern - The pattern to match (e.g., "user:*")
    */
   async deletePattern(pattern: string): Promise<void> {
-    const fullPattern = this.buildKey(pattern);
-    const keys = await this.redisClient.keys(fullPattern);
-    
-    if (keys.length > 0) {
-      // Use pipeline for better performance when deleting multiple keys
-      const pipeline = this.redisClient.pipeline();
-      keys.forEach(key => pipeline.del(key));
-      await pipeline.exec();
+    try {
+      const fullPattern = this.buildKey(pattern);
+      const keys = await this.redisClient.keys(fullPattern);
+
+      if (keys.length > 0) {
+        // Use pipeline for better performance when deleting multiple keys
+        const pipeline = this.redisClient.pipeline();
+        keys.forEach((key) => pipeline.del(key));
+        await pipeline.exec();
+      }
+    } catch (error) {
+      console.error('Redis deletePattern error:', error);
     }
   }
 

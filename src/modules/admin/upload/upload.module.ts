@@ -21,12 +21,8 @@ import { IStorageService } from './domain/interfaces/storage.interface';
 import { IFileValidationService } from './domain/interfaces/validation.interface';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([File])
-  ],
-  controllers: [
-    UploadController
-  ],
+  imports: [TypeOrmModule.forFeature([File])],
+  controllers: [UploadController],
   providers: [
     // Main Service
     UploadService,
@@ -36,12 +32,8 @@ import { IFileValidationService } from './domain/interfaces/validation.interface
 
     // Infrastructure Services
     StorageService,
-    FileValidationService
+    FileValidationService,
   ],
-  exports: [
-    UploadService,
-    StorageService,
-    FileValidationService
-  ]
-}) 
-export class UploadModule { }
+  exports: [UploadService, StorageService, FileValidationService],
+})
+export class UploadModule {}

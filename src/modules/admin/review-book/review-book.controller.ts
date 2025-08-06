@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  ParseIntPipe,
+  UseGuards,
+} from '@nestjs/common';
 import { ReviewBookService } from './review-book.service';
 import { CreateReviewBookDto } from './dto/request/create-review-book.dto';
 import { UpdateReviewBookDto } from './dto/request/update-review-book.dto';
@@ -18,12 +29,15 @@ import { PermissionsGuard } from 'src/common/guards';
 @ApiBearerAuth()
 @ApiGlobalResponses()
 export class ReviewBookController {
-  constructor(private readonly reviewBookService: ReviewBookService) { }
+  constructor(private readonly reviewBookService: ReviewBookService) {}
 
   @Post()
   @RequirePermissions(PermissionsEnum.CREATE_BOOK_REVIEW)
   @ApiOperation({ summary: 'Create a new review book' })
-  async create(@Body() createReviewBookDto: CreateReviewBookDto, @GetUser() user: User) {
+  async create(
+    @Body() createReviewBookDto: CreateReviewBookDto,
+    @GetUser() user: User,
+  ) {
     return this.reviewBookService.create(createReviewBookDto, user);
   }
 
@@ -44,7 +58,11 @@ export class ReviewBookController {
   @Patch(':id')
   @RequirePermissions(PermissionsEnum.UPDATE_BOOK_REVIEW)
   @ApiOperation({ summary: 'Update a review book by ID' })
-  async update(@Param('id', ParseIntPipe) id: number, @Body() updateReviewBookDto: UpdateReviewBookDto, @GetUser() user: User) {
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateReviewBookDto: UpdateReviewBookDto,
+    @GetUser() user: User,
+  ) {
     return this.reviewBookService.update(id, updateReviewBookDto, user);
   }
 

@@ -17,7 +17,6 @@ async function seed() {
 
     const roleSeeder = new RoleSeeder(dataSource);
     await roleSeeder.seed();
-
   } catch (error) {
     console.error('Error during seeding:', error);
   } finally {
@@ -26,4 +25,4 @@ async function seed() {
   }
 }
 
-seed(); 
+seed();

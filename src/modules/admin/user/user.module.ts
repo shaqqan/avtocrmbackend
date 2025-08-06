@@ -9,4 +9,4 @@ import { User, Role } from 'src/databases/typeorm/entities';
   controllers: [UserController],
   providers: [UserService],
 })
-export class UserModule { }
+export class UserModule {}

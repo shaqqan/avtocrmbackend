@@ -15,18 +15,18 @@ export interface IFileValidationService {
    * Validate file against category rules
    */
   validateFile(
-    mimetype: string, 
-    size: number, 
-    filename: string, 
+    mimetype: string,
+    size: number,
+    filename: string,
     category: FileCategory,
-    format: FileFormat
+    format: FileFormat,
   ): Promise<void>;
-  
+
   /**
    * Get validation rules for category
    */
   getValidationRules(category: FileCategory): IValidationRule;
-  
+
   /**
    * Check if file extension matches format
    */

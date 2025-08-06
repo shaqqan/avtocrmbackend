@@ -7,4 +7,4 @@ import { Global } from '@nestjs/common';
   providers: [RedisService],
   exports: [RedisService],
 })
-export class RedisModule { }
+export class RedisModule {}

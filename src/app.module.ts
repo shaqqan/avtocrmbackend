@@ -37,4 +37,4 @@ import { CustomTypeOrmModule } from './databases/typeorm/typeorm.module';
     CustomTypeOrmModule,
   ],
 })
-export class AppModule { }
+export class AppModule {}

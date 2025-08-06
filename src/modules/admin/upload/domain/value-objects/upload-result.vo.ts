@@ -18,7 +18,7 @@ export class UploadResultVO {
     public readonly lang: string = 'uzb',
     public readonly isActive: boolean = true,
     public readonly createdAt: Date = new Date(),
-    public readonly checksum?: string
+    public readonly checksum?: string,
   ) {}
 
   public getPublicUrl(): string {
@@ -69,7 +69,7 @@ export class UploadResultVO {
       fileExtension: this.getFileExtension(),
       isImage: this.isImage(),
       isAudio: this.isAudio(),
-      isDocument: this.isDocument()
+      isDocument: this.isDocument(),
     };
   }
 }

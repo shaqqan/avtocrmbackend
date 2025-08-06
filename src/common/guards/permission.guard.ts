@@ -14,16 +14,12 @@ export class PermissionsGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly i18n: I18nService,
-  ) { }
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const requiredPermissions = this.reflector.getAllAndOverride<PermissionsEnum[]>(
-      PERMISSIONS_KEY,
-      [
-        context.getHandler(),
-        context.getClass(),
-      ],
-    );
+    const requiredPermissions = this.reflector.getAllAndOverride<
+      PermissionsEnum[]
+    >(PERMISSIONS_KEY, [context.getHandler(), context.getClass()]);
 
     if (!requiredPermissions) {
       return true;
@@ -41,9 +37,11 @@ export class PermissionsGuard implements CanActivate {
     }
 
     // Get permissions from user's roles
-    const rolePermissions = user.roles?.flatMap(
-      (role) => role.permissions?.map((permission) => permission.action) || [],
-    ) || [];
+    const rolePermissions =
+      user.roles?.flatMap(
+        (role) =>
+          role.permissions?.map((permission) => permission.action) || [],
+      ) || [];
 
     return requiredPermissions.every((permission) =>
       rolePermissions.includes(permission),

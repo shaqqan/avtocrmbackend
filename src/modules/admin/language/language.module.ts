@@ -9,4 +9,4 @@ import { Language } from 'src/databases/typeorm/entities/language.entity';
   controllers: [LanguageController],
   providers: [LanguageService],
 })
-export class LanguageModule { }
+export class LanguageModule {}

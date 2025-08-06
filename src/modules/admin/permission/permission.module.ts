@@ -10,4 +10,4 @@ import { PermissionController } from './permission.controller';
   providers: [PermissionService],
   exports: [PermissionService],
 })
-export class PermissionModule {} 
+export class PermissionModule {}

@@ -1,4 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToOne, BaseEntity } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToOne,
+  BaseEntity,
+} from 'typeorm';
 import { File } from './file.entity';
 @Entity('languages')
 export class Language extends BaseEntity {
@@ -23,4 +33,4 @@ export class Language extends BaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
-} 
+}

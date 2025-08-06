@@ -1,11 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Repository } from 'typeorm';
 import { Book, PublishedEnum } from 'src/databases/typeorm/entities';
 import { RedisService } from 'src/databases/redis/redis.service';
-import { I18nContext } from 'nestjs-i18n';
+import { currentLocale } from 'src/common/utils';
+import { decodeHTML } from 'entities';
 
-@Injectable()
+@Injectable({ scope: Scope.DEFAULT })
 export class BookService {
   constructor(
     @InjectRepository(Book)
@@ -14,56 +15,51 @@ export class BookService {
   ) { }
 
   public async newBooks() {
-    const currentLang = I18nContext.current()?.lang?.split('-')[0] || 'uz';
-    const cachedData = await this.redisService.get(`core:new-books:${currentLang}`);
+    const currentLang = currentLocale();
+    const cachedData = await this.redisService.get(
+      `core:new-books:${currentLang}`,
+    );
     if (cachedData) {
       return cachedData;
     }
 
-    const books = await this.bookRepository.find({
-      select: {
-        id: true,
-        [`name_${currentLang}`]: true,
-        cover: true,
-        createdAt: true,
-        authors: {
-          id: true,
-          [`name_${currentLang}`]: true,
-          [`lastName_${currentLang}`]: true,
-          [`middleName_${currentLang}`]: true,
-        },
-        reviews: {
-          rating: true,
-        }
-      },
-      relations: {
-        authors: true,
-        reviews: true,
-      },
-      where: {
+    const books = await this.bookRepository
+      .createQueryBuilder('book')
+      .leftJoin('book.reviews', 'review')
+      .leftJoin('book.authors', 'author')
+      .select([
+        'book.id',
+        'book.cover',
+        `book.name_${currentLang}`,
+        'book.published',
+        'book.createdAt',
+      ])
+      .addSelect('AVG(review.rating)', 'averageRating')
+      .addSelect('COUNT(review.id)', 'reviewCount')
+      .addSelect(`GROUP_CONCAT(DISTINCT author.name_${currentLang})`, 'authorNames')
+      .where('book.published = :published', {
         published: PublishedEnum.PUBLISHED,
-        deletedAt: IsNull(),
-      },
-      order: {
-        createdAt: 'DESC',
-      },
-      take: 50,
-    });
+      })
+      .groupBy('book.id')
+      .orderBy('book.createdAt', 'DESC')
+      .addOrderBy('reviewCount', 'DESC')
+      .limit(50)
+      .getRawMany();
 
-    const data = books.map(book => ({
-      id: book.id,
-      cover: book.cover,
-      avgRating: book.getAvgRating(),
-      name: book[`name_${currentLang}`],
-      authors: book.authors.map(author => ({
-        id: author.id,
-        name: author[`name_${currentLang}`],
-        lastName: author[`lastName_${currentLang}`],
-        middleName: author[`middleName_${currentLang}`],
-      })),
+    const data = books.map((book) => ({
+      id: book.book_id,
+      cover: global.asset(book.book_cover),
+      avgRating: parseFloat(book.averageRating) || 5.0,
+      reviewCount: parseInt(book.reviewCount) || 0,
+      name: decodeHTML(book[`book_name_${currentLang}`]),
+      authors: book.authorNames ? book.authorNames.split(',').map(decodeHTML) : [],
     }));
 
-    await this.redisService.set(`core:new-books:${currentLang}`, data, 60 * 60 * 24);
+    await this.redisService.set(
+      `core:new-books:${currentLang}`,
+      data,
+    );
+
     return data;
   }
 }

@@ -1,5 +1,13 @@
 import { FileCategory, FileFormat } from 'src/common/enums';
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, BaseEntity, AfterLoad } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  BaseEntity,
+  AfterLoad,
+} from 'typeorm';
 
 @Entity('files')
 export class File extends BaseEntity {
@@ -49,4 +57,4 @@ export class File extends BaseEntity {
   setUrlName() {
     this.name = global.asset(this.name);
   }
-} 
+}

@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { IssuerService } from './issuer.service';
 import { CreateIssuerDto } from './dto/request/create-issuer.dto';
 import { UpdateIssuerDto } from './dto/request/update-issuer.dto';
@@ -49,7 +59,10 @@ export class IssuerController {
   @Patch(':id')
   @RequirePermissions(PermissionsEnum.UPDATE_ISSUER)
   @ApiOperation({ summary: 'Update an issuer by ID' })
-  async update(@Param('id') id: string, @Body() updateIssuerDto: UpdateIssuerDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateIssuerDto: UpdateIssuerDto,
+  ) {
     return this.issuerService.update(+id, updateIssuerDto);
   }
 

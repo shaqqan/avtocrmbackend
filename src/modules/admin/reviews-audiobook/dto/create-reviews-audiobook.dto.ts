@@ -1,36 +1,46 @@
-import { IsString, IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
-import { ReviewsAudiobookRating, ReviewsAudiobookStatus } from 'src/databases/typeorm/entities';
+import {
+  IsString,
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+} from 'class-validator';
+import {
+  ReviewsAudiobookRating,
+  ReviewsAudiobookStatus,
+} from 'src/databases/typeorm/entities';
 
 export class CreateReviewsAudiobookDto {
-    @IsString()
-    @IsNotEmpty()
-    name: string;
+  @IsString()
+  @IsNotEmpty()
+  name: string;
 
-    @IsNumber()
-    @IsNotEmpty()
-    booksId: number;
+  @IsNumber()
+  @IsNotEmpty()
+  booksId: number;
 
-    @IsEmail()
-    @IsNotEmpty()
-    email: string;
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
 
-    @IsString()
-    @IsNotEmpty()
-    ip: string;
+  @IsString()
+  @IsNotEmpty()
+  ip: string;
 
-    @IsEnum(ReviewsAudiobookRating)
-    @IsNotEmpty()
-    rating: ReviewsAudiobookRating;
+  @IsEnum(ReviewsAudiobookRating)
+  @IsNotEmpty()
+  rating: ReviewsAudiobookRating;
 
-    @IsString()
-    @IsNotEmpty()
-    review: string;
+  @IsString()
+  @IsNotEmpty()
+  review: string;
 
-    @IsEnum(ReviewsAudiobookStatus)
-    @IsOptional()
-    status?: ReviewsAudiobookStatus;
+  @IsEnum(ReviewsAudiobookStatus)
+  @IsOptional()
+  status?: ReviewsAudiobookStatus;
 
-    @IsNumber()
-    @IsOptional()
-    usersId?: number;
+  @IsNumber()
+  @IsOptional()
+  usersId?: number;
 }

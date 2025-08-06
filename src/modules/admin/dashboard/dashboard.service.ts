@@ -1,8 +1,18 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { AudioBook, Author, Book, Genre, Issuer, News, ReviewBook, ReviewsAudiobook } from 'src/databases/typeorm/entities';
+import {
+  AudioBook,
+  Author,
+  Book,
+  Genre,
+  Issuer,
+  News,
+  ReviewBook,
+  ReviewsAudiobook,
+} from 'src/databases/typeorm/entities';
 import { I18nContext } from 'nestjs-i18n';
+import { currentLocale } from 'src/common/utils';
 
 @Injectable({ scope: Scope.REQUEST })
 export class DashboardService {
@@ -23,10 +33,17 @@ export class DashboardService {
     private reviewBookRepository: Repository<ReviewBook>,
     @InjectRepository(ReviewsAudiobook)
     private reviewsAudiobookRepository: Repository<ReviewsAudiobook>,
-  ) { }
+  ) {}
 
   async getInfoPanel() {
-    const [bookCount, audioBookCount, authorCount, genreCount, issuerCount, newsCount] = await Promise.all([
+    const [
+      bookCount,
+      audioBookCount,
+      authorCount,
+      genreCount,
+      issuerCount,
+      newsCount,
+    ] = await Promise.all([
       this.bookRepository.count(),
       this.audioBookRepository.count(),
       this.authorRepository.count(),
@@ -43,7 +60,7 @@ export class DashboardService {
       genreCount: genreCount,
       issuerCount: issuerCount,
       newsCount: newsCount,
-    }
+    };
   }
 
   async getBooksComparisonPieChart() {
@@ -57,14 +74,26 @@ export class DashboardService {
       audioBookCount,
       total: bookCount + audioBookCount,
       percentage: {
-        books: bookCount > 0 ? Number(((bookCount / (bookCount + audioBookCount)) * 100).toFixed(2)) : 0,
-        audioBooks: audioBookCount > 0 ? Number(((audioBookCount / (bookCount + audioBookCount)) * 100).toFixed(2)) : 0,
-      }
+        books:
+          bookCount > 0
+            ? Number(
+                ((bookCount / (bookCount + audioBookCount)) * 100).toFixed(2),
+              )
+            : 0,
+        audioBooks:
+          audioBookCount > 0
+            ? Number(
+                ((audioBookCount / (bookCount + audioBookCount)) * 100).toFixed(
+                  2,
+                ),
+              )
+            : 0,
+      },
     };
   }
 
   async getGenreComparisonLineGraph() {
-    const currentLang = I18nContext.current()?.lang?.split('-')[0] || 'uz';
+    const locale = currentLocale();
     const genres = await this.genreRepository.find();
 
     const genreStats = await Promise.all(
@@ -84,15 +113,15 @@ export class DashboardService {
 
         return {
           genreId: genre.id,
-          genreName: genre[`name_${currentLang}`],
+          genreName: genre[`name_${locale}`],
           books: bookCount,
           audioBooks: audioBookCount,
           total: bookCount + audioBookCount,
         };
-      })
+      }),
     );
 
-    return genreStats.filter(stat => stat.total > 0);
+    return genreStats.filter((stat) => stat.total > 0);
   }
 
   async getAudioBooksRatingStats() {
@@ -103,16 +132,33 @@ export class DashboardService {
       .groupBy('review.rating')
       .getRawMany();
 
-    const totalReviews = ratingStats.reduce((sum, stat) => sum + parseInt(stat.count), 0);
+    const totalReviews = ratingStats.reduce(
+      (sum, stat) => sum + parseInt(stat.count),
+      0,
+    );
 
     return {
-      ratingStats: ratingStats.map(stat => ({
+      ratingStats: ratingStats.map((stat) => ({
         rating: parseInt(stat.rating),
         count: parseInt(stat.count),
-        percentage: totalReviews > 0 ? Number(((parseInt(stat.count) / totalReviews) * 100).toFixed(2)) : 0,
+        percentage:
+          totalReviews > 0
+            ? Number(((parseInt(stat.count) / totalReviews) * 100).toFixed(2))
+            : 0,
       })),
       totalReviews,
-      averageRating: totalReviews > 0 ? Number((ratingStats.reduce((sum, stat) => sum + (parseInt(stat.rating) * parseInt(stat.count)), 0) / totalReviews).toFixed(2)) : 0,
+      averageRating:
+        totalReviews > 0
+          ? Number(
+              (
+                ratingStats.reduce(
+                  (sum, stat) =>
+                    sum + parseInt(stat.rating) * parseInt(stat.count),
+                  0,
+                ) / totalReviews
+              ).toFixed(2),
+            )
+          : 0,
     };
   }
 
@@ -124,16 +170,33 @@ export class DashboardService {
       .groupBy('review.rating')
       .getRawMany();
 
-    const totalReviews = ratingStats.reduce((sum, stat) => sum + parseInt(stat.count), 0);
+    const totalReviews = ratingStats.reduce(
+      (sum, stat) => sum + parseInt(stat.count),
+      0,
+    );
 
     return {
-      ratingStats: ratingStats.map(stat => ({
+      ratingStats: ratingStats.map((stat) => ({
         rating: parseInt(stat.rating),
         count: parseInt(stat.count),
-        percentage: totalReviews > 0 ? Number(((parseInt(stat.count) / totalReviews) * 100).toFixed(2)) : 0,
+        percentage:
+          totalReviews > 0
+            ? Number(((parseInt(stat.count) / totalReviews) * 100).toFixed(2))
+            : 0,
       })),
       totalReviews,
-      averageRating: totalReviews > 0 ? Number((ratingStats.reduce((sum, stat) => sum + (parseInt(stat.rating) * parseInt(stat.count)), 0) / totalReviews).toFixed(2)) : 0,
+      averageRating:
+        totalReviews > 0
+          ? Number(
+              (
+                ratingStats.reduce(
+                  (sum, stat) =>
+                    sum + parseInt(stat.rating) * parseInt(stat.count),
+                  0,
+                ) / totalReviews
+              ).toFixed(2),
+            )
+          : 0,
     };
   }
 }

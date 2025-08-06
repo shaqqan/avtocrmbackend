@@ -1,9 +1,25 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Query,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { GenresService } from './genres.service';
 import { CreateGenreDto } from './dto/request/create-genre.dto';
 import { UpdateGenreDto } from './dto/request/update-genre.dto';
 import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ApiGlobalResponses } from 'src/common/decorators/swagger';
 import { BasePaginationDto } from 'src/common/dto/request';
 import { RequirePermissions } from 'src/common/decorators/permissions.decorator';
@@ -16,7 +32,7 @@ import { PermissionsGuard } from 'src/common/guards';
 @ApiBearerAuth()
 @ApiGlobalResponses()
 export class GenresController {
-  constructor(private readonly genresService: GenresService) { }
+  constructor(private readonly genresService: GenresService) {}
 
   @Post()
   @RequirePermissions(PermissionsEnum.CREATE_GENRE)
@@ -51,7 +67,10 @@ export class GenresController {
   @Patch(':id')
   @RequirePermissions(PermissionsEnum.UPDATE_GENRE)
   @ApiOperation({ summary: 'Update a genre by ID' })
-  async update(@Param('id', ParseIntPipe) id: number, @Body() updateGenreDto: UpdateGenreDto) {
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateGenreDto: UpdateGenreDto,
+  ) {
     return this.genresService.update(id, updateGenreDto);
   }
 

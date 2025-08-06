@@ -7,7 +7,7 @@ const os = require('os');
  */
 function setupClustering() {
   const numCPUs = os.cpus().length;
-  
+
   if (cluster.isPrimary) {
     console.log(`🚀 Primary process ${process.pid} is running`);
     console.log(`🔄 Forking ${numCPUs} worker processes...`);
@@ -19,7 +19,9 @@ function setupClustering() {
 
     // Restart worker if it dies
     cluster.on('exit', (worker, code, signal) => {
-      console.log(`💥 Worker ${worker.process.pid} died with code ${code} and signal ${signal}`);
+      console.log(
+        `💥 Worker ${worker.process.pid} died with code ${code} and signal ${signal}`,
+      );
       console.log('🔄 Starting a new worker...');
       cluster.fork();
     });
@@ -40,7 +42,6 @@ function setupClustering() {
       }
       process.exit(0);
     });
-
   } else {
     // Worker process - import and run the main application
     console.log(`👷 Worker ${process.pid} started`);
@@ -52,7 +53,10 @@ function setupClustering() {
 module.exports = { setupClustering };
 
 // Enable clustering only in production for maximum performance
-if (process.env.NODE_ENV === 'production' && process.env.ENABLE_CLUSTERING !== 'false') {
+if (
+  process.env.NODE_ENV === 'production' &&
+  process.env.ENABLE_CLUSTERING !== 'false'
+) {
   setupClustering();
 } else {
   // Development mode - run single process

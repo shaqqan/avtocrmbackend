@@ -2,13 +2,17 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
 import * as path from 'path';
 import { FileCategory, FileFormat } from 'src/common/enums';
-import { IFileValidationService, IValidationRule, IValidationConfig } from '../../domain/interfaces/validation.interface';
+import {
+  IFileValidationService,
+  IValidationRule,
+  IValidationConfig,
+} from '../../domain/interfaces/validation.interface';
 
 @Injectable()
 export class FileValidationService implements IFileValidationService {
   private readonly validationConfig: IValidationConfig;
 
-  constructor(private readonly i18n: I18nService) {    
+  constructor(private readonly i18n: I18nService) {
     this.validationConfig = this.buildValidationConfig();
   }
 
@@ -17,62 +21,62 @@ export class FileValidationService implements IFileValidationService {
     size: number,
     filename: string,
     category: FileCategory,
-    format: FileFormat
+    format: FileFormat,
   ): Promise<void> {
     const rules = this.getValidationRules(category);
-    
+
     // Validate mimetype
     if (!rules.allowedMimeTypes.includes(mimetype)) {
       throw new BadRequestException(
         this.i18n.t('errors.VALIDATION.INVALID_MIME_TYPE', {
-          args: { 
+          args: {
             allowed: rules.allowedMimeTypes.join(', '),
-            received: mimetype 
-          }
-        })
+            received: mimetype,
+          },
+        }),
       );
     }
-    
+
     // Validate file size
     if (size > rules.maxFileSize) {
       throw new BadRequestException(
         this.i18n.t('errors.VALIDATION.FILE_TOO_LARGE', {
-          args: { 
+          args: {
             maxSize: this.formatFileSize(rules.maxFileSize),
-            actualSize: this.formatFileSize(size)
-          }
-        })
+            actualSize: this.formatFileSize(size),
+          },
+        }),
       );
     }
-    
+
     if (size <= 0) {
       throw new BadRequestException(
-        this.i18n.t('errors.VALIDATION.INVALID_FILE_SIZE')
+        this.i18n.t('errors.VALIDATION.INVALID_FILE_SIZE'),
       );
     }
-    
+
     // Validate file extension
     const extension = path.extname(filename).toLowerCase();
     if (!rules.allowedExtensions.includes(extension)) {
       throw new BadRequestException(
         this.i18n.t('errors.VALIDATION.INVALID_FILE_EXTENSION', {
-          args: { 
+          args: {
             allowed: rules.allowedExtensions.join(', '),
-            received: extension || 'none'
-          }
-        })
+            received: extension || 'none',
+          },
+        }),
       );
     }
-    
+
     // Validate format-extension consistency
     if (!this.validateFormatExtension(filename, format)) {
       throw new BadRequestException(
         this.i18n.t('errors.VALIDATION.FORMAT_EXTENSION_MISMATCH', {
-          args: { 
+          args: {
             format,
-            extension: extension || 'none'
-          }
-        })
+            extension: extension || 'none',
+          },
+        }),
       );
     }
   }
@@ -82,8 +86,8 @@ export class FileValidationService implements IFileValidationService {
     if (!config) {
       throw new BadRequestException(
         this.i18n.t('errors.VALIDATION.UNSUPPORTED_CATEGORY', {
-          args: { category }
-        })
+          args: { category },
+        }),
       );
     }
     return config;
@@ -91,7 +95,7 @@ export class FileValidationService implements IFileValidationService {
 
   validateFormatExtension(filename: string, format: FileFormat): boolean {
     const extension = path.extname(filename).toLowerCase().substring(1); // Remove dot
-    
+
     const formatExtensionMap: Record<FileFormat, string[]> = {
       [FileFormat.EPUB]: ['epub'],
       [FileFormat.PDF]: ['pdf'],
@@ -99,9 +103,9 @@ export class FileValidationService implements IFileValidationService {
       [FileFormat.PNG]: ['png'],
       [FileFormat.JPG]: ['jpg'],
       [FileFormat.JPEG]: ['jpeg', 'jpg'],
-      [FileFormat.MP3]: ['mp3']
+      [FileFormat.MP3]: ['mp3'],
     };
-    
+
     const allowedExtensions = formatExtensionMap[format];
     return allowedExtensions ? allowedExtensions.includes(extension) : false;
   }
@@ -113,83 +117,61 @@ export class FileValidationService implements IFileValidationService {
           'application/epub+zip',
           'application/pdf',
           'application/x-fictionbook+xml',
-          'text/xml'
+          'text/xml',
         ],
         maxFileSize: 50 * 1024 * 1024, // 50MB for ebooks
-        allowedExtensions: ['.epub', '.pdf', '.fb2']
+        allowedExtensions: ['.epub', '.pdf', '.fb2'],
       },
       [FileCategory.AUDIOBOOK]: {
-        allowedMimeTypes: [
-          'audio/mpeg',
-          'audio/mp3'
-        ],
+        allowedMimeTypes: ['audio/mpeg', 'audio/mp3'],
         maxFileSize: 50 * 1024 * 1024, // 50MB for audiobooks
-        allowedExtensions: ['.mp3']
+        allowedExtensions: ['.mp3'],
       },
       [FileCategory.AUDIOBOOKS]: {
-        allowedMimeTypes: [
-          'audio/mpeg',
-          'audio/mp3'
-        ],
+        allowedMimeTypes: ['audio/mpeg', 'audio/mp3'],
         maxFileSize: 50 * 1024 * 1024, // 50MB for audiobooks
-        allowedExtensions: ['.mp3']
+        allowedExtensions: ['.mp3'],
       },
       [FileCategory.COVER]: {
-        allowedMimeTypes: [
-          'image/jpeg',
-          'image/jpg',
-          'image/png'
-        ],
+        allowedMimeTypes: ['image/jpeg', 'image/jpg', 'image/png'],
         maxFileSize: 10 * 1024 * 1024, // 10MB for covers
-        allowedExtensions: ['.jpg', '.jpeg', '.png']
+        allowedExtensions: ['.jpg', '.jpeg', '.png'],
       },
       [FileCategory.NEWS_IMAGE]: {
-        allowedMimeTypes: [
-          'image/jpeg',
-          'image/jpg',
-          'image/png'
-        ],
+        allowedMimeTypes: ['image/jpeg', 'image/jpg', 'image/png'],
         maxFileSize: 10 * 1024 * 1024, // 10MB for news images
-        allowedExtensions: ['.jpg', '.jpeg', '.png']
+        allowedExtensions: ['.jpg', '.jpeg', '.png'],
       },
       [FileCategory.BOOKS]: {
         allowedMimeTypes: [
           'application/epub+zip',
           'application/pdf',
           'application/x-fictionbook+xml',
-          'text/xml'
+          'text/xml',
         ],
         maxFileSize: 100 * 1024 * 1024, // 100MB for books
-        allowedExtensions: ['.epub', '.pdf', '.fb2']
+        allowedExtensions: ['.epub', '.pdf', '.fb2'],
       },
       [FileCategory.AUTHOR_COVER]: {
-        allowedMimeTypes: [
-          'image/jpeg',
-          'image/jpg',
-          'image/png'
-        ],
+        allowedMimeTypes: ['image/jpeg', 'image/jpg', 'image/png'],
         maxFileSize: 10 * 1024 * 1024, // 10MB for author covers
-        allowedExtensions: ['.jpg', '.jpeg', '.png']
+        allowedExtensions: ['.jpg', '.jpeg', '.png'],
       },
       [FileCategory.GENRE_COVER]: {
-        allowedMimeTypes: [
-          'image/jpeg',
-          'image/jpg',
-          'image/png'
-        ],
+        allowedMimeTypes: ['image/jpeg', 'image/jpg', 'image/png'],
         maxFileSize: 10 * 1024 * 1024, // 10MB for genre covers
-        allowedExtensions: ['.jpg', '.jpeg', '.png']
+        allowedExtensions: ['.jpg', '.jpeg', '.png'],
       },
       [FileCategory.LANGUAGE_ICON]: {
         allowedMimeTypes: [
           'image/jpeg',
           'image/jpg',
           'image/png',
-          'image/svg+xml'
+          'image/svg+xml',
         ],
         maxFileSize: 5 * 1024 * 1024, // 5MB for language icons
-        allowedExtensions: ['.jpg', '.jpeg', '.png', '.svg']
-      }
+        allowedExtensions: ['.jpg', '.jpeg', '.png', '.svg'],
+      },
     };
   }
 
@@ -197,12 +179,12 @@ export class FileValidationService implements IFileValidationService {
     const units = ['B', 'KB', 'MB', 'GB'];
     let size = bytes;
     let unitIndex = 0;
-    
+
     while (size >= 1024 && unitIndex < units.length - 1) {
       size /= 1024;
       unitIndex++;
     }
-    
+
     return `${size.toFixed(1)} ${units[unitIndex]}`;
   }
 
@@ -233,22 +215,24 @@ export class FileValidationService implements IFileValidationService {
     } catch (error) {
       throw new BadRequestException(
         this.i18n.t('errors.VALIDATION.CORRUPTED_FILE', {
-          args: { reason: error.message }
-        })
+          args: { reason: error.message },
+        }),
       );
     }
   }
 
   private async validateJpegFile(buffer: Buffer): Promise<void> {
     // Check JPEG magic numbers
-    if (buffer.length < 2 || buffer[0] !== 0xFF || buffer[1] !== 0xD8) {
+    if (buffer.length < 2 || buffer[0] !== 0xff || buffer[1] !== 0xd8) {
       throw new Error('Invalid JPEG file header');
     }
   }
 
   private async validatePngFile(buffer: Buffer): Promise<void> {
     // Check PNG magic numbers
-    const pngSignature = Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
+    const pngSignature = Buffer.from([
+      0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
+    ]);
     if (buffer.length < 8 || !buffer.subarray(0, 8).equals(pngSignature)) {
       throw new Error('Invalid PNG file header');
     }
@@ -266,10 +250,10 @@ export class FileValidationService implements IFileValidationService {
     if (buffer.length < 3) {
       throw new Error('File too small to be valid MP3');
     }
-    
+
     const hasId3 = buffer.toString('ascii', 0, 3) === 'ID3';
-    const hasMpegSync = buffer[0] === 0xFF && (buffer[1] & 0xE0) === 0xE0;
-    
+    const hasMpegSync = buffer[0] === 0xff && (buffer[1] & 0xe0) === 0xe0;
+
     if (!hasId3 && !hasMpegSync) {
       throw new Error('Invalid MP3 file header');
     }

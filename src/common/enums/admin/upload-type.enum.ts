@@ -1,3 +1,3 @@
 export enum UploadTypeEnum {
-    LANGUAGE = 'languages',
+  LANGUAGE = 'languages',
 }

@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { AuthorService } from './author.service';
 import { CreateAuthorDto } from './dto/request/create-author.dto';
 import { UpdateAuthorDto } from './dto/request/update-author.dto';
@@ -16,7 +27,7 @@ import { PermissionsGuard } from 'src/common/guards';
 @ApiBearerAuth()
 @ApiGlobalResponses()
 export class AuthorController {
-  constructor(private readonly authorService: AuthorService) { }
+  constructor(private readonly authorService: AuthorService) {}
 
   @Post()
   @RequirePermissions(PermissionsEnum.CREATE_AUTHOR)
@@ -49,7 +60,10 @@ export class AuthorController {
   @Patch(':id')
   @RequirePermissions(PermissionsEnum.UPDATE_AUTHOR)
   @ApiOperation({ summary: 'Update an author by ID' })
-  async update(@Param('id', ParseIntPipe) id: number, @Body() updateAuthorDto: UpdateAuthorDto) {
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateAuthorDto: UpdateAuthorDto,
+  ) {
     return this.authorService.update(id, updateAuthorDto);
   }
 

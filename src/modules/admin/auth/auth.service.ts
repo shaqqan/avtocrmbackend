@@ -29,7 +29,7 @@ export class AuthService {
     private readonly redisService: RedisService,
     private readonly configService: ConfigService,
     private readonly i18n: I18nService,
-  ) { }
+  ) {}
 
   async signIn(signInDto: SignInDto): Promise<SignInResponseDto> {
     const { email, password } = signInDto;
@@ -50,7 +50,6 @@ export class AuthService {
       },
       where: { email },
     });
-
 
     if (!user) {
       throw new NotFoundException(this.i18n.t('errors.USER.NOT_FOUND'));

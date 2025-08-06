@@ -1,15 +1,33 @@
-import { BadRequestException, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  Scope,
+} from '@nestjs/common';
 import { CreateAudioBookDto } from './dto/request/create-audio-book.dto';
 import { UpdateAudioBookDto } from './dto/request/update-audio-book.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository, In } from 'typeorm';
-import { AudioBook, AudioBookLangEnum, Author, Genre, Issuer, File, BookAudiobookLink } from 'src/databases/typeorm/entities';
+import {
+  AudioBook,
+  AudioBookLangEnum,
+  Author,
+  Genre,
+  Issuer,
+  File,
+  BookAudiobookLink,
+} from 'src/databases/typeorm/entities';
 import { LinkStatusEnum } from '../../../databases/typeorm/entities/book-audiobook-link.entity';
 import { I18nService, I18nContext } from 'nestjs-i18n';
 import { BasePaginationDto, SortOrder } from 'src/common/dto/request';
 import { AudioBookMapper } from './mapper/audio-book.mapper';
-import { BasePaginationResponseDto, MessageResponseDto, MessageWithDataResponseDto } from 'src/common/dto/response';
+import {
+  BasePaginationResponseDto,
+  MessageResponseDto,
+  MessageWithDataResponseDto,
+} from 'src/common/dto/response';
 import { QueryAudioBookDto } from './dto/request/query-audio-book.dto';
+import { currentLocale } from 'src/common/utils';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AudioBookService {
@@ -27,42 +45,67 @@ export class AudioBookService {
     @InjectRepository(BookAudiobookLink)
     private readonly bookAudiobookLinkRepository: Repository<BookAudiobookLink>,
     private readonly i18n: I18nService,
-  ) { }
+  ) {}
 
   async create(createAudioBookDto: CreateAudioBookDto) {
     // Validate and fetch authors
     let authors: Author[] = [];
-    if (createAudioBookDto.authorsIds && createAudioBookDto.authorsIds.length > 0) {
-      authors = await this.authorRepository.findBy({ id: In(createAudioBookDto.authorsIds) });
+    if (
+      createAudioBookDto.authorsIds &&
+      createAudioBookDto.authorsIds.length > 0
+    ) {
+      authors = await this.authorRepository.findBy({
+        id: In(createAudioBookDto.authorsIds),
+      });
       if (authors.length !== createAudioBookDto.authorsIds.length) {
-        throw new BadRequestException(this.i18n.t('errors.AUDIOBOOK.INVALID_AUTHORS'));
+        throw new BadRequestException(
+          this.i18n.t('errors.AUDIOBOOK.INVALID_AUTHORS'),
+        );
       }
     }
 
     // Validate and fetch genres
     let genres: Genre[] = [];
-    if (createAudioBookDto.genresIds && createAudioBookDto.genresIds.length > 0) {
-      genres = await this.genreRepository.findBy({ id: In(createAudioBookDto.genresIds) });
+    if (
+      createAudioBookDto.genresIds &&
+      createAudioBookDto.genresIds.length > 0
+    ) {
+      genres = await this.genreRepository.findBy({
+        id: In(createAudioBookDto.genresIds),
+      });
       if (genres.length !== createAudioBookDto.genresIds.length) {
-        throw new BadRequestException(this.i18n.t('errors.AUDIOBOOK.INVALID_GENRES'));
+        throw new BadRequestException(
+          this.i18n.t('errors.AUDIOBOOK.INVALID_GENRES'),
+        );
       }
     }
 
     // Validate and fetch issuers
     let issuers: Issuer[] = [];
-    if (createAudioBookDto.issuersIds && createAudioBookDto.issuersIds.length > 0) {
-      issuers = await this.issuerRepository.findBy({ id: In(createAudioBookDto.issuersIds) });
+    if (
+      createAudioBookDto.issuersIds &&
+      createAudioBookDto.issuersIds.length > 0
+    ) {
+      issuers = await this.issuerRepository.findBy({
+        id: In(createAudioBookDto.issuersIds),
+      });
       if (issuers.length !== createAudioBookDto.issuersIds.length) {
-        throw new BadRequestException(this.i18n.t('errors.AUDIOBOOK.INVALID_ISSUERS'));
+        throw new BadRequestException(
+          this.i18n.t('errors.AUDIOBOOK.INVALID_ISSUERS'),
+        );
       }
     }
 
     // Validate and fetch files
     let files: File[] = [];
     if (createAudioBookDto.filesIds && createAudioBookDto.filesIds.length > 0) {
-      files = await this.fileRepository.findBy({ id: In(createAudioBookDto.filesIds) });
+      files = await this.fileRepository.findBy({
+        id: In(createAudioBookDto.filesIds),
+      });
       if (files.length !== createAudioBookDto.filesIds.length) {
-        throw new BadRequestException(this.i18n.t('errors.AUDIOBOOK.INVALID_FILES'));
+        throw new BadRequestException(
+          this.i18n.t('errors.AUDIOBOOK.INVALID_FILES'),
+        );
       }
     }
 
@@ -77,20 +120,18 @@ export class AudioBookService {
     // Fetch the saved audiobook with relations for response
     const audioBookWithRelations = await this.audioBookRepository.findOne({
       where: { id: savedAudioBook.id },
-      relations: { authors: true, genres: true, issuers: true, files: true }
+      relations: { authors: true, genres: true, issuers: true, files: true },
     });
 
     return new MessageWithDataResponseDto(
       this.i18n.t('success.AUDIOBOOK.CREATED'),
-      AudioBookMapper.toDto(audioBookWithRelations!)
+      AudioBookMapper.toDto(audioBookWithRelations!),
     );
   }
 
   async findAll(query: QueryAudioBookDto) {
     const { take, skip, page, limit, sortBy, sortOrder, search } = query;
-    const currentLocale = I18nContext.current()?.lang?.split('_')[0] || 'uz';
-
-    console.log(I18nContext.current()?.lang);
+    const currentLang = currentLocale();
 
     const allowedSortFields: string[] = [
       'id',
@@ -104,16 +145,18 @@ export class AudioBookService {
       'year',
       'published',
       'createdAt',
-      'updatedAt'
+      'updatedAt',
     ];
 
     if (!allowedSortFields.includes(sortBy)) {
-      throw new BadRequestException(this.i18n.t('errors.VALIDATION.INVALID_SORT_BY'));
+      throw new BadRequestException(
+        this.i18n.t('errors.VALIDATION.INVALID_SORT_BY'),
+      );
     }
 
     const localizableFields = ['name', 'description', 'description_short'];
     const actualSortField = localizableFields.includes(sortBy)
-      ? `${sortBy}_${currentLocale}`
+      ? `${sortBy}_${currentLang}`
       : sortBy;
 
     // Build where conditions array for OR logic in search
@@ -122,9 +165,9 @@ export class AudioBookService {
     // Handle search with OR conditions
     if (search) {
       whereConditions.push(
-        { [`name_${currentLocale}`]: ILike(`%${search}%`) },
-        { [`description_${currentLocale}`]: ILike(`%${search}%`) },
-        { [`description_short_${currentLocale}`]: ILike(`%${search}%`) }
+        { [`name_${currentLang}`]: ILike(`%${search}%`) },
+        { [`description_${currentLang}`]: ILike(`%${search}%`) },
+        { [`description_short_${currentLang}`]: ILike(`%${search}%`) },
       );
     }
 
@@ -137,8 +180,8 @@ export class AudioBookService {
       },
       select: {
         id: true,
-        [`name_${currentLocale}`]: true,
-        [`description_short_${currentLocale}`]: true,
+        [`name_${currentLang}`]: true,
+        [`description_short_${currentLang}`]: true,
         lang: true,
         ISBN: true,
         duration: true,
@@ -157,11 +200,14 @@ export class AudioBookService {
       skip,
     });
 
-    return new BasePaginationResponseDto(AudioBookMapper.toDtoList(audioBooks), {
-      total,
-      page,
-      limit,
-    });
+    return new BasePaginationResponseDto(
+      AudioBookMapper.toDtoList(audioBooks),
+      {
+        total,
+        page,
+        limit,
+      },
+    );
   }
 
   public async findOne(id: number) {
@@ -172,7 +218,7 @@ export class AudioBookService {
         genres: true,
         issuers: true,
       },
-      where: { id }
+      where: { id },
     });
     if (!audioBook) {
       throw new NotFoundException(this.i18n.t('errors.AUDIOBOOK.NOT_FOUND'));
@@ -183,7 +229,7 @@ export class AudioBookService {
   async update(id: number, updateAudioBookDto: UpdateAudioBookDto) {
     const audioBook = await this.audioBookRepository.findOne({
       where: { id },
-      relations: { authors: true, genres: true, issuers: true, files: true }
+      relations: { authors: true, genres: true, issuers: true, files: true },
     });
 
     if (!audioBook) {
@@ -198,9 +244,13 @@ export class AudioBookService {
     // Update authors if provided
     if (updateAudioBookDto.authorsIds !== undefined) {
       if (updateAudioBookDto.authorsIds.length > 0) {
-        authors = await this.authorRepository.findBy({ id: In(updateAudioBookDto.authorsIds) });
+        authors = await this.authorRepository.findBy({
+          id: In(updateAudioBookDto.authorsIds),
+        });
         if (authors.length !== updateAudioBookDto.authorsIds.length) {
-          throw new BadRequestException(this.i18n.t('errors.AUDIOBOOK.INVALID_AUTHORS'));
+          throw new BadRequestException(
+            this.i18n.t('errors.AUDIOBOOK.INVALID_AUTHORS'),
+          );
         }
       } else {
         authors = [];
@@ -210,9 +260,13 @@ export class AudioBookService {
     // Update genres if provided
     if (updateAudioBookDto.genresIds !== undefined) {
       if (updateAudioBookDto.genresIds.length > 0) {
-        genres = await this.genreRepository.findBy({ id: In(updateAudioBookDto.genresIds) });
+        genres = await this.genreRepository.findBy({
+          id: In(updateAudioBookDto.genresIds),
+        });
         if (genres.length !== updateAudioBookDto.genresIds.length) {
-          throw new BadRequestException(this.i18n.t('errors.AUDIOBOOK.INVALID_GENRES'));
+          throw new BadRequestException(
+            this.i18n.t('errors.AUDIOBOOK.INVALID_GENRES'),
+          );
         }
       } else {
         genres = [];
@@ -222,9 +276,13 @@ export class AudioBookService {
     // Update issuers if provided
     if (updateAudioBookDto.issuersIds !== undefined) {
       if (updateAudioBookDto.issuersIds.length > 0) {
-        issuers = await this.issuerRepository.findBy({ id: In(updateAudioBookDto.issuersIds) });
+        issuers = await this.issuerRepository.findBy({
+          id: In(updateAudioBookDto.issuersIds),
+        });
         if (issuers.length !== updateAudioBookDto.issuersIds.length) {
-          throw new BadRequestException(this.i18n.t('errors.AUDIOBOOK.INVALID_ISSUERS'));
+          throw new BadRequestException(
+            this.i18n.t('errors.AUDIOBOOK.INVALID_ISSUERS'),
+          );
         }
       } else {
         issuers = [];
@@ -234,32 +292,40 @@ export class AudioBookService {
     // Update files if provided
     if (updateAudioBookDto.filesIds !== undefined) {
       if (updateAudioBookDto.filesIds.length > 0) {
-        files = await this.fileRepository.findBy({ id: In(updateAudioBookDto.filesIds) });
+        files = await this.fileRepository.findBy({
+          id: In(updateAudioBookDto.filesIds),
+        });
         if (files.length !== updateAudioBookDto.filesIds.length) {
-          throw new BadRequestException(this.i18n.t('errors.AUDIOBOOK.INVALID_FILES'));
+          throw new BadRequestException(
+            this.i18n.t('errors.AUDIOBOOK.INVALID_FILES'),
+          );
         }
       } else {
         files = [];
       }
     }
 
-    const updatedAudioBookData = AudioBookMapper.toEntityFromUpdateDto(updateAudioBookDto, audioBook);
+    const updatedAudioBookData = AudioBookMapper.toEntityFromUpdateDto(
+      updateAudioBookDto,
+      audioBook,
+    );
     updatedAudioBookData.authors = authors;
     updatedAudioBookData.genres = genres;
     updatedAudioBookData.issuers = issuers;
     updatedAudioBookData.files = files;
 
-    const savedAudioBook = await this.audioBookRepository.save(updatedAudioBookData);
+    const savedAudioBook =
+      await this.audioBookRepository.save(updatedAudioBookData);
 
     // Fetch the updated audiobook with relations
     const audioBookWithRelations = await this.audioBookRepository.findOne({
       where: { id: savedAudioBook.id },
-      relations: { authors: true, genres: true, issuers: true, files: true }
+      relations: { authors: true, genres: true, issuers: true, files: true },
     });
 
     return new MessageWithDataResponseDto(
       this.i18n.t('success.AUDIOBOOK.UPDATED'),
-      AudioBookMapper.toDto(audioBookWithRelations!)
+      AudioBookMapper.toDto(audioBookWithRelations!),
     );
   }
 
@@ -279,13 +345,13 @@ export class AudioBookService {
     const links = await this.bookAudiobookLinkRepository.find({
       where: {
         audiobookId,
-        status: LinkStatusEnum.ACTIVE // Only get active links
+        status: LinkStatusEnum.ACTIVE, // Only get active links
       },
       relations: ['book'],
       order: { priority: 'ASC', createdAt: 'DESC' },
     });
 
-    return links.map(link => ({
+    return links.map((link) => ({
       linkId: link.id,
       linkType: link.linkType,
       priority: link.priority,
@@ -298,7 +364,7 @@ export class AudioBookService {
         pages: link.book.pages,
         year: link.book.year,
         published: link.book.published,
-      }
+      },
     }));
   }
 
@@ -309,8 +375,8 @@ export class AudioBookService {
     const count = await this.bookAudiobookLinkRepository.count({
       where: {
         audiobookId,
-        status: LinkStatusEnum.ACTIVE
-      }
+        status: LinkStatusEnum.ACTIVE,
+      },
     });
     return count > 0;
   }

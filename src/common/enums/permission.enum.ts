@@ -128,4 +128,4 @@ export enum PermissionsEnum {
   READ_REPORTS = 'read_reports',
   GENERATE_REPORTS = 'generate_reports',
   EXPORT_DATA = 'export_data',
-} 
+}

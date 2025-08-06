@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { ReviewsAudiobookService } from './reviews-audiobook.service';
 import { CreateReviewsAudiobookDto } from './dto/request/create-reviews-audiobook.dto';
 import { UpdateReviewsAudiobookDto } from './dto/request/update-reviews-audiobook.dto';
@@ -16,7 +27,9 @@ import { PermissionsGuard } from 'src/common/guards';
 @ApiBearerAuth()
 @ApiGlobalResponses()
 export class ReviewsAudiobookController {
-  constructor(private readonly reviewsAudiobookService: ReviewsAudiobookService) {}
+  constructor(
+    private readonly reviewsAudiobookService: ReviewsAudiobookService,
+  ) {}
 
   @Post()
   @RequirePermissions(PermissionsEnum.CREATE_AUDIOBOOK_REVIEW)
@@ -42,7 +55,10 @@ export class ReviewsAudiobookController {
   @Patch(':id')
   @RequirePermissions(PermissionsEnum.UPDATE_AUDIOBOOK_REVIEW)
   @ApiOperation({ summary: 'Update a review audiobook by ID' })
-  async update(@Param('id', ParseIntPipe) id: number, @Body() updateReviewsAudiobookDto: UpdateReviewsAudiobookDto) {
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateReviewsAudiobookDto: UpdateReviewsAudiobookDto,
+  ) {
     return this.reviewsAudiobookService.update(id, updateReviewsAudiobookDto);
   }
 

@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  Scope,
+} from '@nestjs/common';
 import { CreateGenreDto } from './dto/request/create-genre.dto';
 import { UpdateGenreDto } from './dto/request/update-genre.dto';
 import { BasePaginationDto, SortOrder } from 'src/common/dto/request';
@@ -6,9 +11,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, IsNull, Repository } from 'typeorm';
 import { Genre } from 'src/databases/typeorm/entities';
 import { I18nContext, I18nService } from 'nestjs-i18n';
-import { BasePaginationResponseDto, MessageResponseDto, MessageWithDataResponseDto } from 'src/common/dto/response';
+import {
+  BasePaginationResponseDto,
+  MessageResponseDto,
+  MessageWithDataResponseDto,
+} from 'src/common/dto/response';
 import { GenreMapper } from './mapper/gender.mapper';
 import { GenreListMapper } from './mapper/gender-list.mapper';
+import { currentLocale } from 'src/common/utils';
 
 @Injectable({ scope: Scope.REQUEST })
 export class GenresService {
@@ -16,41 +26,50 @@ export class GenresService {
     @InjectRepository(Genre)
     private readonly genreRepository: Repository<Genre>,
     private readonly i18n: I18nService,
-  ) { }
+  ) {}
 
   async create(createGenreDto: CreateGenreDto) {
     // Validate parent genre exists if parentId is provided
     if (createGenreDto.parentId) {
       const parentGenre = await this.genreRepository.findOne({
-        where: { id: createGenreDto.parentId }
+        where: { id: createGenreDto.parentId },
       });
       if (!parentGenre) {
-        throw new BadRequestException(this.i18n.t('errors.PARENT_GENRE_NOT_FOUND'));
+        throw new BadRequestException(
+          this.i18n.t('errors.PARENT_GENRE_NOT_FOUND'),
+        );
       }
     }
 
-    const genre = await this.genreRepository.save(GenreMapper.toEntityFromCreateDto(createGenreDto));
-    return new MessageWithDataResponseDto(this.i18n.t('messages.CREATED'), GenreMapper.toDto(genre));
+    const genre = await this.genreRepository.save(
+      GenreMapper.toEntityFromCreateDto(createGenreDto),
+    );
+    return new MessageWithDataResponseDto(
+      this.i18n.t('messages.CREATED'),
+      GenreMapper.toDto(genre),
+    );
   }
 
   public async findAll(query: BasePaginationDto) {
     const { take, skip, page, limit, sortBy, sortOrder, search } = query;
-    const currentLocale = I18nContext.current()?.lang?.split('_')[0] || 'uz';
+    const locale = currentLocale();
     const allowedSortFields: string[] = [
       'id',
       'name',
       'description',
       'createdAt',
-      'updatedAt'
+      'updatedAt',
     ];
 
     if (!allowedSortFields.includes(sortBy)) {
-      throw new BadRequestException(this.i18n.t('errors.VALIDATION.INVALID_SORT_BY'));
+      throw new BadRequestException(
+        this.i18n.t('errors.VALIDATION.INVALID_SORT_BY'),
+      );
     }
 
     const localizableFields = ['name', 'description'];
     const actualSortField = localizableFields.includes(sortBy)
-      ? `${sortBy}_${currentLocale}`
+      ? `${sortBy}_${locale}`
       : sortBy;
 
     const [genres, total] = await this.genreRepository.findAndCount({
@@ -61,26 +80,28 @@ export class GenresService {
         id: true,
         parentId: true,
         cover: true,
-        [`name_${currentLocale}`]: true,
-        [`description_${currentLocale}`]: true,
+        [`name_${locale}`]: true,
+        [`description_${locale}`]: true,
         createdAt: true,
         updatedAt: true,
         children: {
           id: true,
           parentId: true,
           cover: true,
-          [`name_${currentLocale}`]: true,
-          [`description_${currentLocale}`]: true,
+          [`name_${locale}`]: true,
+          [`description_${locale}`]: true,
           createdAt: true,
           updatedAt: true,
         },
       },
-      where: search ? [
-        { [`name_${currentLocale}`]: ILike(`%${search}%`) },
-        { [`description_${currentLocale}`]: ILike(`%${search}%`) },
-      ] : {
-        parentId: IsNull(),
-      },
+      where: search
+        ? [
+            { [`name_${locale}`]: ILike(`%${search}%`) },
+            { [`description_${locale}`]: ILike(`%${search}%`) },
+          ]
+        : {
+            parentId: IsNull(),
+          },
       order: {
         [actualSortField]: sortOrder === SortOrder.ASC ? 'ASC' : 'DESC',
       },
@@ -115,45 +136,60 @@ export class GenresService {
     if (updateGenreDto.parentId && updateGenreDto.parentId !== genre.parentId) {
       // Prevent self-reference
       if (updateGenreDto.parentId === id) {
-        throw new BadRequestException(this.i18n.t('errors.CANNOT_SET_SELF_AS_PARENT'));
+        throw new BadRequestException(
+          this.i18n.t('errors.CANNOT_SET_SELF_AS_PARENT'),
+        );
       }
 
       const parentGenre = await this.genreRepository.findOne({
-        where: { id: updateGenreDto.parentId }
+        where: { id: updateGenreDto.parentId },
       });
       if (!parentGenre) {
-        throw new BadRequestException(this.i18n.t('errors.PARENT_GENRE_NOT_FOUND'));
+        throw new BadRequestException(
+          this.i18n.t('errors.PARENT_GENRE_NOT_FOUND'),
+        );
       }
 
       // Prevent circular references by checking if the parent is a child of current genre
-      const isCircular = await this.checkCircularReference(id, updateGenreDto.parentId);
+      const isCircular = await this.checkCircularReference(
+        id,
+        updateGenreDto.parentId,
+      );
       if (isCircular) {
-        throw new BadRequestException(this.i18n.t('errors.CIRCULAR_REFERENCE_DETECTED'));
+        throw new BadRequestException(
+          this.i18n.t('errors.CIRCULAR_REFERENCE_DETECTED'),
+        );
       }
     }
 
     const updatedGenre = await this.genreRepository.save({
       ...genre,
-      ...GenreMapper.toEntityFromUpdateDto(updateGenreDto, genre)
+      ...GenreMapper.toEntityFromUpdateDto(updateGenreDto, genre),
     });
-    return new MessageWithDataResponseDto(this.i18n.t('messages.UPDATED'), GenreMapper.toDto(updatedGenre));
+    return new MessageWithDataResponseDto(
+      this.i18n.t('messages.UPDATED'),
+      GenreMapper.toDto(updatedGenre),
+    );
   }
 
-  private async checkCircularReference(genreId: number, potentialParentId: number): Promise<boolean> {
+  private async checkCircularReference(
+    genreId: number,
+    potentialParentId: number,
+  ): Promise<boolean> {
     // Find all children of the current genre recursively
     const findAllChildren = async (id: number): Promise<number[]> => {
       const children = await this.genreRepository.find({
         where: { parentId: id },
-        select: ['id']
+        select: ['id'],
       });
-      
-      let allChildrenIds = children.map(child => child.id);
-      
+
+      let allChildrenIds = children.map((child) => child.id);
+
       for (const child of children) {
         const grandChildren = await findAllChildren(child.id);
         allChildrenIds = allChildrenIds.concat(grandChildren);
       }
-      
+
       return allChildrenIds;
     };
 
@@ -162,7 +198,10 @@ export class GenresService {
   }
 
   async remove(id: number) {
-    const genre = await this.genreRepository.findOne({ where: { id }, relations: { children: true } });
+    const genre = await this.genreRepository.findOne({
+      where: { id },
+      relations: { children: true },
+    });
     if (!genre) {
       throw new NotFoundException(this.i18n.t('errors.NOT_FOUND'));
     }
@@ -171,12 +210,12 @@ export class GenresService {
   }
 
   public async list() {
-    const currentLocale = I18nContext.current()?.lang?.split('_')[0] || 'uz';
+    const locale = currentLocale();
     const genres = await this.genreRepository.find({
       select: {
         id: true,
         parentId: true,
-        [`name_${currentLocale}`]: true,
+        [`name_${locale}`]: true,
       },
     });
     return GenreListMapper.toDtoList(genres);
