@@ -35,7 +35,7 @@ export class File extends BaseEntity {
   @Column({ type: 'smallint' })
   chapter: number;
 
-  @Column({ type: 'char', length: 3 })
+  @Column({ type: 'char' })
   lang: string;
 
   @Column({ type: 'int' })

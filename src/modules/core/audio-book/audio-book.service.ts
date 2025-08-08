@@ -1,15 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import {
-  AudioBook,
-  AudioBookPublishedEnum,
-} from 'src/databases/typeorm/entities';
-import { currentLocale } from 'src/common/utils';
+import { AudioBook, AudioBookPublishedEnum } from 'src/databases/typeorm/entities';
 import { RedisService } from 'src/databases/redis/redis.service';
+import { currentLocale } from 'src/common/utils';
 import { decodeHTML } from 'entities';
 
-@Injectable()
+@Injectable({ scope: Scope.DEFAULT })
 export class AudioBookService {
   constructor(
     @InjectRepository(AudioBook)
@@ -18,27 +15,29 @@ export class AudioBookService {
   ) { }
 
   async byRating() {
-    const locale = currentLocale();
+    const currentLang = currentLocale();
     const cachedData = await this.redisService.get(
-      `core:audio-books:by-rating:${locale}`,
+      `core:top-audiobooks:${currentLang}`,
     );
     if (cachedData) {
       return cachedData;
     }
 
-    const results = await this.audioBookRepository
+    const audiobooks = await this.audioBookRepository
       .createQueryBuilder('audiobook')
       .leftJoin('audiobook.reviews', 'review')
       .leftJoin('audiobook.authors', 'author')
       .select([
         'audiobook.id',
         'audiobook.cover',
-        `audiobook.name_${locale}`,
+        `audiobook.name_${currentLang}`,
         'audiobook.published',
+        'audiobook.duration',
+        'audiobook.createdAt',
       ])
       .addSelect('AVG(review.rating)', 'averageRating')
       .addSelect('COUNT(review.id)', 'reviewCount')
-      .addSelect(`GROUP_CONCAT(DISTINCT author.name_${locale})`, 'authorNames')
+      .addSelect(`GROUP_CONCAT(DISTINCT author.name_${currentLang})`, 'authorNames')
       .where('audiobook.published = :published', {
         published: AudioBookPublishedEnum.PUBLISHED,
       })
@@ -48,18 +47,20 @@ export class AudioBookService {
       .limit(50)
       .getRawMany();
 
-    const data = results.map((result) => ({
-      id: result.audiobook_id,
-      cover: global.asset(result.audiobook_cover),
-      avgRating: parseFloat(result.averageRating) || 5.0,
-      reviewCount: parseInt(result.reviewCount) || 0,
-      name: decodeHTML(result[`audiobook_name_${locale}`]),
-      authors: result.authorNames ? result.authorNames.split(',').map(decodeHTML) : [],
+    const data = audiobooks.map((audiobook) => ({
+      id: audiobook.audiobook_id,
+      cover: global.asset(audiobook.audiobook_cover),
+      avgRating: parseFloat(audiobook.averageRating) || 5.0,
+      reviewCount: parseInt(audiobook.reviewCount) || 0,
+      name: decodeHTML(audiobook[`audiobook_name_${currentLang}`]),
+      duration: audiobook.audiobook_duration,
+      authors: audiobook.authorNames ? audiobook.authorNames.split(',').map(decodeHTML) : [],
     }));
 
     await this.redisService.set(
-      `core:audio-books:by-rating:${locale}`,
+      `core:top-audiobooks:${currentLang}`,
       data,
+      60 * 60 * 24, // 24 hours cache
     );
 
     return data;

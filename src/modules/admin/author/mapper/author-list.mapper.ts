@@ -12,9 +12,7 @@ export class AuthorListMapper {
     const locale = currentLocale();
     return new AuthorListResponseDto(
       author.id,
-      author[`name_${locale}`],
-      author[`lastName_${locale}`],
-      author[`middleName_${locale}`],
+      author.getFullName(locale),
     );
   }
   static toDtoList(authors: Author[]): AuthorListResponseDto[] {

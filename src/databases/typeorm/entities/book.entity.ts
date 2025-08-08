@@ -12,6 +12,7 @@ import {
   ManyToMany,
   AfterLoad,
   OneToMany,
+  Index,
 } from 'typeorm';
 import { File } from './file.entity';
 import { Genre } from './genre.entity';
@@ -32,11 +33,15 @@ export enum PublishedEnum {
 }
 
 @Entity('books')
+@Index(['name_uz', 'name_ru', 'name_en'], { fulltext: true })
 export class Book extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ type: 'varchar', length: 100 })
+  @Index({
+    fulltext: true,
+  })
   name_ru: string;
 
   @Column({ type: 'varchar', length: 100 })
@@ -102,7 +107,17 @@ export class Book extends BaseEntity {
   deletedAt: Date;
 
   @ManyToMany(() => Author, { nullable: true })
-  @JoinTable()
+  @JoinTable({
+    name: 'books_authors_authors',
+    joinColumn: {
+      name: 'booksId',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'authorsId',
+      referencedColumnName: 'id',
+    },
+  })
   authors: Author[];
 
   @ManyToMany(() => File, { nullable: true })
@@ -110,7 +125,17 @@ export class Book extends BaseEntity {
   files: File[];
 
   @ManyToMany(() => Genre, { nullable: true })
-  @JoinTable()
+  @JoinTable({
+    name: 'books_genres_genres',
+    joinColumn: {
+      name: 'booksId',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'genresId',
+      referencedColumnName: 'id',
+    },
+  })
   genres: Genre[];
 
   @ManyToMany(() => Issuer, { nullable: true })

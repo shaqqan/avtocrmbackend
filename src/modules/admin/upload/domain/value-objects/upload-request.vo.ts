@@ -47,8 +47,8 @@ export class UploadRequestVO {
       throw new Error('Duration must be non-negative');
     }
 
-    if (this.lang && this.lang.length !== 3) {
-      throw new Error('Language code must be 3 characters');
+    if (!this.lang) {
+      throw new Error('Language code is required');
     }
   }
 

@@ -65,5 +65,6 @@ dataSource
   })
   .catch((err) => {
     console.error('Error during Data Source initialization', err);
+    process.exit(1);
   });
 export default dataSource;

@@ -1,3 +1,4 @@
+import { FileFormat } from 'src/common/enums';
 import { BookLangEnum, PublishedEnum } from 'src/databases/typeorm/entities';
 
 export class BookResponseDto {
@@ -15,7 +16,16 @@ export class BookResponseDto {
     public published: PublishedEnum,
     public createdAt: string | Date,
     public authors: string[],
-    public files: string[],
+    public files: {
+      id: number;
+      title: string;
+      name: string;
+      format: FileFormat;
+      chapter: number;
+      lang: string;
+      duration: number;
+      size: number;
+    }[],
     public genres: string[],
     public issuers: string[],
   ) {
@@ -59,7 +69,18 @@ export class BookResponseMultiLangDto {
     public published: PublishedEnum,
     public createdAt: string | Date,
     public authors: string[],
-    public files: string[],
+    public files: {
+      id: number;
+      title_uz: string;
+      title_ru: string;
+      title_en: string;
+      name: string;
+      format: FileFormat;
+      chapter: number;
+      lang: string;
+      duration: number;
+      size: number;
+    }[],
     public genres: string[],
     public issuers: string[],
   ) {

@@ -7,10 +7,13 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { decodeHTML } from 'entities';
+import { Book } from './book.entity';
+import { AudioBook } from './audio-book.entity';
 
 @Entity({ name: 'genres' })
 export class Genre extends BaseEntity {
@@ -55,6 +58,12 @@ export class Genre extends BaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToMany(() => Book, (book) => book.genres)
+  books: Book[];
+
+  @ManyToMany(() => AudioBook, (audiobook) => audiobook.genres)
+  audiobooks: AudioBook[];
 
   @AfterLoad()
   setCover() {

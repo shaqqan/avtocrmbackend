@@ -62,12 +62,8 @@ export class AuthorListResponseDto {
   constructor(
     public id: number,
     public name: string,
-    public lastName: string,
-    public middleName: string,
   ) {
     this.id = id;
     this.name = name;
-    this.lastName = lastName;
-    this.middleName = middleName;
   }
 }

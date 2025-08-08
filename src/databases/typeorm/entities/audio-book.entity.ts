@@ -9,6 +9,7 @@ import {
   JoinTable,
   ManyToMany,
   OneToMany,
+  Index,
 } from 'typeorm';
 import { Author } from './author.entity';
 import { Genre } from './genre.entity';
@@ -30,6 +31,7 @@ export enum AudioBookPublishedEnum {
 }
 
 @Entity('audiobooks')
+@Index(['name_uz', 'name_ru', 'name_en'], { fulltext: true })
 export class AudioBook extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -107,7 +109,17 @@ export class AudioBook extends BaseEntity {
   files: File[];
 
   @ManyToMany(() => Genre, { nullable: true })
-  @JoinTable()
+  @JoinTable({
+    name: 'audiobooks_genres_genres',
+    joinColumn: {
+      name: 'audiobooksId',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'genresId',
+      referencedColumnName: 'id',
+    },
+  })
   genres: Genre[];
 
   @ManyToMany(() => Issuer, { nullable: true })

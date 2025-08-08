@@ -10,9 +10,11 @@ import {
   UpdateDateColumn,
   ManyToOne,
   ManyToMany,
-  JoinTable,
+  OneToMany,
+  Index,
 } from 'typeorm';
 import { decodeHTML } from 'entities';
+import { Book } from './book.entity';
 
 @Entity('authors')
 export class Author extends BaseEntity {
@@ -20,39 +22,75 @@ export class Author extends BaseEntity {
   id: number;
 
   @Column({ type: 'varchar', length: 50 })
+  @Index({
+    fulltext: true,
+  })
   name_uz: string;
 
   @Column({ type: 'varchar', length: 50 })
+  @Index({
+    fulltext: true,
+  })
   lastName_uz: string;
 
   @Column({ type: 'varchar', length: 50, nullable: true })
+  @Index({
+    fulltext: true,
+  })
   middleName_uz: string;
 
   @Column({ type: 'varchar', length: 50 })
+  @Index({
+    fulltext: true,
+  })
   name_ru: string;
 
   @Column({ type: 'varchar', length: 50 })
+  @Index({
+    fulltext: true,
+  })
   lastName_ru: string;
 
   @Column({ type: 'varchar', length: 50, nullable: true })
+  @Index({
+    fulltext: true,
+  })
   middleName_ru: string;
 
   @Column({ type: 'varchar', length: 50 })
+  @Index({
+    fulltext: true,
+  })
   name_en: string;
 
   @Column({ type: 'varchar', length: 50 })
+  @Index({
+    fulltext: true,
+  })
   lastName_en: string;
 
   @Column({ type: 'varchar', length: 50, nullable: true })
+  @Index({
+    fulltext: true,
+  })
   middleName_en: string;
 
   @Column({ type: 'varchar', length: 4000 })
+  @Index({
+    fulltext: true,
+  })
   description_uz: string;
 
   @Column({ type: 'varchar', length: 4000 })
+  @Index({
+    fulltext: true,
+  })
   description_ru: string;
 
   @Column({ type: 'varchar', length: 4000 })
+  @Index({
+    fulltext: true,
+  })
   description_en: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
@@ -66,6 +104,9 @@ export class Author extends BaseEntity {
 
   @DeleteDateColumn({ default: null })
   deletedAt: Date;
+
+  @ManyToMany(() => Book, (book) => book.authors)
+  books: Book[];
 
   @AfterLoad()
   setUrlCover() {
