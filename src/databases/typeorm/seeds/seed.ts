@@ -3,6 +3,7 @@ import dataSource from '../data-source';
 import { LanguageSeeder } from './language.seeder';
 import { PermissionSeeder } from './permission.seeder';
 import { RoleSeeder } from './role.seeder';
+import { UserSeeder } from './user.seeder';
 
 config();
 async function seed() {
@@ -17,6 +18,9 @@ async function seed() {
 
     const roleSeeder = new RoleSeeder(dataSource);
     await roleSeeder.seed();
+
+    const userSeeder = new UserSeeder(dataSource);
+    await userSeeder.seed();
   } catch (error) {
     console.error('Error during seeding:', error);
   } finally {

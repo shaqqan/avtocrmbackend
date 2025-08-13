@@ -1,21 +1,22 @@
 import { DataSource } from 'typeorm';
 import { Role, User } from '../entities';
 import * as bcrypt from 'bcrypt';
+import { Role as RoleEnum } from 'src/common/enums';
 
 export class UserSeeder {
   constructor(private readonly dataSource: DataSource) {}
 
   async seed() {
-    const hashedPassword = await bcrypt.hash('admin123', 10);
+    const hashedPassword = await bcrypt.hash('^6CX0KwS57<MCZ5n', 10);
     const roles = await this.dataSource.manager.find(Role, {
       where: {
-        name: 'admin',
+        name: RoleEnum.SUPER_ADMIN,
       },
     });
     const user = await this.dataSource.manager.save(User, [
       {
-        firstName: 'Admin',
-        lastName: 'User',
+        firstName: 'Azizbek',
+        lastName: 'Berdimuratov',
         email: 'admin@kitob.uz',
         password: hashedPassword,
         roles: roles,

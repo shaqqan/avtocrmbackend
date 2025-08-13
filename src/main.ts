@@ -75,16 +75,20 @@ import * as path from 'path';
   app.setGlobalPrefix('api');
 
   // Enhanced compression configuration for maximum performance
-  await app.register(compression, {
-    encodings: ['gzip', 'deflate', 'br'], // Add Brotli compression
-    threshold: 1024, // Only compress responses > 1KB
-    zlibOptions: {
-      level: 6, // Compression level (1-9, 6 is optimal balance)
-      memLevel: 8, // Memory usage level
-    },
-  });
+  if (isProd) {
+    await app.register(compression, {
+      encodings: ['gzip'],
+      threshold: 2048,
+      zlibOptions: {
+        level: 4,
+        memLevel: 8,
+      },
+    });
+  }
 
-  setupSwaggerAdmin(app);
+  if (!isProd) {
+    setupSwaggerAdmin(app);
+  }
 
   const configService = app.get(ConfigService);
   const serverConfig =
