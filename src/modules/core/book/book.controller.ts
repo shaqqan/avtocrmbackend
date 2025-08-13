@@ -12,7 +12,7 @@ import { BookService } from './book.service';
 @Controller('core/book')
 export class BookController {
   constructor(private readonly bookService: BookService) {}
-  
+
   @Get('new')
   async newBooks() {
     return this.bookService.newBooks();

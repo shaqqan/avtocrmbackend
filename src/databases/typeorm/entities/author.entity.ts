@@ -148,13 +148,7 @@ export class Author extends BaseEntity {
   }
 
   getFullName(locale?: string): string {
-    return (
-      this[`name_${locale}`] +
-      ' ' +
-      this[`lastName_${locale}`] +
-      ' ' +
-      this[`middleName_${locale}`]
-    );
+    return `${this[`name_${locale}`]} ${this[`lastName_${locale}`]} ${this[`middleName_${locale}`]}`.trim();
   }
 
   getName(locale?: string): string {

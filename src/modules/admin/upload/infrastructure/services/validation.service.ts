@@ -95,6 +95,7 @@ export class FileValidationService implements IFileValidationService {
 
   validateFormatExtension(filename: string, format: FileFormat): boolean {
     const extension = path.extname(filename).toLowerCase().substring(1); // Remove dot
+    const formatLower = format.toLowerCase();
 
     const formatExtensionMap: Record<FileFormat, string[]> = {
       [FileFormat.EPUB]: ['epub'],
@@ -106,7 +107,7 @@ export class FileValidationService implements IFileValidationService {
       [FileFormat.MP3]: ['mp3'],
     };
 
-    const allowedExtensions = formatExtensionMap[format];
+    const allowedExtensions = formatExtensionMap[formatLower];
     return allowedExtensions ? allowedExtensions.includes(extension) : false;
   }
 

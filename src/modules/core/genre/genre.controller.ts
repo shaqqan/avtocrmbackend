@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { GenreService } from './genre.service';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { TopGenreResponseDto } from './dto/top-genre-response.dto';
@@ -6,7 +14,7 @@ import { TopGenreResponseDto } from './dto/top-genre-response.dto';
 @ApiTags('Genres')
 @Controller('core/genre')
 export class GenreController {
-  constructor(private readonly genreService: GenreService) { }
+  constructor(private readonly genreService: GenreService) {}
 
   @Get()
   @ApiOperation({ summary: 'Get all genres' })
@@ -15,9 +23,10 @@ export class GenreController {
   }
 
   @Get('top')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Get top 30 genres by content count',
-    description: 'Returns the top 30 genres sorted by total number of books and audiobooks'
+    description:
+      'Returns the top 30 genres sorted by total number of books and audiobooks',
   })
   @ApiResponse({
     status: 200,

@@ -21,6 +21,7 @@ import {
 import { MessageWithDataResponseDto } from '../../../common/dto/response/message-with-data.res.dto';
 import { MessageResponseDto } from '../../../common/dto/response/message.res.dto';
 import { BasePaginationResponseDto } from '../../../common/dto/response/base-pagination.res.dto';
+import { currentLocale } from 'src/common/utils/i18n-contex';
 
 @Injectable({ scope: Scope.REQUEST })
 export class BookAudiobookLinkService {
@@ -32,7 +33,7 @@ export class BookAudiobookLinkService {
     @InjectRepository(AudioBook)
     private readonly audiobookRepository: Repository<AudioBook>,
     private readonly i18n: I18nService,
-  ) {}
+  ) { }
 
   async create(
     createLinkDto: CreateBookAudiobookLinkDto,
@@ -94,11 +95,14 @@ export class BookAudiobookLinkService {
       limit = 10,
       sortBy = 'createdAt',
       sortOrder = 'DESC',
+      search,
       bookId,
       audiobookId,
       linkType,
       status,
     } = query;
+
+    const locale = currentLocale();
 
     const queryBuilder = this.linkRepository
       .createQueryBuilder('link')
@@ -120,6 +124,18 @@ export class BookAudiobookLinkService {
 
     if (status) {
       queryBuilder.andWhere('link.status = :status', { status });
+    }
+
+    // Apply search filter
+    if (search) {
+      queryBuilder.andWhere(
+        '(link.id = :searchId OR book.name_' + locale + ' LIKE :searchPattern OR audiobook.name_' + locale + ' LIKE :searchPattern OR link.linkType = :search OR link.status = :search OR CAST(link.priority AS CHAR) = :search)',
+        {
+          searchId: isNaN(Number(search)) ? -1 : Number(search), // For ID search
+          searchPattern: `%${search}%`, // For name search
+          search: search // For other fields
+        }
+      );
     }
 
     // Apply sorting
@@ -149,7 +165,7 @@ export class BookAudiobookLinkService {
       limit,
     });
   }
-
+  
   async findOne(id: number): Promise<BookAudiobookLinkResponseDto> {
     const link = await this.findOneEntity(id);
     return BookAudiobookLinkMapper.toDto(link);
@@ -207,13 +223,21 @@ export class BookAudiobookLinkService {
       }
     }
 
-    const updatedEntity = BookAudiobookLinkMapper.toEntityFromUpdateDto(
-      updateLinkDto,
-      existingLink,
-    );
-    await this.linkRepository.save(updatedEntity);
+    // Save the updated entity
+    const savedLink = await this.linkRepository.update(id, updateLinkDto);
 
-    const completeLink = await this.findOneEntity(id);
+    // Fetch the complete link with relations for response
+    const completeLink = await this.linkRepository.findOne({
+      where: { id: id },
+      relations: ['book', 'audiobook'],
+    });
+
+    if (!completeLink) {
+      throw new NotFoundException(
+        await this.i18n.translate('errors.BOOK_AUDIOBOOK_LINK.NOT_FOUND'),
+      );
+    }
+
     const linkDto = BookAudiobookLinkMapper.toDto(completeLink);
 
     return {

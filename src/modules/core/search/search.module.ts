@@ -5,10 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AudioBook, Author, Book } from 'src/databases/typeorm/entities';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Book, AudioBook, Author]),
-  ],
+  imports: [TypeOrmModule.forFeature([Book, AudioBook, Author])],
   controllers: [SearchController],
   providers: [SearchService],
 })
-export class SearchModule { }
+export class SearchModule {}

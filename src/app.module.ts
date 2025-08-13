@@ -6,7 +6,6 @@ import { RedisModule } from './databases/redis/redis.module';
 import { HeaderResolver, I18nModule } from 'nestjs-i18n';
 import * as path from 'path';
 import { I18nConfig } from './common/configs/i18n.config';
-import { EventEmitterModule } from '@nestjs/event-emitter';
 import { CustomTypeOrmModule } from './databases/typeorm/typeorm.module';
 
 @Module({
@@ -23,14 +22,11 @@ import { CustomTypeOrmModule } from './databases/typeorm/typeorm.module';
             .fakerLocale,
         loaderOptions: {
           path: path.join(process.cwd(), 'src/i18n/'),
-          watch: true,
+          watch: process.env.NODE_ENV !== 'production',
         },
       }),
       resolvers: [new HeaderResolver(['x-lang'])],
       inject: [ConfigService],
-    }),
-    EventEmitterModule.forRoot({
-      global: true,
     }),
     RedisModule,
     ModulesModule,

@@ -23,7 +23,11 @@
     "migration:run": "npm run typeorm -- migration:run -d src/databases/typeorm/data-source.ts",
     "migration:revert": "npm run typeorm -- migration:revert -d src/databases/typeorm/data-source.ts",
     "seed": "ts-node -r tsconfig-paths/register src/databases/typeorm/seeds/seed.ts",
-    "release": "semantic-release"
+    "release": "semantic-release",
+    "load-test": "node scripts/load-test.js",
+    "load-test:quick": "node scripts/load-test.js --duration 30 --rps 500 --concurrency 50",
+    "load-test:stress": "node scripts/load-test.js --duration 120 --rps 2000 --concurrency 200",
+    "load-test:production": "node scripts/load-test.js --url https://api.kitob.uz --duration 300 --rps 1000 --concurrency 100"
   },
   "engines": {
     "npm": ">=10.0.0",

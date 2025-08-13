@@ -1,7 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ILike, Brackets } from 'typeorm';
-import { Book, AudioBook, Author, PublishedEnum, AudioBookPublishedEnum } from 'src/databases/typeorm/entities';
+import {
+  Book,
+  AudioBook,
+  Author,
+  PublishedEnum,
+  AudioBookPublishedEnum,
+} from 'src/databases/typeorm/entities';
 import { RedisService } from 'src/databases/redis/redis.service';
 import { currentLocale } from 'src/common/utils';
 import { decodeHTML } from 'entities';
@@ -15,7 +21,7 @@ export class SearchService {
     private readonly audioBookRepository: Repository<AudioBook>,
     @InjectRepository(Author)
     private readonly authorRepository: Repository<Author>,
-  ) { }
+  ) {}
 
   public async search(query: string) {
     const currentLang = currentLocale();
@@ -73,7 +79,9 @@ export class SearchService {
       avgRating: parseFloat(book.averageRating) || 5.0,
       reviewCount: parseInt(book.reviewCount) || 0,
       name: decodeHTML(book[`book_name_${lang}`]),
-      authors: book.authorNames ? book.authorNames.split(',').map(decodeHTML) : [],
+      authors: book.authorNames
+        ? book.authorNames.split(',').map(decodeHTML)
+        : [],
     }));
   }
 
@@ -109,7 +117,9 @@ export class SearchService {
       reviewCount: parseInt(audiobook.reviewCount) || 0,
       name: decodeHTML(audiobook[`audiobook_name_${lang}`]),
       duration: audiobook.audiobook_duration,
-      authors: audiobook.authorNames ? audiobook.authorNames.split(',').map(decodeHTML) : [],
+      authors: audiobook.authorNames
+        ? audiobook.authorNames.split(',').map(decodeHTML)
+        : [],
     }));
   }
 
@@ -142,5 +152,4 @@ export class SearchService {
       bookCount: parseInt(author.bookCount) || 0,
     }));
   }
-
 }

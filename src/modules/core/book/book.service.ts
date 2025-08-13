@@ -12,7 +12,7 @@ export class BookService {
     @InjectRepository(Book)
     private readonly bookRepository: Repository<Book>,
     private readonly redisService: RedisService,
-  ) { }
+  ) {}
 
   public async newBooks() {
     const currentLang = currentLocale();
@@ -36,7 +36,10 @@ export class BookService {
       ])
       .addSelect('AVG(review.rating)', 'averageRating')
       .addSelect('COUNT(review.id)', 'reviewCount')
-      .addSelect(`GROUP_CONCAT(DISTINCT author.name_${currentLang})`, 'authorNames')
+      .addSelect(
+        `GROUP_CONCAT(DISTINCT author.name_${currentLang})`,
+        'authorNames',
+      )
       .where('book.published = :published', {
         published: PublishedEnum.PUBLISHED,
       })
@@ -52,13 +55,12 @@ export class BookService {
       avgRating: parseFloat(book.averageRating) || 5.0,
       reviewCount: parseInt(book.reviewCount) || 0,
       name: decodeHTML(book[`book_name_${currentLang}`]),
-      authors: book.authorNames ? book.authorNames.split(',').map(decodeHTML) : [],
+      authors: book.authorNames
+        ? book.authorNames.split(',').map(decodeHTML)
+        : [],
     }));
 
-    await this.redisService.set(
-      `core:new-books:${currentLang}`,
-      data,
-    );
+    await this.redisService.set(`core:new-books:${currentLang}`, data);
 
     return data;
   }
@@ -84,7 +86,10 @@ export class BookService {
       ])
       .addSelect('AVG(review.rating)', 'averageRating')
       .addSelect('COUNT(review.id)', 'reviewCount')
-      .addSelect(`GROUP_CONCAT(DISTINCT author.name_${currentLang})`, 'authorNames')
+      .addSelect(
+        `GROUP_CONCAT(DISTINCT author.name_${currentLang})`,
+        'authorNames',
+      )
       .where('book.published = :published', {
         published: PublishedEnum.PUBLISHED,
       })
@@ -102,13 +107,12 @@ export class BookService {
       avgRating: parseFloat(book.averageRating) || 5.0,
       reviewCount: parseInt(book.reviewCount) || 0,
       name: decodeHTML(book[`book_name_${currentLang}`]),
-      authors: book.authorNames ? book.authorNames.split(',').map(decodeHTML) : [],
+      authors: book.authorNames
+        ? book.authorNames.split(',').map(decodeHTML)
+        : [],
     }));
 
-    await this.redisService.set(
-      `core:top-books-rating:${currentLang}`,
-      data,
-    );
+    await this.redisService.set(`core:top-books-rating:${currentLang}`, data);
 
     return data;
   }
@@ -142,7 +146,10 @@ export class BookService {
       ])
       .addSelect('AVG(review.rating)', 'averageRating')
       .addSelect('COUNT(review.id)', 'reviewCount')
-      .addSelect(`GROUP_CONCAT(DISTINCT author.name_${currentLang})`, 'authorNames')
+      .addSelect(
+        `GROUP_CONCAT(DISTINCT author.name_${currentLang})`,
+        'authorNames',
+      )
       .where('book.published = :published', {
         published: PublishedEnum.PUBLISHED,
       })
@@ -161,7 +168,9 @@ export class BookService {
       avgRating: parseFloat(book.averageRating) || 5.0,
       reviewCount: parseInt(book.reviewCount) || 0,
       name: decodeHTML(book[`book_name_${currentLang}`]),
-      authors: book.authorNames ? book.authorNames.split(',').map(decodeHTML) : [],
+      authors: book.authorNames
+        ? book.authorNames.split(',').map(decodeHTML)
+        : [],
     }));
 
     await this.redisService.set(

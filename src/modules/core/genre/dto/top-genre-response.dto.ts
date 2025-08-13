@@ -1,21 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class TopGenreResponseDto {
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Genre name',
-    example: 'Fiction'
+    example: 'Fiction',
   })
   name: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Number of books in this genre',
-    example: 150
+    example: 150,
   })
   bookCount: number;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Number of audiobooks in this genre',
-    example: 75
+    example: 75,
   })
   audioBookCount: number;
 }

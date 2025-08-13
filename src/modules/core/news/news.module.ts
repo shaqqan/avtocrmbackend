@@ -9,4 +9,4 @@ import { News } from 'src/databases/typeorm/entities';
   controllers: [NewsController],
   providers: [NewsService],
 })
-export class NewsModule { }
+export class NewsModule {}

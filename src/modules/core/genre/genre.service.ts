@@ -10,7 +10,7 @@ export class GenreService {
   constructor(
     @InjectRepository(Genre)
     private readonly genreRepository: Repository<Genre>,
-  ) { }
+  ) {}
 
   async findAll() {
     const locale = currentLocale();
@@ -52,16 +52,23 @@ export class GenreService {
 
     const genres = await this.genreRepository
       .createQueryBuilder('genre')
-      .leftJoin('genre.books', 'book', 'book.published = :bookPublished', { bookPublished: '1' })
-      .leftJoin('genre.audiobooks', 'audiobook', 'audiobook.published = :audioBookPublished', { audioBookPublished: '1' })
-      .select([
-        'genre.id',
-        `genre.name_${locale}`,
-      ])
+      .leftJoin('genre.books', 'book', 'book.published = :bookPublished', {
+        bookPublished: '1',
+      })
+      .leftJoin(
+        'genre.audiobooks',
+        'audiobook',
+        'audiobook.published = :audioBookPublished',
+        { audioBookPublished: '1' },
+      )
+      .select(['genre.id', `genre.name_${locale}`])
       .addSelect('COUNT(DISTINCT book.id)', 'bookCount')
       .addSelect('COUNT(DISTINCT audiobook.id)', 'audioBookCount')
       .groupBy('genre.id')
-      .orderBy('(COUNT(DISTINCT book.id) + COUNT(DISTINCT audiobook.id))', 'DESC')
+      .orderBy(
+        '(COUNT(DISTINCT book.id) + COUNT(DISTINCT audiobook.id))',
+        'DESC',
+      )
       .limit(30)
       .getRawMany();
 

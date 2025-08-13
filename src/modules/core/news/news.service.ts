@@ -11,7 +11,7 @@ export class NewsService {
     @InjectRepository(News)
     private readonly newsRepository: Repository<News>,
     private readonly redisService: RedisService,
-  ) { }
+  ) {}
 
   public async getNewsForHomepage() {
     const currentLang = currentLocale();
@@ -47,7 +47,7 @@ export class NewsService {
         description: mainNews[`description_${currentLang}`],
         createdAt: mainNews.createdAt,
       },
-      items: otherNews.map(item => ({
+      items: otherNews.map((item) => ({
         id: item.id,
         cover: item.cover,
         title: item[`title_${currentLang}`],
@@ -55,10 +55,7 @@ export class NewsService {
       })),
     };
 
-    await this.redisService.set(
-      `core:news-homepage:${currentLang}`,
-      result,
-    );
+    await this.redisService.set(`core:news-homepage:${currentLang}`, result);
 
     return result;
   }

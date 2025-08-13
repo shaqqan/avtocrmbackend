@@ -3,7 +3,7 @@ import { NewsService } from './news.service';
 
 @Controller('core/news')
 export class NewsController {
-  constructor(private readonly newsService: NewsService) { }
+  constructor(private readonly newsService: NewsService) {}
 
   @Get('home')
   async getNewsForHomepage() {

@@ -9,4 +9,4 @@ import { Genre } from 'src/databases/typeorm/entities';
   controllers: [GenreController],
   providers: [GenreService],
 })
-export class GenreModule { }
+export class GenreModule {}

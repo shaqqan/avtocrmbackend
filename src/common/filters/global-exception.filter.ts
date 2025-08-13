@@ -35,10 +35,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    if (process.env.NODE_ENV === 'development') {
-      console.log(exception);
-    }
-
     if (exception instanceof QueryFailedError) {
       const error = exception.driverError;
 

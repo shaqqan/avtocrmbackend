@@ -9,22 +9,30 @@ import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import compression from '@fastify/compress';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
-import fastifyMultipart from '@fastify/multipart';
 import { asset } from './common/utils/asset';
 import fastifyStatic from '@fastify/static';
 import * as path from 'path';
 
 (async function bootstrap() {
+  const isProd = process.env.NODE_ENV === 'production';
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({
       logger: false,
       bodyLimit: 1024 * 1024 * 10, // 10MB
+      // High-performance server options
+      trustProxy: true,
+      ignoreTrailingSlash: true,
+      // Optimize for low latency
+      connectionTimeout: 30000,
+      keepAliveTimeout: 65000,
+      maxRequestsPerSocket: 1000,
+      // Disable unnecessary features in production
+      disableRequestLogging: isProd,
     }),
     {
       // Optimize logging for production performance
-      logger:
-        process.env.NODE_ENV === 'production' ? ['error'] : ['error', 'warn'],
+      logger: isProd ? false : ['error', 'warn'],
       cors: {
         origin: true,
         credentials: true,
@@ -56,12 +64,14 @@ import * as path from 'path';
   await app.register(fastifyStatic, {
     root: path.join(process.cwd(), 'storage'),
     prefix: '/storage/',
+    // Optimize static file serving
+    maxAge: 31536000, // 1 year cache
+    immutable: true,
   });
 
   // Register global filters and pipes in the correct order
   app.useGlobalFilters(new GlobalExceptionFilter(app.get(ConfigService), i18n));
   app.useGlobalPipes(new ValidationErrorHandler(i18n));
-
   app.setGlobalPrefix('api');
 
   // Enhanced compression configuration for maximum performance
@@ -93,6 +103,10 @@ import * as path from 'path';
       console.log(
         `🚀🚀 Server is running on ${url} in ${serverConfig.env} mode`,
       );
+      if (isProd) {
+        console.log('🚀 Production mode: Optimized for maximum performance');
+        console.log('🚀 Target: Sub-5ms response times');
+      }
     },
   );
 })();
