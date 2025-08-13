@@ -1,7 +1,6 @@
 import {
   IsString,
   IsNotEmpty,
-  IsOptional,
   IsObject,
   MaxLength,
 } from 'class-validator';
@@ -17,7 +16,6 @@ export class CreatePermissionDto {
     },
     maxLength: 255,
   })
-  @MaxLength(255, { message: i18nValidationMessage('validation.MAX_LENGTH') })
   @IsObject()
   @IsNotEmpty()
   name: object;
