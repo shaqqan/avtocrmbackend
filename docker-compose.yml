@@ -1,4 +1,23 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kitob_uz_app
+    restart: always
+    ports:
+      - "3000:3000"
+    networks:
+      - kitob_uz_network
+    depends_on:
+      - mysql
+      - redis
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   mysql:
     image: mysql:8.4
     container_name: kitob_uz_mysql

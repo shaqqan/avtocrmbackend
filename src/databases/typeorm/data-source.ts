@@ -14,18 +14,6 @@ export const dataSourceOptions: DataSourceOptions = {
   migrations: [path.join(__dirname, 'migrations', '*{.ts,.js}')],
   subscribers: [path.join(__dirname, 'subscribers', '*.subscriber{.ts,.js}')],
   synchronize: process.env.NODE_ENV === 'development',
-
-  // Performance optimizations
-  cache: {
-    type: 'ioredis',
-    options: {
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379', 10),
-      password: process.env.REDIS_PASSWORD,
-    },
-    duration: 30000, // Cache for 30 seconds
-  },
-
   // Connection pooling for high performance
   extra: {
     connectionLimit: 100,
@@ -34,7 +22,6 @@ export const dataSourceOptions: DataSourceOptions = {
     reconnect: true,
     // MySQL specific optimizations
     charset: 'utf8mb4_unicode_ci',
-    timezone: '+00:00',
     // Connection pool optimizations
     idleTimeout: 300000, // 5 minutes
     // Performance settings
