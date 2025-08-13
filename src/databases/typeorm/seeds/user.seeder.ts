@@ -15,7 +15,7 @@ export class UserSeeder {
     });
     const user = await this.dataSource.manager.save(User, [
       {
-        firstName: 'Azizbek',
+        name: 'Azizbek',
         lastName: 'Berdimuratov',
         email: 'admin@kitob.uz',
         password: hashedPassword,

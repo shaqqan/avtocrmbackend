@@ -82,7 +82,7 @@ export class UserService {
 
     const allowedSortFields = [
       'id',
-      'firstName',
+      'name',
       'lastName',
       'email',
       'createdAt',
@@ -102,7 +102,7 @@ export class UserService {
     const whereConditions: any[] = [];
     if (search) {
       whereConditions.push(
-        { firstName: ILike(`%${search}%`) },
+        { name: ILike(`%${search}%`) },
         { lastName: ILike(`%${search}%`) },
         { email: ILike(`%${search}%`) },
       );
