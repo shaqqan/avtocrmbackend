@@ -1,8 +1,12 @@
 import { DataSource } from 'typeorm';
+import { config } from 'dotenv';
+
 import { runAllSeeders } from './index';
 import { User } from '../entities/user.entity';
 import { Role } from '../entities/role.entity';
 import { Permission } from '../entities/permission.entity';
+
+config();
 
 /**
  * Standalone script to run all database seeders
@@ -15,10 +19,12 @@ async function main() {
     type: 'postgres', // or 'mysql', 'sqlite', etc.
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT || '5432'),
-    username: process.env.DB_USERNAME || 'postgres',
-    password: process.env.DB_PASSWORD || 'password',
-    database: process.env.DB_DATABASE || 'typeform_db',
-    entities: [User, Role, Permission],
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
+    entities: [
+      __dirname + '/../**/*.entity{.ts,.js}',
+    ],
     synchronize: false, // Set to true only in development if you want auto-schema sync
     logging: true,
   });
