@@ -19,7 +19,7 @@ async function main() {
     password: process.env.DB_PASSWORD || 'password',
     database: process.env.DB_DATABASE || 'typeform_db',
     entities: [User, Role, Permission],
-    synchronize: false, // Set to true only in development if you want auto-schema sync
+    synchronize: true, // Set to true only in development if you want auto-schema sync
     logging: true,
   });
 
