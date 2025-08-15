@@ -1,8 +1,8 @@
 import { DataSource } from 'typeorm';
 import { runAllSeeders } from './index';
-import { User } from '../../typeorm/entities/user.entity';
-import { Role } from '../../typeorm/entities/role.entity';
-import { Permission } from '../../typeorm/entities/permission.entity';
+import { User } from '../entities/user.entity';
+import { Role } from '../entities/role.entity';
+import { Permission } from '../entities/permission.entity';
 
 /**
  * Standalone script to run all database seeders
