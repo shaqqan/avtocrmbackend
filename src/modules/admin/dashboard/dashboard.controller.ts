@@ -1,90 +1,223 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
-import { DashboardService } from './dashboard.service';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiOkResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { Controller, Post, Body, UseGuards, BadRequestException } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { DashboardService, DashboardSalesResponse, DashboardModelSalesResponse, ComprehensiveStatistics } from './dashboard.service';
+import { DashboardSalesDto } from './dto/request/dashboard-sales.dto';
 import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
-import { ApiGlobalResponses } from 'src/common/decorators/swagger';
-import { RequirePermissions } from 'src/common/decorators/permissions.decorator';
-import { PermissionsEnum } from 'src/common/enums';
 import { PermissionsGuard } from 'src/common/guards';
 
-@Controller('admin/dashboard')
-@ApiTags('🏗Dashboard')
-@UseGuards(JwtAuthAdminAccessGuard, PermissionsGuard)
+@ApiTags('Admin - Dashboard')
 @ApiBearerAuth()
-@ApiGlobalResponses()
+@UseGuards(JwtAuthAdminAccessGuard, PermissionsGuard)
+@Controller('admin/dashboard')
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
-  @Get('/info-panel')
-  @RequirePermissions(PermissionsEnum.READ_DASHBOARD)
-  @ApiOperation({
-    summary: 'Get dashboard info panel data',
-    description:
-      'Retrieves general statistics and information for the admin dashboard info panel',
+  @Post('car-sales-statistics')
+  @ApiOperation({ 
+    summary: 'Get car sales statistics within a date range',
+    description: 'Returns car sales data formatted for line charts. Uses weekly intervals for ranges up to 1 month, monthly intervals for longer ranges.'
   })
-  @ApiOkResponse({
-    description: 'Dashboard info panel data retrieved successfully',
+  @ApiResponse({
+    status: 200,
+    description: 'Car sales statistics retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              period: { type: 'string', example: '2024-01-01' },
+              count: { type: 'number', example: 5 },
+              revenue: { type: 'number', example: 125000.00 }
+            }
+          }
+        },
+        summary: {
+          type: 'object',
+          properties: {
+            totalSales: { type: 'number', example: 25 },
+            totalRevenue: { type: 'number', example: 625000.00 },
+            averageSalesPerPeriod: { type: 'number', example: 5.0 },
+            averageRevenuePerPeriod: { type: 'number', example: 125000.00 }
+          }
+        },
+        metadata: {
+          type: 'object',
+          properties: {
+            startDate: { type: 'string', format: 'date' },
+            endDate: { type: 'string', format: 'date' },
+            interval: { type: 'string', enum: ['weekly', 'monthly'] },
+            totalPeriods: { type: 'number', example: 5 }
+          }
+        }
+      }
+    }
   })
-  async getInfoPanel() {
-    return this.dashboardService.getInfoPanel();
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid date format or date range',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  async getCarSalesStatistics(@Body() dashboardSalesDto: DashboardSalesDto): Promise<DashboardSalesResponse> {
+    const startDate = new Date(dashboardSalesDto.startDate);
+    const endDate = new Date(dashboardSalesDto.endDate);
+    
+    // Validate dates
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      throw new BadRequestException('Invalid date format provided');
+    }
+    
+    if (startDate >= endDate) {
+      throw new BadRequestException('Start date must be before end date');
+    }
+    
+    return this.dashboardService.getCarSalesStatistics(startDate, endDate);
   }
 
-  @Get('/books-comparison-pie-chart')
-  @RequirePermissions(PermissionsEnum.READ_ANALYTICS)
-  @ApiOperation({
-    summary: 'Get books comparison pie chart data',
-    description:
-      'Retrieves data for displaying books comparison in a pie chart format',
+  @Post('car-sales-by-model')
+  @ApiOperation({ 
+    summary: 'Get car sales statistics grouped by model within a date range',
+    description: 'Returns car sales data grouped by auto model, formatted for diagram charts (bar charts, pie charts) to compare sales between different models.'
   })
-  @ApiOkResponse({
-    description: 'Books comparison pie chart data retrieved successfully',
+  @ApiResponse({
+    status: 200,
+    description: 'Car sales by model statistics retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              modelId: { type: 'number', example: 1 },
+              modelName: { type: 'string', example: 'Camry' },
+              brandName: { type: 'string', example: 'Toyota' },
+              count: { type: 'number', example: 15 },
+              revenue: { type: 'number', example: 375000.00 },
+              percentage: { type: 'number', example: 30.5 }
+            }
+          }
+        },
+        summary: {
+          type: 'object',
+          properties: {
+            totalSales: { type: 'number', example: 50 },
+            totalRevenue: { type: 'number', example: 1250000.00 },
+            totalModels: { type: 'number', example: 8 },
+            averageSalesPerModel: { type: 'number', example: 6.25 },
+            averageRevenuePerModel: { type: 'number', example: 156250.00 }
+          }
+        },
+        metadata: {
+          type: 'object',
+          properties: {
+            startDate: { type: 'string', format: 'date' },
+            endDate: { type: 'string', format: 'date' },
+            totalModels: { type: 'number', example: 8 }
+          }
+        }
+      }
+    }
   })
-  async getBooksComparisonPieChart() {
-    return this.dashboardService.getBooksComparisonPieChart();
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid date format or date range',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  async getCarSalesByModel(@Body() dashboardSalesDto: DashboardSalesDto): Promise<DashboardModelSalesResponse> {
+    const startDate = new Date(dashboardSalesDto.startDate);
+    const endDate = new Date(dashboardSalesDto.endDate);
+    
+    // Validate dates
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      throw new BadRequestException('Invalid date format provided');
+    }
+    
+    if (startDate >= endDate) {
+      throw new BadRequestException('Start date must be before end date');
+    }
+    
+    return this.dashboardService.getCarSalesByModel(startDate, endDate);
   }
 
-  @Get('/genre-comparison-line-graph')
-  @RequirePermissions(PermissionsEnum.READ_ANALYTICS)
-  @ApiOperation({
-    summary: 'Get genre comparison line graph data',
-    description:
-      'Retrieves data for displaying genre comparison trends in a line graph format',
+  @Post('comprehensive-statistics')
+  @ApiOperation({ 
+    summary: 'Get comprehensive business statistics within a date range',
+    description: 'Returns complete business overview including stock metrics, customer metrics, and sales metrics for the specified period.'
   })
-  @ApiOkResponse({
-    description: 'Genre comparison line graph data retrieved successfully',
+  @ApiResponse({
+    status: 200,
+    description: 'Comprehensive statistics retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        stockMetrics: {
+          type: 'object',
+          properties: {
+            totalCarsAvailable: { type: 'number', example: 150 },
+            totalCarsReserved: { type: 'number', example: 25 },
+            totalCarsSold: { type: 'number', example: 75 },
+            totalCarsInStock: { type: 'number', example: 250 }
+          }
+        },
+        customerMetrics: {
+          type: 'object',
+          properties: {
+            totalCustomers: { type: 'number', example: 500 },
+            newCustomersInPeriod: { type: 'number', example: 45 }
+          }
+        },
+        salesMetrics: {
+          type: 'object',
+          properties: {
+            totalCarsSold: { type: 'number', example: 75 },
+            totalSalesAmount: { type: 'number', example: 1875000.00 },
+            totalInitialPayments: { type: 'number', example: 468750.00 },
+            totalOutstandingAmount: { type: 'number', example: 1406250.00 },
+            averagePaymentPercentage: { type: 'number', example: 25.0 }
+          }
+        },
+        metadata: {
+          type: 'object',
+          properties: {
+            startDate: { type: 'string', format: 'date' },
+            endDate: { type: 'string', format: 'date' },
+            generatedAt: { type: 'string', format: 'date-time' }
+          }
+        }
+      }
+    }
   })
-  async getGenreComparisonLineGraph() {
-    return this.dashboardService.getGenreComparisonLineGraph();
-  }
-
-  @Get('/audiobooks-rating-stats')
-  @RequirePermissions(PermissionsEnum.READ_STATISTICS)
-  @ApiOperation({
-    summary: 'Get audiobooks rating statistics',
-    description: 'Retrieves rating statistics and analytics for audiobooks',
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid date format or date range',
   })
-  @ApiOkResponse({
-    description: 'Audiobooks rating statistics retrieved successfully',
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
   })
-  async getAudioBooksRatingStats() {
-    return this.dashboardService.getAudioBooksRatingStats();
-  }
-
-  @Get('/ebooks-rating-stats')
-  @RequirePermissions(PermissionsEnum.READ_STATISTICS)
-  @ApiOperation({
-    summary: 'Get e-books rating statistics',
-    description: 'Retrieves rating statistics and analytics for e-books',
-  })
-  @ApiOkResponse({
-    description: 'E-books rating statistics retrieved successfully',
-  })
-  async getEBooksRatingStats() {
-    return this.dashboardService.getEBooksRatingStats();
+  async getComprehensiveStatistics(@Body() dashboardSalesDto: DashboardSalesDto): Promise<ComprehensiveStatistics> {
+    const startDate = new Date(dashboardSalesDto.startDate);
+    const endDate = new Date(dashboardSalesDto.endDate);
+    
+    // Validate dates
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      throw new BadRequestException('Invalid date format provided');
+    }
+    
+    if (startDate >= endDate) {
+      throw new BadRequestException('Start date must be before end date');
+    }
+    
+    return this.dashboardService.getComprehensiveStatistics(startDate, endDate);
   }
 }

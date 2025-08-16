@@ -1,32 +1,13 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { DashboardService } from './dashboard.service';
 import { DashboardController } from './dashboard.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import {
-  AudioBook,
-  Author,
-  Book,
-  Genre,
-  Issuer,
-  News,
-  ReviewBook,
-  ReviewsAudiobook,
-} from 'src/databases/typeorm/entities';
+import { Order, AutoModels, Stock, Customer } from 'src/databases/typeorm/entities';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      Book,
-      AudioBook,
-      Author,
-      Genre,
-      Issuer,
-      News,
-      ReviewBook,
-      ReviewsAudiobook,
-    ]),
-  ],
-  controllers: [DashboardController],
+  imports: [TypeOrmModule.forFeature([Order, AutoModels, Stock, Customer])],
   providers: [DashboardService],
+  controllers: [DashboardController],
+  exports: [DashboardService],
 })
 export class DashboardModule {}

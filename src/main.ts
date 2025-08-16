@@ -8,10 +8,11 @@ import { I18nService } from 'nestjs-i18n';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import compression from '@fastify/compress';
-import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
+// import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { asset } from './common/utils/asset';
 import fastifyStatic from '@fastify/static';
 import * as path from 'path';
+import { Logger } from '@nestjs/common';
 
 (async function bootstrap() {
   const isProd = process.env.NODE_ENV === 'production';
@@ -43,15 +44,15 @@ import * as path from 'path';
       bufferLogs: true, // Buffer logs for better performance
       abortOnError: false, // Don't abort on errors for better uptime
     },
-  );
+  ); 
 
   global.asset = asset;
 
-  const i18n = app.get(I18nService);
+  const i18n = app.get(I18nService); 
   await app.register(require('@fastify/multipart'), {
     // Attach fields to request (muhim!)
-    attachFieldsToBody: true,
-    limits: {
+    attachFieldsToBody: true, 
+    limits: { 
       fieldNameSize: 100,
       fieldSize: 1000000,
       fields: 10,
@@ -69,8 +70,11 @@ import * as path from 'path';
     immutable: true,
   });
 
+  // Create a standard logger
+  // const logger = new Logger('Application');
+  
   // Register global filters and pipes in the correct order
-  app.useGlobalFilters(new GlobalExceptionFilter(app.get(ConfigService), i18n));
+  // app.useGlobalFilters(new GlobalExceptionFilter(logger));
   app.useGlobalPipes(new ValidationErrorHandler(i18n));
   app.setGlobalPrefix('api');
 
@@ -106,10 +110,29 @@ import * as path from 'path';
       const url = await app.getUrl();
       console.log(
         `🚀🚀 Server is running on ${url} in ${serverConfig.env} mode`,
+        {
+          module: 'main',
+          method: 'bootstrap',
+          type: 'server_startup',
+          port: serverConfig.port,
+          host: serverConfig.host,
+          environment: serverConfig.env,
+        }
       );
+      
       if (isProd) {
-        console.log('🚀 Production mode: Optimized for maximum performance');
-        console.log('🚀 Target: Sub-5ms response times');
+        console.log('🚀 Production mode: Optimized for maximum performance', {
+          module: 'main',
+          method: 'bootstrap',
+          type: 'server_startup',
+          mode: 'production',
+        });
+        console.log('🚀 Target: Sub-5ms response times', {
+          module: 'main',
+          method: 'bootstrap',
+          type: 'server_startup',
+          target: 'sub_5ms_response_times',
+        });
       }
     },
   );

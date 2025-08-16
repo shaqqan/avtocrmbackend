@@ -29,14 +29,14 @@ export class UserService {
     private readonly i18n: I18nService,
   ) {}
   async create(createUserDto: CreateUserDto) {
-    // Check if email already exists
+    // Check if phone already exists
     const existingUser = await this.userRepository.findOne({
-      where: { email: createUserDto.email },
+      where: { phone: createUserDto.phone },
     });
 
     if (existingUser) {
       throw new BadRequestException(
-        this.i18n.t('errors.USER.EMAIL_ALREADY_EXISTS'),
+        this.i18n.t('errors.USER.PHONE_ALREADY_EXISTS'),
       );
     }
 
@@ -58,7 +58,7 @@ export class UserService {
     const user = this.userRepository.create({
       name: createUserDto.name,
       lastName: createUserDto.lastName,
-      email: createUserDto.email,
+      phone: createUserDto.phone,
       password: hashedPassword,
       roles: roles,
     });
@@ -84,7 +84,7 @@ export class UserService {
       'id',
       'name',
       'lastName',
-      'email',
+      'phone',
       'createdAt',
     ];
 
@@ -104,7 +104,7 @@ export class UserService {
       whereConditions.push(
         { name: ILike(`%${search}%`) },
         { lastName: ILike(`%${search}%`) },
-        { email: ILike(`%${search}%`) },
+        { phone: ILike(`%${search}%`) },
       );
     }
 
@@ -113,7 +113,7 @@ export class UserService {
         id: true,
         name: true,
         lastName: true,
-        email: true,
+        phone: true,
         createdAt: true,
         roles: {
           id: true,
@@ -160,15 +160,15 @@ export class UserService {
       throw new NotFoundException(this.i18n.t('errors.USER.NOT_FOUND'));
     }
 
-    // Check if email is being changed and if it already exists
-    if (updateUserDto.email && updateUserDto.email !== user.email) {
+    // Check if phone is being changed and if it already exists
+    if (updateUserDto.phone && updateUserDto.phone !== user.phone) {
       const existingUser = await this.userRepository.findOne({
-        where: { email: updateUserDto.email },
+        where: { phone: updateUserDto.phone },
       });
 
       if (existingUser) {
         throw new BadRequestException(
-          this.i18n.t('errors.USER.EMAIL_ALREADY_EXISTS'),
+          this.i18n.t('errors.USER.PHONE_ALREADY_EXISTS'),
         );
       }
     }

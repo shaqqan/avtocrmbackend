@@ -4,16 +4,16 @@ import * as path from 'path';
 
 config();
 export const dataSourceOptions: DataSourceOptions = {
-  type: 'mysql',
+  type: 'postgres',
   host: process.env.DB_HOST,
-  port: parseInt(process.env.DB_PORT || '3306', 10),
+  port: parseInt(process.env.DB_PORT || '5432', 10),
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
   entities: [path.join(__dirname, '..', '..', '**', '*.entity{.ts,.js}')],
   migrations: [path.join(__dirname, 'migrations', '*{.ts,.js}')],
   subscribers: [path.join(__dirname, 'subscribers', '*.subscriber{.ts,.js}')],
-  synchronize: process.env.NODE_ENV === 'development',
+  synchronize: false, //process.env.NODE_ENV === 'development',
   // Connection pooling for high performance
   extra: {
     connectionLimit: 100,
@@ -32,9 +32,6 @@ export const dataSourceOptions: DataSourceOptions = {
     debug: false,
   },
 
-  // Connection pool settings
-  poolSize: 100,
-  acquireTimeout: 60000,
 
   // Logging optimizations (disable in production)
   logging: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : false,

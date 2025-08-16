@@ -4,7 +4,7 @@ import { User } from 'src/databases/typeorm/entities';
 export class GetMeResponseDto {
   constructor(user: User) {
     this.id = user.id;
-    this.email = user.email;
+    this.phone = user.phone;
     this.name = user.name;
     this.lastName = user.lastName;
     this.roles = user.roles.map((role) => role.name);
@@ -17,7 +17,7 @@ export class GetMeResponseDto {
   id: number;
 
   @ApiProperty({ type: String })
-  email: string;
+  phone: string;
 
   @ApiProperty({ type: String })
   name: string;

@@ -29,15 +29,15 @@ export class AuthService {
     private readonly redisService: RedisService,
     private readonly configService: ConfigService,
     private readonly i18n: I18nService,
-  ) {}
+  ) { }
 
   async signIn(signInDto: SignInDto): Promise<SignInResponseDto> {
-    const { email, password } = signInDto;
+    const { phone, password } = signInDto;
 
     const user = await this.userRepository.findOne({
       select: {
         id: true,
-        email: true,
+        phone: true,
         password: true,
         name: true,
         lastName: true,
@@ -48,7 +48,7 @@ export class AuthService {
           },
         },
       },
-      where: { email },
+      where: { phone },
     });
 
     if (!user) {
@@ -95,7 +95,7 @@ export class AuthService {
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const payload = {
       id: user.id,
-      email: user.email,
+      phone: user.phone,
     };
 
     const config =

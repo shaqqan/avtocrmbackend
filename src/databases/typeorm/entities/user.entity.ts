@@ -12,8 +12,6 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Role } from './role.entity';
-import { ReviewBook } from './review-book.entity';
-import { ReviewsAudiobook } from './reviews-audiobook.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -27,7 +25,7 @@ export class User extends BaseEntity {
   lastName: string;
 
   @Column({ unique: true })
-  email: string;
+  phone: string;
 
   @Column()
   password: string;
@@ -49,9 +47,4 @@ export class User extends BaseEntity {
   })
   roles: Role[];
 
-  @OneToMany(() => ReviewBook, (review) => review.user)
-  reviews: ReviewBook[];
-
-  @OneToMany(() => ReviewsAudiobook, (review) => review.user)
-  reviewsAudiobook: ReviewsAudiobook[];
 }

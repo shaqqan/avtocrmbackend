@@ -17,6 +17,7 @@ export const setupSwaggerAdmin = (app: INestApplication): void => {
     .addBearerAuth()
     .setContact('Kitob.uz Support Team', 'https://kitob.uz', 'support@kitob.uz')
     .setLicense('Proprietary License', 'https://kitob.uz')
+    .addServer('https://yobirbeka.jprq.site', 'Jprq Server') 
     .addServer('http://127.0.0.1:3000', 'Local Development Server')
     .addServer('http://10.95.3.15:3000', 'Wi-Fi Network')
     .addServer('https://api.kitob.uz', 'Production Server')

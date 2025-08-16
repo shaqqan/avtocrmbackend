@@ -9,7 +9,6 @@ import {
   BaseEntity,
 } from 'typeorm';
 import { Role } from './role.entity';
-import { BookLangEnum } from './book.entity';
 
 @Entity('permissions')
 export class Permission extends BaseEntity {

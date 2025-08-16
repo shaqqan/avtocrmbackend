@@ -35,7 +35,7 @@ export class JwtAdminAccessStrategy extends PassportStrategy(
     const user = await this.userRepository.findOne({
       select: {
         id: true,
-        email: true,
+        phone: true,
         name: true,
         lastName: true,
         roles: {

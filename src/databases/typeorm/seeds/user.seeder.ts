@@ -17,7 +17,7 @@ export class UserSeeder {
       {
         name: 'Azizbek',
         lastName: 'Berdimuratov',
-        email: 'admin@kitob.uz',
+        phone: '+998912672434',
         password: hashedPassword,
         roles: roles,
       },

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsEmail,
+  IsPhoneNumber,
   IsNotEmpty,
   IsString,
   MaxLength,
@@ -9,10 +9,10 @@ import {
 import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class SignInDto {
-  @IsEmail(
-    {},
+  @IsPhoneNumber(
+    'UZ',
     {
-      message: i18nValidationMessage('errors.VALIDATION.IS_EMAIL'),
+      message: i18nValidationMessage('errors.VALIDATION.IS_PHONE_NUMBER'),
     },
   )
   @IsNotEmpty({
@@ -22,10 +22,10 @@ export class SignInDto {
     message: i18nValidationMessage('errors.VALIDATION.MAX_LENGTH'),
   })
   @ApiProperty({
-    description: 'The email of the user',
-    example: 'admin@kitob.uz',
+    description: 'The phone number of the user',
+    example: '+998912672434',
   })
-  email: string;
+  phone: string;
 
   @IsString({
     message: i18nValidationMessage('errors.VALIDATION.IS_STRING'),
@@ -41,7 +41,7 @@ export class SignInDto {
   })
   @ApiProperty({
     description: 'The password of the user',
-    example: 'admin123',
+    example: '^6CX0KwS57<MCZ5n',
   })
   password: string;
 }

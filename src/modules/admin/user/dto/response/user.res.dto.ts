@@ -5,14 +5,14 @@ export class UserResponseDto {
     public id: number,
     public name: string,
     public lastName: string,
-    public email: string,
+    public phone: string,
     public roles: Role[],
     public createdAt: Date,
   ) {
     this.id = id;
     this.name = name;
     this.lastName = lastName;
-    this.email = email;
+    this.phone = phone;
     this.roles = roles;
     this.createdAt = createdAt;
   }

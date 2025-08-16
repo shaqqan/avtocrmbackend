@@ -4,22 +4,17 @@ import { LanguageModule } from './language/language.module';
 import { UploadModule } from './upload/upload.module';
 import { RoleModule } from './role/role.module';
 import { PermissionModule } from './permission/permission.module';
-import { APP_GUARD } from '@nestjs/core';
-import { PermissionsGuard, RolesGuard } from 'src/common/guards';
-import { BookModule } from './book/book.module';
-import { AuthorModule } from './author/author.module';
-import { GenresModule } from './genres/genres.module';
-import { IssuerModule } from './issuer/issuer.module';
-import { NewsModule } from './news/news.module';
 import { UserModule } from './user/user.module';
-import { HelpModule } from './help/help.module';
-import { FeedbacksThemeModule } from './feedbacks-theme/feedbacks-theme.module';
-import { FeedbackModule } from './feedback/feedback.module';
-import { ReviewBookModule } from './review-book/review-book.module';
-import { AudioBookModule } from './audio-book/audio-book.module';
-import { ReviewsAudiobookModule } from './reviews-audiobook/reviews-audiobook.module';
+import { AutoBrandModule } from './auto-brand/auto-brand.module';
+import { AutoModelModule } from './auto-model/auto-model.module';
+import { AutoPositionModule } from './auto-position/auto-position.module';
+import { AutoColorModule } from './auto-color/auto-color.module';
+import { WarehouseModule } from './warehouse/warehouse.module';
+import { StockModule } from './stock/stock.module';
+import { CustomerModule } from './customer/customer.module';
+import { OrderModule } from './order/order.module';
+import { PriceListModule } from './price-list/price-list.module';
 import { DashboardModule } from './dashboard/dashboard.module';
-import { BookAudiobookLinkModule } from './book-audiobook-link/book-audiobook-link.module';
 
 @Module({
   imports: [
@@ -28,20 +23,17 @@ import { BookAudiobookLinkModule } from './book-audiobook-link/book-audiobook-li
     PermissionModule,
     RoleModule,
     UploadModule,
-    BookModule,
-    AuthorModule,
-    GenresModule,
-    IssuerModule,
-    NewsModule,
     UserModule,
-    HelpModule,
-    FeedbacksThemeModule,
-    FeedbackModule,
-    ReviewBookModule,
-    AudioBookModule,
-    ReviewsAudiobookModule,
+    AutoBrandModule,
+    AutoModelModule,
+    AutoPositionModule,
+    AutoColorModule,
+    WarehouseModule,
+    StockModule,
+    CustomerModule,
+    OrderModule,
+    PriceListModule,
     DashboardModule,
-    BookAudiobookLinkModule,
   ],
   providers: [],
 })
