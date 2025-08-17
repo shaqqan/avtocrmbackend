@@ -23,9 +23,12 @@ export class AutoColorService {
   ) {}
 
   async create(createAutoColorDto: CreateAutoColorDto) {
-    // Check if color name already exists
+    // Check if color name already exists for the same modelgit
     const existingColor = await this.autoColorRepository.findOne({
-      where: { name: createAutoColorDto.name },
+      where: { 
+        name: createAutoColorDto.name,
+        autoModelId: createAutoColorDto.autoModelId 
+      },
     });
 
     if (existingColor) {
@@ -37,6 +40,7 @@ export class AutoColorService {
     // Create auto color entity
     const autoColor = this.autoColorRepository.create({
       name: createAutoColorDto.name,
+      autoModelId: createAutoColorDto.autoModelId,
     });
 
     const savedColor = await this.autoColorRepository.save(autoColor);
@@ -53,6 +57,7 @@ export class AutoColorService {
     const allowedSortFields = [
       'id',
       'name',
+      'autoModelId',
       'createdAt',
       'updatedAt',
     ];
@@ -79,12 +84,20 @@ export class AutoColorService {
       select: {
         id: true,
         name: true,
+        autoModelId: true,
         createdAt: true,
         updatedAt: true,
+        autoModel: {
+          id: true,
+          name: true,
+        },
       },
       where: whereConditions.length > 0 ? whereConditions : undefined,
       order: {
         [validSortBy]: validSortOrder,
+      },
+      relations: {
+        autoModel: true,
       },
       skip,
       take,
@@ -104,6 +117,9 @@ export class AutoColorService {
   public async findOne(id: number) {
     const color = await this.autoColorRepository.findOne({
       where: { id },
+      relations: {
+        autoModel: true,
+      },
     });
 
     if (!color) {
@@ -122,10 +138,14 @@ export class AutoColorService {
       throw new NotFoundException(this.i18n.t('errors.AUTO_COLOR.NOT_FOUND'));
     }
 
-    // Check if name is being changed and if it already exists
+    // Check if name is being changed and if it already exists for the same model
     if (updateAutoColorDto.name && updateAutoColorDto.name !== color.name) {
+      const modelId = updateAutoColorDto.autoModelId || color.autoModelId;
       const existingColor = await this.autoColorRepository.findOne({
-        where: { name: updateAutoColorDto.name },
+        where: { 
+          name: updateAutoColorDto.name,
+          autoModelId: modelId 
+        },
       });
 
       if (existingColor) {
@@ -279,5 +299,48 @@ export class AutoColorService {
         totalPages: Math.ceil(total / limit),
       },
     };
+  }
+
+  // Additional method to get colors by auto model
+  async findColorsByAutoModel(autoModelId: number) {
+    const colors = await this.autoColorRepository.find({
+      where: { autoModelId },
+      relations: {
+        autoModel: true,
+      },
+      order: { name: 'ASC' },
+    });
+
+    return AutoColorMapper.toDtoList(colors);
+  }
+
+  // Additional method to get colors with auto model information
+  async findColorsWithAutoModelInfo() {
+    const colors = await this.autoColorRepository
+      .createQueryBuilder('color')
+      .leftJoinAndSelect('color.autoModel', 'autoModel')
+      .select([
+        'color.id',
+        'color.name',
+        'color.autoModelId',
+        'color.createdAt',
+        'color.updatedAt',
+        'autoModel.id',
+        'autoModel.name',
+      ])
+      .orderBy('autoModel.name', 'ASC')
+      .addOrderBy('color.name', 'ASC')
+      .getMany();
+
+    return AutoColorMapper.toDtoList(colors);
+  }
+
+  // Additional method to check if color exists for specific model
+  async colorExistsForModel(name: string, autoModelId: number): Promise<boolean> {
+    const color = await this.autoColorRepository.findOne({
+      where: { name, autoModelId },
+    });
+
+    return !!color;
   }
 }

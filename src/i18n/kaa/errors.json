@@ -106,6 +106,10 @@
   "FEEDBACK": {
     "NOT_FOUND": "Pićkir bildiris tabılmadı"
   },
+  "AUTO_COLOR": {
+    "NOT_FOUND": "Avtomobil reńi tabılmadı",
+    "NAME_ALREADY_EXISTS": "Avtomobil reńi atı bul model ushın aldaqashan bar"
+  },
   "NOT_FOUND": "Resurs tabılmadı",
   "PARENT_GENRE_NOT_FOUND": "Ata janr tabılmadı",
   "CANNOT_SET_SELF_AS_PARENT": "Ózin ata retinde belgilewge bolmaydı",

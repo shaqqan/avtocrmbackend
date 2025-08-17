@@ -89,5 +89,10 @@
     "CREATED": "Ruxsat tabıslı jaratıldı",
     "UPDATED": "Ruxsat tabıslı jańalandı",
     "DELETED": "Ruxsat tabıslı óshirildi"
+  },
+  "AUTO_COLOR": {
+    "CREATED": "Avtomobil reńi tabıslı jaratıldı",
+    "UPDATED": "Avtomobil reńi tabıslı jańalandı",
+    "DELETED": "Avtomobil reńi tabıslı óshirildi"
   }
 }

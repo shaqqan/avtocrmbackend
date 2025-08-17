@@ -13,26 +13,7 @@ export const dataSourceOptions: DataSourceOptions = {
   entities: [path.join(__dirname, '..', '..', '**', '*.entity{.ts,.js}')],
   migrations: [path.join(__dirname, 'migrations', '*{.ts,.js}')],
   subscribers: [path.join(__dirname, 'subscribers', '*.subscriber{.ts,.js}')],
-  synchronize: false, //process.env.NODE_ENV === 'development',
-  // Connection pooling for high performance
-  extra: {
-    connectionLimit: 100,
-    acquireTimeout: 60000,
-    timeout: 60000,
-    reconnect: true,
-    // MySQL specific optimizations
-    charset: 'utf8mb4_unicode_ci',
-    // Connection pool optimizations
-    idleTimeout: 300000, // 5 minutes
-    // Performance settings
-    supportBigNumbers: true,
-    bigNumberStrings: false,
-    // Enable prepared statements for better performance
-    trace: false,
-    debug: false,
-  },
-
-
+  synchronize: true, // Disabled to use migrations instead
   // Logging optimizations (disable in production)
   logging: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : false,
 

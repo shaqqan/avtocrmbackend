@@ -105,6 +105,10 @@
   "FEEDBACK": {
     "NOT_FOUND": "Feedback not found"
   },
+  "AUTO_COLOR": {
+    "NOT_FOUND": "Auto color not found",
+    "NAME_ALREADY_EXISTS": "Auto color name already exists for this model"
+  },
   "NOT_FOUND": "Resource not found",
   "PARENT_GENRE_NOT_FOUND": "Parent genre not found",
   "CANNOT_SET_SELF_AS_PARENT": "Cannot set as own parent",

@@ -105,6 +105,10 @@
   "FEEDBACK": {
     "NOT_FOUND": "Fikr-mulohaza topilmadi"
   },
+  "AUTO_COLOR": {
+    "NOT_FOUND": "Avtomobil rangi topilmadi",
+    "NAME_ALREADY_EXISTS": "Avtomobil rangi nomi bu model uchun allaqachon mavjud"
+  },
   "NOT_FOUND": "Resurs topilmadi",
   "PARENT_GENRE_NOT_FOUND": "Ota janr topilmadi",
   "CANNOT_SET_SELF_AS_PARENT": "O'zini ota sifatida belgilab bo'lmaydi",

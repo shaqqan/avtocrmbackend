@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsString, MaxLength, IsNumber } from 'class-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class CreateAutoColorDto {
@@ -18,4 +18,16 @@ export class CreateAutoColorDto {
     message: i18nValidationMessage('errors.VALIDATION.MAX_LENGTH'),
   })
   name: string;
+
+  @ApiProperty({
+    description: 'Auto model ID',
+    example: 1,
+  })
+  @IsNotEmpty({
+    message: i18nValidationMessage('errors.VALIDATION.NOT_EMPTY'),
+  })
+  @IsNumber({}, {
+    message: i18nValidationMessage('errors.VALIDATION.IS_NUMBER'),
+  })
+  autoModelId: number;
 }

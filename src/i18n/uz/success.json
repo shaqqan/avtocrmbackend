@@ -89,5 +89,10 @@
     "CREATED": "Ruxsat muvaffaqiyatli yaratildi",
     "UPDATED": "Ruxsat muvaffaqiyatli yangilandi",
     "DELETED": "Ruxsat muvaffaqiyatli o'chirildi"
+  },
+  "AUTO_COLOR": {
+    "CREATED": "Avtomobil rangi muvaffaqiyatli yaratildi",
+    "UPDATED": "Avtomobil rangi muvaffaqiyatli yangilandi",
+    "DELETED": "Avtomobil rangi muvaffaqiyatli o'chirildi"
   }
 }

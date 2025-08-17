@@ -183,6 +183,52 @@ export class AutoColorController {
     return { exists, name };
   }
 
+  @Get('by-model/:autoModelId')
+  @ApiOperation({ summary: 'Get auto colors by auto model ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Auto colors retrieved successfully',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  findColorsByAutoModel(@Param('autoModelId') autoModelId: string) {
+    return this.autoColorService.findColorsByAutoModel(+autoModelId);
+  }
+
+  @Get('with-model-info')
+  @ApiOperation({ summary: 'Get all auto colors with auto model information' })
+  @ApiResponse({
+    status: 200,
+    description: 'Auto colors with model info retrieved successfully',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  findColorsWithAutoModelInfo() {
+    return this.autoColorService.findColorsWithAutoModelInfo();
+  }
+
+  @Get('exists/:name/model/:autoModelId')
+  @ApiOperation({ summary: 'Check if auto color exists for specific auto model' })
+  @ApiResponse({
+    status: 200,
+    description: 'Auto color existence check completed',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  async colorExistsForModel(
+    @Param('name') name: string,
+    @Param('autoModelId') autoModelId: string,
+  ) {
+    const exists = await this.autoColorService.colorExistsForModel(name, +autoModelId);
+    return { exists, name, autoModelId: +autoModelId };
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get auto color by ID' })
   @ApiResponse({

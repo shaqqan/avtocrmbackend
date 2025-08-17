@@ -8,6 +8,8 @@ export class AutoColorMapper {
     return new AutoColorResponseDto(
       entity.id,
       entity.name,
+      entity.autoModelId,
+      entity.autoModel,
       entity.createdAt,
       entity.updatedAt,
     );

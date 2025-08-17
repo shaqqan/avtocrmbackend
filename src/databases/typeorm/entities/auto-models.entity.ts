@@ -1,6 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, UpdateDateColumn, PrimaryGeneratedColumn, OneToMany } from "typeorm";
 import { AutoBrand } from "./auto-brand.entity";
 import { AutoPosition } from "./auto-position.entity";
+import { AutoColor } from "./auto-color.entity";
 
 @Entity('auto_models')
 export class AutoModels extends BaseEntity {
@@ -18,6 +19,9 @@ export class AutoModels extends BaseEntity {
 
   @OneToMany(() => AutoPosition, (position) => position.autoModel)
   positions: AutoPosition[];
+
+  @OneToMany(() => AutoColor, (color) => color.autoModel)
+  autoColors: AutoColor[];
 
   @CreateDateColumn()
   createdAt: Date;

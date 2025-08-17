@@ -89,5 +89,10 @@
     "CREATED": "Permission created successfully",
     "UPDATED": "Permission updated successfully",
     "DELETED": "Permission deleted successfully"
+  },
+  "AUTO_COLOR": {
+    "CREATED": "Auto color created successfully",
+    "UPDATED": "Auto color updated successfully",
+    "DELETED": "Auto color deleted successfully"
   }
 }
