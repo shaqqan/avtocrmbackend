@@ -22,9 +22,10 @@ Successfully migrated all pagination functionality in the project from custom pa
 
 ### 4. Common Pagination Utilities Created
 - **File**: `src/common/utils/pagination.utils.ts`
-- Created centralized pagination configurations for all entities
+- Created centralized pagination configurations based on actual entity structures
 - Implemented helper functions for creating pagination configs
-- Configured specific pagination settings for each entity type
+- Configured specific pagination settings for each entity type with proper field mappings
+- All configurations are based on actual entity fields and relationships from the TypeORM entities
 
 ### 5. Services Migrated
 
@@ -155,26 +156,59 @@ The new pagination response follows nestjs-paginate standard:
 
 ## Configuration Examples
 
-### Basic Entity Configuration
+### Basic Entity Configuration (User)
 ```typescript
 export const userPaginateConfig: PaginateConfig<any> = createBasePaginateConfig(
   ['id', 'name', 'lastName', 'phone', 'createdAt', 'updatedAt'], // sortable
   ['name', 'lastName', 'phone'], // searchable
-  {}, // filterable
+  {
+    name: true,
+    lastName: true,
+    phone: true,
+  }, // filterable
   [['createdAt', 'DESC']], // default sort
 );
 ```
 
-### Entity with Relations and Filters
+### Entity with Relations and Advanced Filters (Order)
 ```typescript
 export const orderPaginateConfig: PaginateConfig<any> = createBasePaginateConfig(
-  ['id', 'totalAmount', 'status', 'createdAt', 'updatedAt'],
-  [],
+  ['id', 'contractCode', 'state', 'queueNumber', 'amountDue', 'orderDate', 'price', 'expectedDeliveryDate', 'statusChangedAt', 'frozen', 'paidPercentage', 'createdAt', 'updatedAt'],
+  ['contractCode'],
   {
-    status: true,
-    'customer.id': true,
+    contractCode: true,
+    state: true,
+    frozen: true,
+    customerId: true,
+    autoModelId: true,
+    autoPositionId: true,
+    autoColorId: true,
     'customer.firstName': true,
     'customer.lastName': true,
+    'autoModel.name': true,
+    'autoPosition.name': true,
+    'autoColor.name': true,
+  },
+  [['createdAt', 'DESC']],
+);
+```
+
+### Entity with Complex Relationships (Stock)
+```typescript
+export const stockPaginateConfig: PaginateConfig<any> = createBasePaginateConfig(
+  ['id', 'bodyNumber', 'arrivalDate', 'factoryPrice', 'status', 'createdAt', 'updatedAt'],
+  ['bodyNumber'],
+  {
+    bodyNumber: true,
+    status: true,
+    warehouseId: true,
+    autoModelId: true,
+    autoColorId: true,
+    autoPositionId: true,
+    'warehouse.name': true,
+    'autoModel.name': true,
+    'autoColor.name': true,
+    'autoPosition.name': true,
   },
   [['createdAt', 'DESC']],
 );
