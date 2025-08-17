@@ -13,6 +13,8 @@ import { StockMapper } from './mapper/stock.mapper';
 import { BasePaginationDto } from 'src/common/dto/request/base-pagination.dto';
 import { MessageWithDataResponseDto } from 'src/common/dto/response/message-with-data.res.dto';
 import { MessageResponseDto } from 'src/common/dto/response/message.res.dto';
+import { paginate, FilterOperator, FilterSuffix } from 'nestjs-paginate';
+import { convertPaginatedResult } from 'src/common/utils/pagination.util';
 
 @Injectable()
 export class StockService {
@@ -118,96 +120,50 @@ export class StockService {
   }
 
   public async findAll(query: BasePaginationDto) {
-    const { take, skip, page, limit, sortBy, sortOrder, search } = query;
-
-    const allowedSortFields = [
-      'id',
-      'bodyNumber',
-      'arrivalDate',
-      'status',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    // Validate sortBy field
-    const validSortBy = allowedSortFields.includes(sortBy)
-      ? sortBy
-      : 'createdAt';
-
-    // Validate sortOrder
-    const validSortOrder = ['ASC', 'DESC'].includes(sortOrder?.toUpperCase())
-      ? (sortOrder.toUpperCase() as 'ASC' | 'DESC')
-      : 'DESC';
-
-    // Build where conditions for search
-    const whereConditions: any[] = [];
-    if (search) {
-      whereConditions.push(
-        { bodyNumber: ILike(`%${search}%`) },
-        { warehouse: { name: ILike(`%${search}%`) } },
-        { autoModel: { name: ILike(`%${search}%`) } },
-        { autoColor: { name: ILike(`%${search}%`) } },
-        { autoPosition: { name: ILike(`%${search}%`) } },
-      );
-    }
-
-    const [stocks, total] = await this.stockRepository.findAndCount({
-      select: {
-        id: true,
+    const result = await paginate(query, this.stockRepository, {
+      sortableColumns: ['id', 'bodyNumber', 'arrivalDate', 'status', 'createdAt', 'updatedAt'],
+      nullSort: 'last',
+      defaultSortBy: [['id', 'DESC']],
+      searchableColumns: ['bodyNumber', 'warehouse.name', 'autoModel.name', 'autoColor.name', 'autoPosition.name'],
+      select: [
+        'id',
+        'warehouseId',
+        'autoModelId',
+        'autoColorId',
+        'autoPositionId',
+        'bodyNumber',
+        'arrivalDate',
+        'status',
+        'createdAt',
+        'updatedAt',
+        'warehouse.id',
+        'warehouse.name',
+        'warehouse.address',
+        'autoModel.id',
+        'autoModel.name',
+        'autoModel.brand.id',
+        'autoModel.brand.name',
+        'autoColor.id',
+        'autoColor.name',
+        'autoPosition.id',
+        'autoPosition.name'
+      ],
+      relations: ['warehouse', 'autoModel', 'autoModel.brand', 'autoColor', 'autoPosition'],
+      filterableColumns: {
+        bodyNumber: [FilterOperator.EQ, FilterSuffix.NOT],
+        status: [FilterOperator.EQ, FilterSuffix.NOT],
         warehouseId: true,
         autoModelId: true,
         autoColorId: true,
         autoPositionId: true,
-        bodyNumber: true,
+        id: true,
         arrivalDate: true,
-        status: true,
         createdAt: true,
         updatedAt: true,
-        warehouse: {
-          id: true,
-          name: true,
-          address: true,
-        },
-        autoModel: {
-          id: true,
-          name: true,
-          brand: {
-            id: true,
-            name: true,
-          },
-        },
-        autoColor: {
-          id: true,
-          name: true,
-        },
-        autoPosition: {
-          id: true,
-          name: true,
-        },
       },
-      where: whereConditions.length > 0 ? whereConditions : undefined,
-      order: {
-        [validSortBy]: validSortOrder,
-      },
-      relations: {
-        warehouse: true,
-        autoModel: { brand: true },
-        autoColor: true,
-        autoPosition: true,
-      },
-      skip,
-      take,
     });
 
-    return {
-      data: StockMapper.toDtoList(stocks),
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
+    return convertPaginatedResult(result, StockMapper.toDtoList);
   }
 
   public async findOne(id: number) {

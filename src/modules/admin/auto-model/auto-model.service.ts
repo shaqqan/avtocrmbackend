@@ -13,6 +13,8 @@ import { AutoModelMapper } from './mapper/auto-model.mapper';
 import { BasePaginationDto } from 'src/common/dto/request/base-pagination.dto';
 import { MessageWithDataResponseDto } from 'src/common/dto/response/message-with-data.res.dto';
 import { MessageResponseDto } from 'src/common/dto/response/message.res.dto';
+import { paginate, FilterOperator, FilterSuffix } from 'nestjs-paginate';
+import { convertPaginatedResult } from 'src/common/utils/pagination.util';
 
 @Injectable()
 export class AutoModelService {
@@ -71,67 +73,23 @@ export class AutoModelService {
   }
 
   public async findAll(query: BasePaginationDto) {
-    const { take, skip, page, limit, sortBy, sortOrder, search } = query;
-
-    const allowedSortFields = [
-      'id',
-      'name',
-      'brandId',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    // Validate sortBy field
-    const validSortBy = allowedSortFields.includes(sortBy)
-      ? sortBy
-      : 'createdAt';
-
-    // Validate sortOrder
-    const validSortOrder = ['ASC', 'DESC'].includes(sortOrder?.toUpperCase())
-      ? (sortOrder.toUpperCase() as 'ASC' | 'DESC')
-      : 'DESC';
-
-    // Build where conditions for search
-    const whereConditions: any[] = [];
-    if (search) {
-      whereConditions.push(
-        { name: ILike(`%${search}%`) },
-        { brand: { name: ILike(`%${search}%`) } },
-      );
-    }
-
-    const [models, total] = await this.autoModelRepository.findAndCount({
-      select: {
-        id: true,
-        name: true,
+    const result = await paginate(query, this.autoModelRepository, {
+      sortableColumns: ['id', 'name', 'brandId', 'createdAt', 'updatedAt'],
+      nullSort: 'last',
+      defaultSortBy: [['id', 'DESC']],
+      searchableColumns: ['name', 'brand.name'],
+      select: ['id', 'name', 'brandId', 'createdAt', 'updatedAt', 'brand.id', 'brand.name'],
+      relations: ['brand'],
+      filterableColumns: {
+        name: [FilterOperator.EQ, FilterSuffix.NOT],
         brandId: true,
+        id: true,
         createdAt: true,
         updatedAt: true,
-        brand: {
-          id: true,
-          name: true,
-        },
       },
-      where: whereConditions.length > 0 ? whereConditions : undefined,
-      order: {
-        [validSortBy]: validSortOrder,
-      },
-      relations: {
-        brand: true,
-      },
-      skip,
-      take,
     });
 
-    return {
-      data: AutoModelMapper.toDtoList(models),
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
+    return convertPaginatedResult(result, AutoModelMapper.toDtoList);
   }
 
   public async findOne(id: number) {

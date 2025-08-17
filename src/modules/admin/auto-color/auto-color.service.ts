@@ -13,6 +13,8 @@ import { AutoColorMapper } from './mapper/auto-color.mapper';
 import { BasePaginationDto } from 'src/common/dto/request/base-pagination.dto';
 import { MessageWithDataResponseDto } from 'src/common/dto/response/message-with-data.res.dto';
 import { MessageResponseDto } from 'src/common/dto/response/message.res.dto';
+import { paginate, FilterOperator, FilterSuffix } from 'nestjs-paginate';
+import { convertPaginatedResult } from 'src/common/utils/pagination.util';
 
 @Injectable()
 export class AutoColorService {
@@ -52,66 +54,23 @@ export class AutoColorService {
   }
 
   public async findAll(query: BasePaginationDto) {
-    const { take, skip, page, limit, sortBy, sortOrder, search } = query;
-
-    const allowedSortFields = [
-      'id',
-      'name',
-      'autoModelId',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    // Validate sortBy field
-    const validSortBy = allowedSortFields.includes(sortBy)
-      ? sortBy
-      : 'createdAt';
-
-    // Validate sortOrder
-    const validSortOrder = ['ASC', 'DESC'].includes(sortOrder?.toUpperCase())
-      ? (sortOrder.toUpperCase() as 'ASC' | 'DESC')
-      : 'DESC';
-
-    // Build where conditions for search
-    const whereConditions: any[] = [];
-    if (search) {
-      whereConditions.push(
-        { name: ILike(`%${search}%`) },
-      );
-    }
-
-    const [colors, total] = await this.autoColorRepository.findAndCount({
-      select: {
-        id: true,
-        name: true,
+    const result = await paginate(query, this.autoColorRepository, {
+      sortableColumns: ['id', 'name', 'autoModelId', 'createdAt', 'updatedAt'],
+      nullSort: 'last',
+      defaultSortBy: [['id', 'DESC']],
+      searchableColumns: ['name'],
+      select: ['id', 'name', 'autoModelId', 'createdAt', 'updatedAt', 'autoModel.id', 'autoModel.name'],
+      relations: ['autoModel'],
+      filterableColumns: {
+        name: [FilterOperator.EQ, FilterSuffix.NOT],
         autoModelId: true,
+        id: true,
         createdAt: true,
         updatedAt: true,
-        autoModel: {
-          id: true,
-          name: true,
-        },
       },
-      where: whereConditions.length > 0 ? whereConditions : undefined,
-      order: {
-        [validSortBy]: validSortOrder,
-      },
-      relations: {
-        autoModel: true,
-      },
-      skip,
-      take,
     });
 
-    return {
-      data: AutoColorMapper.toDtoList(colors),
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
+    return convertPaginatedResult(result, AutoColorMapper.toDtoList);
   }
 
   public async findOne(id: number) {

@@ -14,6 +14,8 @@ import { BasePaginationDto } from 'src/common/dto/request/base-pagination.dto';
 import { FindAllAutoPositionDto } from './dto/request/find-all-auto-position.dto';
 import { MessageWithDataResponseDto } from 'src/common/dto/response/message-with-data.res.dto';
 import { MessageResponseDto } from 'src/common/dto/response/message.res.dto';
+import { paginate, FilterOperator, FilterSuffix } from 'nestjs-paginate';
+import { convertPaginatedResult } from 'src/common/utils/pagination.util';
 
 @Injectable()
 export class AutoPositionService {
@@ -72,89 +74,42 @@ export class AutoPositionService {
   }
 
   public async findAll(query: FindAllAutoPositionDto) {
-    const { take, skip, page, limit, sortBy, sortOrder, search, autoModelId } = query;
-
-    const allowedSortFields = [
-      'id',
-      'name',
-      'autoModelId',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    // Validate sortBy field
-    const validSortBy = allowedSortFields.includes(sortBy)
-      ? sortBy
-      : 'createdAt';
-
-    // Validate sortOrder
-    const validSortOrder = ['ASC', 'DESC'].includes(sortOrder?.toUpperCase())
-      ? (sortOrder.toUpperCase() as 'ASC' | 'DESC')
-      : 'DESC';
-
-    // Build where conditions for search and filters
-    let whereCondition: any = {};
-    
-    // Add autoModelId filter
-    if (autoModelId) {
-      whereCondition.autoModelId = autoModelId;
-    }
-    
-    // Add search conditions
-    if (search) {
-      if (autoModelId) {
-        // If we have autoModelId filter, we need to use OR for search
-        whereCondition = [
-          { ...whereCondition, name: ILike(`%${search}%`) },
-          { ...whereCondition, autoModel: { name: ILike(`%${search}%`) } },
-        ];
-      } else {
-        // If no autoModelId filter, use simple OR for search
-        whereCondition = [
-          { name: ILike(`%${search}%`) },
-          { autoModel: { name: ILike(`%${search}%`) } },
-        ];
-      }
+    // Handle the autoModelId filter by modifying the query
+    const paginateQuery = { ...query };
+    if (query.autoModelId) {
+      paginateQuery.filter = { 
+        ...paginateQuery.filter, 
+        autoModelId: query.autoModelId.toString() 
+      };
     }
 
-    const [positions, total] = await this.autoPositionRepository.findAndCount({
-      select: {
-        id: true,
-        name: true,
+    const result = await paginate(paginateQuery, this.autoPositionRepository, {
+      sortableColumns: ['id', 'name', 'autoModelId', 'createdAt', 'updatedAt'],
+      nullSort: 'last',
+      defaultSortBy: [['id', 'DESC']],
+      searchableColumns: ['name', 'autoModel.name'],
+      select: [
+        'id',
+        'name',
+        'autoModelId',
+        'createdAt',
+        'updatedAt',
+        'autoModel.id',
+        'autoModel.name',
+        'autoModel.brand.id',
+        'autoModel.brand.name'
+      ],
+      relations: ['autoModel', 'autoModel.brand'],
+      filterableColumns: {
+        name: [FilterOperator.EQ, FilterSuffix.NOT],
         autoModelId: true,
+        id: true,
         createdAt: true,
         updatedAt: true,
-        autoModel: {
-          id: true,
-          name: true,
-          brand: {
-            id: true,
-            name: true,
-          },
-        },
       },
-      where: whereCondition,
-      order: {
-        [validSortBy]: validSortOrder,
-      },
-      relations: {
-        autoModel: {
-          brand: true,
-        },
-      },
-      skip,
-      take,
     });
 
-    return {
-      data: AutoPositionMapper.toDtoList(positions),
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
+    return convertPaginatedResult(result, AutoPositionMapper.toDtoList);
   }
 
   public async findOne(id: number) {

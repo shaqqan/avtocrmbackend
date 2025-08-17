@@ -18,6 +18,8 @@ import {
 import { BasePaginationDto, SortOrder } from 'src/common/dto/request';
 import { PermissionMapper } from './mapper/permission.mapper';
 import { PermissionResponseDto } from './dto/response/permission.res.dto';
+import { paginate, FilterOperator, FilterSuffix } from 'nestjs-paginate';
+import { convertPaginatedResult } from 'src/common/utils/pagination.util';
 
 @Injectable({ scope: Scope.REQUEST })
 export class PermissionService {
@@ -39,47 +41,24 @@ export class PermissionService {
     );
   }
 
-  async findAll({
-    take,
-    skip,
-    page,
-    limit,
-    sortBy,
-    sortOrder,
-    search,
-  }: BasePaginationDto): Promise<
-    BasePaginationResponseDto<PermissionResponseDto>
-  > {
-    const allowedSortFields: string[] = [
-      'id',
-      'name',
-      'action',
-      'subject',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    if (!allowedSortFields.includes(sortBy)) {
-      throw new BadRequestException(
-        this.i18n.t('errors.VALIDATION.INVALID_SORT_BY'),
-      );
-    }
-
-    const [permissions, total] = await this.permissionRepository.findAndCount({
-      where: search
-        ? [{ name: ILike(`%${search}%`) }, { action: ILike(`%${search}%`) }]
-        : undefined,
-      order: {
-        [sortBy]: sortOrder === SortOrder.ASC ? 'ASC' : 'DESC',
+  async findAll(query: BasePaginationDto) {
+    const result = await paginate(query, this.permissionRepository, {
+      sortableColumns: ['id', 'name', 'action', 'createdAt', 'updatedAt'],
+      nullSort: 'last',
+      defaultSortBy: [['id', 'DESC']],
+      searchableColumns: ['name', 'action'],
+      select: ['id', 'name', 'action', 'subject', 'createdAt', 'updatedAt'],
+      filterableColumns: {
+        name: [FilterOperator.EQ, FilterSuffix.NOT],
+        action: [FilterOperator.EQ, FilterSuffix.NOT],
+        subject: [FilterOperator.EQ, FilterSuffix.NOT],
+        id: true,
+        createdAt: true,
+        updatedAt: true,
       },
-      skip,
-      take,
     });
 
-    return new BasePaginationResponseDto(
-      PermissionMapper.toDtoList(permissions),
-      { total, page, limit },
-    );
+    return convertPaginatedResult(result, PermissionMapper.toDtoList);
   }
 
   async findOne(id: number): Promise<PermissionResponseDto> {

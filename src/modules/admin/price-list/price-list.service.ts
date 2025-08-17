@@ -13,6 +13,8 @@ import { PriceListMapper } from './mapper/price-list.mapper';
 import { BasePaginationDto } from 'src/common/dto/request/base-pagination.dto';
 import { MessageWithDataResponseDto } from 'src/common/dto/response/message-with-data.res.dto';
 import { MessageResponseDto } from 'src/common/dto/response/message.res.dto';
+import { paginate, FilterOperator, FilterSuffix } from 'nestjs-paginate';
+import { convertPaginatedResult } from 'src/common/utils/pagination.util';
 
 @Injectable()
 export class PriceListService {
@@ -93,64 +95,68 @@ export class PriceListService {
   }
 
   async findAll(query: BasePaginationDto) {
-    const { take, skip, page, limit, sortBy, sortOrder, search } = query;
-
-    const allowedSortFields = [
-      'id',
-      'autoModelId',
-      'autoColorId',
-      'autoPositionId',
-      'basePrice',
-      'wholesalePrice',
-      'retailPrice',
-      'vat',
-      'margin',
-      'validFrom',
-      'validTo',
-      'isActive',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    // Validate sortBy field
-    const validSortBy = allowedSortFields.includes(sortBy)
-      ? sortBy
-      : 'createdAt';
-
-    // Validate sortOrder
-    const validSortOrder = ['ASC', 'DESC'].includes(sortOrder?.toUpperCase())
-      ? (sortOrder.toUpperCase() as 'ASC' | 'DESC')
-      : 'DESC';
-
-    // Build where conditions for search
-    const whereConditions: any[] = [];
-    if (search) {
-      whereConditions.push(
-        { autoModel: { name: ILike(`%${search}%`) } },
-        { autoColor: { name: ILike(`%${search}%`) } },
-        { autoPosition: { name: ILike(`%${search}%`) } },
-      );
-    }
-
-    const [priceLists, total] = await this.priceListRepository.findAndCount({
-      where: whereConditions.length > 0 ? whereConditions : undefined,
+    const result = await paginate(query, this.priceListRepository, {
+      sortableColumns: [
+        'id',
+        'autoModelId',
+        'autoColorId',
+        'autoPositionId',
+        'basePrice',
+        'wholesalePrice',
+        'retailPrice',
+        'vat',
+        'margin',
+        'validFrom',
+        'validTo',
+        'isActive',
+        'createdAt',
+        'updatedAt'
+      ],
+      nullSort: 'last',
+      defaultSortBy: [['id', 'DESC']],
+      searchableColumns: ['autoModel.name', 'autoColor.name', 'autoPosition.name'],
+      select: [
+        'id',
+        'autoModelId',
+        'autoColorId',
+        'autoPositionId',
+        'basePrice',
+        'wholesalePrice',
+        'retailPrice',
+        'vat',
+        'margin',
+        'validFrom',
+        'validTo',
+        'isActive',
+        'createdAt',
+        'updatedAt',
+        'autoModel.id',
+        'autoModel.name',
+        'autoColor.id',
+        'autoColor.name',
+        'autoPosition.id',
+        'autoPosition.name'
+      ],
       relations: ['autoModel', 'autoColor', 'autoPosition'],
-      order: {
-        [validSortBy]: validSortOrder,
+      filterableColumns: {
+        autoModelId: true,
+        autoColorId: true,
+        autoPositionId: true,
+        basePrice: true,
+        wholesalePrice: true,
+        retailPrice: true,
+        vat: true,
+        margin: true,
+        validFrom: true,
+        validTo: true,
+        isActive: true,
+        id: true,
+        createdAt: true,
+        updatedAt: true,
       },
-      skip,
-      take,
     });
 
-    return {
-      data: PriceListMapper.toDtoList(priceLists),
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
+    return convertPaginatedResult(result, PriceListMapper.toDtoList);
   }
 
   async findOne(id: number) {

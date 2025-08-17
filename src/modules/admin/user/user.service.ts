@@ -18,6 +18,8 @@ import {
 } from 'src/common/dto/response';
 import { UserMapper } from './mapper/user.mapper';
 import * as bcrypt from 'bcrypt';
+import { paginate, FilterOperator, FilterSuffix } from 'nestjs-paginate';
+import { convertPaginatedResult } from 'src/common/utils/pagination.util';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserService {
@@ -78,61 +80,23 @@ export class UserService {
   }
 
   public async findAll(query: BasePaginationDto) {
-    const { take, skip, page, limit, sortBy, sortOrder, search } = query;
-
-    const allowedSortFields = [
-      'id',
-      'name',
-      'lastName',
-      'phone',
-      'createdAt',
-    ];
-
-    // Validate sortBy field
-    const validSortBy = allowedSortFields.includes(sortBy)
-      ? sortBy
-      : 'createdAt';
-
-    // Validate sortOrder
-    const validSortOrder = ['ASC', 'DESC'].includes(sortOrder?.toUpperCase())
-      ? (sortOrder.toUpperCase() as 'ASC' | 'DESC')
-      : 'DESC';
-
-    // Build where conditions for search
-    const whereConditions: any[] = [];
-    if (search) {
-      whereConditions.push(
-        { name: ILike(`%${search}%`) },
-        { lastName: ILike(`%${search}%`) },
-        { phone: ILike(`%${search}%`) },
-      );
-    }
-
-    const [users, total] = await this.userRepository.findAndCount({
-      select: {
+    const result = await paginate(query, this.userRepository, {
+      sortableColumns: ['id', 'name', 'lastName', 'phone', 'createdAt'],
+      nullSort: 'last',
+      defaultSortBy: [['id', 'DESC']],
+      searchableColumns: ['name', 'lastName', 'phone'],
+      select: ['id', 'name', 'lastName', 'phone', 'createdAt', 'roles.id', 'roles.name'],
+      relations: ['roles'],
+      filterableColumns: {
+        name: [FilterOperator.EQ, FilterSuffix.NOT],
+        lastName: [FilterOperator.EQ, FilterSuffix.NOT],
+        phone: [FilterOperator.EQ, FilterSuffix.NOT],
         id: true,
-        name: true,
-        lastName: true,
-        phone: true,
         createdAt: true,
-        roles: {
-          id: true,
-          name: true,
-        },
       },
-      where: whereConditions.length > 0 ? whereConditions : undefined,
-      order: {
-        [validSortBy]: validSortOrder,
-      },
-      take,
-      skip,
     });
 
-    return new BasePaginationResponseDto(UserMapper.toDtoList(users), {
-      total,
-      page,
-      limit,
-    });
+    return convertPaginatedResult(result, UserMapper.toDtoList);
   }
 
   public async findOne(id: number) {

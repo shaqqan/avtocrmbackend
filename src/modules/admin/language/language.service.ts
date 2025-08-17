@@ -18,6 +18,8 @@ import { Repository, ILike } from 'typeorm';
 import { Language } from 'src/databases/typeorm/entities/language.entity';
 import { LanguageMapper } from './mapper/language.mapper';
 import { LanguageResponseDto } from './dto/response/language.res.dto';
+import { paginate, FilterOperator, FilterSuffix } from 'nestjs-paginate';
+import { convertPaginatedResult } from 'src/common/utils/pagination.util';
 
 @Injectable({ scope: Scope.REQUEST })
 export class LanguageService {
@@ -38,48 +40,24 @@ export class LanguageService {
     );
   }
 
-  public async findAll({
-    take,
-    skip,
-    page,
-    limit,
-    sortBy,
-    sortOrder,
-    search,
-  }: BasePaginationDto): Promise<
-    BasePaginationResponseDto<LanguageResponseDto>
-  > {
-    const allowedSortFields: string[] = [
-      'id',
-      'name',
-      'locale',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    if (!allowedSortFields.includes(sortBy)) {
-      throw new BadRequestException(
-        this.i18n.t('errors.VALIDATION.INVALID_SORT_BY'),
-      );
-    }
-
-    const [languages, total] = await this.languageRepository.findAndCount({
-      relations: { icon: true },
-      where: search
-        ? [{ name: ILike(`%${search}%`) }, { locale: ILike(`%${search}%`) }]
-        : undefined,
-      order: {
-        [sortBy]: sortOrder === SortOrder.ASC ? 'ASC' : 'DESC',
+  public async findAll(query: BasePaginationDto) {
+    const result = await paginate(query, this.languageRepository, {
+      sortableColumns: ['id', 'name', 'locale', 'createdAt', 'updatedAt'],
+      nullSort: 'last',
+      defaultSortBy: [['id', 'DESC']],
+      searchableColumns: ['name', 'locale'],
+      select: ['id', 'name', 'locale', 'createdAt', 'updatedAt', 'icon.id', 'icon.filename'],
+      relations: ['icon'],
+      filterableColumns: {
+        name: [FilterOperator.EQ, FilterSuffix.NOT],
+        locale: [FilterOperator.EQ, FilterSuffix.NOT],
+        id: true,
+        createdAt: true,
+        updatedAt: true,
       },
-      skip,
-      take,
     });
 
-    return new BasePaginationResponseDto(LanguageMapper.toDtoList(languages), {
-      total,
-      page: page,
-      limit: limit,
-    });
+    return convertPaginatedResult(result, LanguageMapper.toDtoList);
   }
 
   public async findOne(id: number): Promise<LanguageResponseDto> {

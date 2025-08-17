@@ -13,6 +13,8 @@ import { CustomerMapper } from './mapper/customer.mapper';
 import { BasePaginationDto } from 'src/common/dto/request/base-pagination.dto';
 import { MessageWithDataResponseDto } from 'src/common/dto/response/message-with-data.res.dto';
 import { MessageResponseDto } from 'src/common/dto/response/message.res.dto';
+import { paginate, FilterOperator, FilterSuffix } from 'nestjs-paginate';
+import { convertPaginatedResult } from 'src/common/utils/pagination.util';
 
 @Injectable()
 export class CustomerService {
@@ -45,61 +47,26 @@ export class CustomerService {
   }
 
   async findAll(query: BasePaginationDto) {
-    const { take, skip, page, limit, sortBy, sortOrder, search } = query;
-
-    const allowedSortFields = [
-      'id',
-      'pinfl',
-      'firstName',
-      'lastName',
-      'middleName',
-      'phoneNumber',
-      'address',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    // Validate sortBy field
-    const validSortBy = allowedSortFields.includes(sortBy)
-      ? sortBy
-      : 'createdAt';
-
-    // Validate sortOrder
-    const validSortOrder = ['ASC', 'DESC'].includes(sortOrder?.toUpperCase())
-      ? (sortOrder.toUpperCase() as 'ASC' | 'DESC')
-      : 'DESC';
-
-    // Build where conditions for search
-    let whereConditions: any = {};
-    if (search && search.trim()) {
-      whereConditions = [
-        { pinfl: ILike(`%${search.trim()}%`) },
-        { firstName: ILike(`%${search.trim()}%`) },
-        { lastName: ILike(`%${search.trim()}%`) },
-        { middleName: ILike(`%${search.trim()}%`) },
-        { phoneNumber: ILike(`%${search.trim()}%`) },
-        { address: ILike(`%${search.trim()}%`) },
-      ];
-    }
-
-    const [customers, total] = await this.customerRepository.findAndCount({
-      where: whereConditions,
-      order: {
-        [validSortBy]: validSortOrder,
+    const result = await paginate(query, this.customerRepository, {
+      sortableColumns: ['id', 'pinfl', 'firstName', 'lastName', 'middleName', 'phoneNumber', 'address', 'createdAt', 'updatedAt'],
+      nullSort: 'last',
+      defaultSortBy: [['id', 'DESC']],
+      searchableColumns: ['pinfl', 'firstName', 'lastName', 'middleName', 'phoneNumber', 'address'],
+      select: ['id', 'pinfl', 'firstName', 'lastName', 'middleName', 'phoneNumber', 'address', 'createdAt', 'updatedAt'],
+      filterableColumns: {
+        pinfl: [FilterOperator.EQ, FilterSuffix.NOT],
+        firstName: [FilterOperator.EQ, FilterSuffix.NOT],
+        lastName: [FilterOperator.EQ, FilterSuffix.NOT],
+        middleName: [FilterOperator.EQ, FilterSuffix.NOT],
+        phoneNumber: [FilterOperator.EQ, FilterSuffix.NOT],
+        address: [FilterOperator.EQ, FilterSuffix.NOT],
+        id: true,
+        createdAt: true,
+        updatedAt: true,
       },
-      skip,
-      take,
     });
 
-    return {
-      data: CustomerMapper.toDtoList(customers),
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
+    return convertPaginatedResult(result, CustomerMapper.toDtoList);
   }
 
   async findOne(id: number) {

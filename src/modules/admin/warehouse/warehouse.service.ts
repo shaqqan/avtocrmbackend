@@ -13,6 +13,8 @@ import { WarehouseMapper } from './mapper/warehouse.mapper';
 import { BasePaginationDto } from 'src/common/dto/request/base-pagination.dto';
 import { MessageWithDataResponseDto } from 'src/common/dto/response/message-with-data.res.dto';
 import { MessageResponseDto } from 'src/common/dto/response/message.res.dto';
+import { paginate, FilterOperator, FilterSuffix } from 'nestjs-paginate';
+import { convertPaginatedResult } from 'src/common/utils/pagination.util';
 
 @Injectable()
 export class WarehouseService {
@@ -50,61 +52,22 @@ export class WarehouseService {
   }
 
   public async findAll(query: BasePaginationDto) {
-    const { take, skip, page, limit, sortBy, sortOrder, search } = query;
-
-    const allowedSortFields = [
-      'id',
-      'name',
-      'address',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    // Validate sortBy field
-    const validSortBy = allowedSortFields.includes(sortBy)
-      ? sortBy
-      : 'createdAt';
-
-    // Validate sortOrder
-    const validSortOrder = ['ASC', 'DESC'].includes(sortOrder?.toUpperCase())
-      ? (sortOrder.toUpperCase() as 'ASC' | 'DESC')
-      : 'DESC';
-
-    // Build where conditions for search
-    const whereConditions: any[] = [];
-    if (search) {
-      whereConditions.push(
-        { name: ILike(`%${search}%`) },
-        { address: ILike(`%${search}%`) },
-      );
-    }
-
-    const [warehouses, total] = await this.warehouseRepository.findAndCount({
-      select: {
+    const result = await paginate(query, this.warehouseRepository, {
+      sortableColumns: ['id', 'name', 'address', 'createdAt', 'updatedAt'],
+      nullSort: 'last',
+      defaultSortBy: [['id', 'DESC']],
+      searchableColumns: ['name', 'address'],
+      select: ['id', 'name', 'address', 'location', 'createdAt', 'updatedAt'],
+      filterableColumns: {
+        name: [FilterOperator.EQ, FilterSuffix.NOT],
+        address: [FilterOperator.EQ, FilterSuffix.NOT],
         id: true,
-        name: true,
-        address: true,
-        location: true,
         createdAt: true,
         updatedAt: true,
       },
-      where: whereConditions.length > 0 ? whereConditions : undefined,
-      order: {
-        [validSortBy]: validSortOrder,
-      },
-      skip,
-      take,
     });
 
-    return {
-      data: WarehouseMapper.toDtoList(warehouses),
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
+    return convertPaginatedResult(result, WarehouseMapper.toDtoList);
   }
 
   public async findOne(id: number) {

@@ -13,6 +13,8 @@ import { OrderMapper } from './mapper/order.mapper';
 import { BasePaginationDto } from 'src/common/dto/request/base-pagination.dto';
 import { MessageWithDataResponseDto } from 'src/common/dto/response/message-with-data.res.dto';
 import { MessageResponseDto } from 'src/common/dto/response/message.res.dto';
+import { paginate, FilterOperator, FilterSuffix } from 'nestjs-paginate';
+import { convertPaginatedResult } from 'src/common/utils/pagination.util';
 
 @Injectable()
 export class OrderService {
@@ -96,66 +98,80 @@ export class OrderService {
   }
 
   async findAll(query: BasePaginationDto) {
-    const { take, skip, page, limit, sortBy, sortOrder, search } = query;
-
-    const allowedSortFields = [
-      'id',
-      'customerId',
-      'autoModelId',
-      'autoPositionId',
-      'autoColorId',
-      'contractCode',
-      'state',
-      'queueNumber',
-      'amountDue',
-      'orderDate',
-      'price',
-      'expectedDeliveryDate',
-      'statusChangedAt',
-      'frozen',
-      'paidPercentage',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    // Validate sortBy field
-    const validSortBy = allowedSortFields.includes(sortBy)
-      ? sortBy
-      : 'createdAt';
-
-    // Validate sortOrder
-    const validSortOrder = ['ASC', 'DESC'].includes(sortOrder?.toUpperCase())
-      ? (sortOrder.toUpperCase() as 'ASC' | 'DESC')
-      : 'DESC';
-
-    // Build where conditions for search
-    let whereConditions: any = {};
-    if (search && search.trim()) {
-      whereConditions = [
-        { contractCode: ILike(`%${search.trim()}%`) },
-        { state: ILike(`%${search.trim()}%`) },
-      ];
-    }
-
-    const [orders, total] = await this.orderRepository.findAndCount({
-      where: whereConditions,
+    const result = await paginate(query, this.orderRepository, {
+      sortableColumns: [
+        'id',
+        'customerId',
+        'autoModelId',
+        'autoPositionId',
+        'autoColorId',
+        'contractCode',
+        'state',
+        'queueNumber',
+        'amountDue',
+        'orderDate',
+        'price',
+        'expectedDeliveryDate',
+        'statusChangedAt',
+        'frozen',
+        'paidPercentage',
+        'createdAt',
+        'updatedAt'
+      ],
+      nullSort: 'last',
+      defaultSortBy: [['id', 'DESC']],
+      searchableColumns: ['contractCode', 'state'],
+      select: [
+        'id',
+        'customerId',
+        'autoModelId',
+        'autoPositionId',
+        'autoColorId',
+        'contractCode',
+        'state',
+        'queueNumber',
+        'amountDue',
+        'orderDate',
+        'price',
+        'expectedDeliveryDate',
+        'statusChangedAt',
+        'frozen',
+        'paidPercentage',
+        'createdAt',
+        'updatedAt',
+        'customer.id',
+        'customer.firstName',
+        'customer.lastName',
+        'autoModel.id',
+        'autoModel.name',
+        'autoPosition.id',
+        'autoPosition.name',
+        'autoColor.id',
+        'autoColor.name'
+      ],
       relations: ['customer', 'autoModel', 'autoPosition', 'autoColor'],
-      order: {
-        [validSortBy]: validSortOrder,
+      filterableColumns: {
+        contractCode: [FilterOperator.EQ, FilterSuffix.NOT],
+        state: [FilterOperator.EQ, FilterSuffix.NOT],
+        customerId: true,
+        autoModelId: true,
+        autoPositionId: true,
+        autoColorId: true,
+        id: true,
+        queueNumber: true,
+        amountDue: true,
+        orderDate: true,
+        price: true,
+        expectedDeliveryDate: true,
+        statusChangedAt: true,
+        frozen: true,
+        paidPercentage: true,
+        createdAt: true,
+        updatedAt: true,
       },
-      skip,
-      take,
     });
 
-    return {
-      data: OrderMapper.toDtoList(orders),
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
+    return convertPaginatedResult(result, OrderMapper.toDtoList);
   }
 
   async findOne(id: number) {

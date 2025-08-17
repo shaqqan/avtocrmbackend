@@ -18,6 +18,8 @@ import { BasePaginationDto, SortOrder } from 'src/common/dto/request';
 import { BasePaginationResponseDto } from 'src/common/dto/response';
 import { AssignPermissionDto } from './dto/request/assign-permission.dto';
 import { RoleMapper } from './mapper/role.mapper';
+import { paginate, FilterOperator, FilterSuffix } from 'nestjs-paginate';
+import { convertPaginatedResult } from 'src/common/utils/pagination.util';
 import { RoleResponseDto } from './dto/response/role.res.dto';
 
 @Injectable({ scope: Scope.REQUEST })
@@ -50,51 +52,23 @@ export class RoleService {
     );
   }
 
-  async findAll({
-    take,
-    skip,
-    page,
-    limit,
-    sortBy,
-    sortOrder,
-    search,
-  }: BasePaginationDto): Promise<BasePaginationResponseDto<RoleResponseDto>> {
-    const allowedSortFields: string[] = [
-      'id',
-      'name',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    if (!allowedSortFields.includes(sortBy)) {
-      throw new BadRequestException(
-        this.i18n.t('errors.VALIDATION.INVALID_SORT_BY'),
-      );
-    }
-
-    const [roles, total] = await this.roleRepository.findAndCount({
-      select: {
-        permissions: {
-          id: true,
-          name: true,
-        },
+  async findAll(query: BasePaginationDto) {
+    const result = await paginate(query, this.roleRepository, {
+      sortableColumns: ['id', 'name', 'createdAt', 'updatedAt'],
+      nullSort: 'last',
+      defaultSortBy: [['id', 'DESC']],
+      searchableColumns: ['name'],
+      select: ['id', 'name', 'createdAt', 'updatedAt', 'permissions.id', 'permissions.name'],
+      relations: ['permissions'],
+      filterableColumns: {
+        name: [FilterOperator.EQ, FilterSuffix.NOT],
+        id: true,
+        createdAt: true,
+        updatedAt: true,
       },
-      relations: {
-        permissions: true,
-      },
-      where: search ? [{ name: ILike(`%${search}%`) }] : undefined,
-      order: {
-        [sortBy]: sortOrder === SortOrder.ASC ? 'ASC' : 'DESC',
-      },
-      skip,
-      take,
     });
 
-    return new BasePaginationResponseDto(RoleMapper.toDtoList(roles), {
-      total,
-      page,
-      limit,
-    });
+    return convertPaginatedResult(result, RoleMapper.toDtoList);
   }
 
   async findOne(id: number): Promise<RoleResponseDto> {
