@@ -16,6 +16,7 @@ import { AutoPositionService } from './auto-position.service';
 import { CreateAutoPositionDto } from './dto/request/create-auto-position.dto';
 import { UpdateAutoPositionDto } from './dto/request/update-auto-position.dto';
 import { BasePaginationDto } from 'src/common/dto/request/base-pagination.dto';
+import { FindAllAutoPositionDto } from './dto/request/find-all-auto-position.dto';
 import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { User } from 'src/databases/typeorm/entities';
@@ -51,7 +52,10 @@ export class AutoPositionController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all auto positions with pagination' })
+  @ApiOperation({ 
+    summary: 'Get all auto positions with pagination and optional autoModelId filter',
+    description: 'Retrieve auto positions with optional filtering by autoModelId. When autoModelId is provided, only positions for that specific model will be returned.'
+  })
   @ApiResponse({
     status: 200,
     description: 'Auto positions retrieved successfully',
@@ -60,7 +64,7 @@ export class AutoPositionController {
     status: 401,
     description: 'Unauthorized',
   })
-  findAll(@Query() query: BasePaginationDto) {
+  findAll(@Query() query: FindAllAutoPositionDto) {
     return this.autoPositionService.findAll(query);
   }
 

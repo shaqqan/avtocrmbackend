@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { AutoModels, AutoColor, Customer, AutoPosition } from "../entities";
 
 export enum OrderState {
@@ -70,9 +70,10 @@ export class Order extends BaseEntity {
     @Column({ nullable: true })
     client_table_id: number
 
-    @Column()
+    @CreateDateColumn({ type: 'timestamp' })
     createdAt: Date;
 
-    @Column()
+    @UpdateDateColumn({ type: 'timestamp' })
     updatedAt: Date;
+
 }

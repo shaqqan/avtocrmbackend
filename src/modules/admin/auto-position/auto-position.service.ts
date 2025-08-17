@@ -11,6 +11,7 @@ import { CreateAutoPositionDto } from './dto/request/create-auto-position.dto';
 import { UpdateAutoPositionDto } from './dto/request/update-auto-position.dto';
 import { AutoPositionMapper } from './mapper/auto-position.mapper';
 import { BasePaginationDto } from 'src/common/dto/request/base-pagination.dto';
+import { FindAllAutoPositionDto } from './dto/request/find-all-auto-position.dto';
 import { MessageWithDataResponseDto } from 'src/common/dto/response/message-with-data.res.dto';
 import { MessageResponseDto } from 'src/common/dto/response/message.res.dto';
 
@@ -70,8 +71,8 @@ export class AutoPositionService {
     );
   }
 
-  public async findAll(query: BasePaginationDto) {
-    const { take, skip, page, limit, sortBy, sortOrder, search } = query;
+  public async findAll(query: FindAllAutoPositionDto) {
+    const { take, skip, page, limit, sortBy, sortOrder, search, autoModelId } = query;
 
     const allowedSortFields = [
       'id',
@@ -91,13 +92,29 @@ export class AutoPositionService {
       ? (sortOrder.toUpperCase() as 'ASC' | 'DESC')
       : 'DESC';
 
-    // Build where conditions for search
-    const whereConditions: any[] = [];
+    // Build where conditions for search and filters
+    let whereCondition: any = {};
+    
+    // Add autoModelId filter
+    if (autoModelId) {
+      whereCondition.autoModelId = autoModelId;
+    }
+    
+    // Add search conditions
     if (search) {
-      whereConditions.push(
-        { name: ILike(`%${search}%`) },
-        { autoModel: { name: ILike(`%${search}%`) } },
-      );
+      if (autoModelId) {
+        // If we have autoModelId filter, we need to use OR for search
+        whereCondition = [
+          { ...whereCondition, name: ILike(`%${search}%`) },
+          { ...whereCondition, autoModel: { name: ILike(`%${search}%`) } },
+        ];
+      } else {
+        // If no autoModelId filter, use simple OR for search
+        whereCondition = [
+          { name: ILike(`%${search}%`) },
+          { autoModel: { name: ILike(`%${search}%`) } },
+        ];
+      }
     }
 
     const [positions, total] = await this.autoPositionRepository.findAndCount({
@@ -116,7 +133,7 @@ export class AutoPositionService {
           },
         },
       },
-      where: whereConditions.length > 0 ? whereConditions : undefined,
+      where: whereCondition,
       order: {
         [validSortBy]: validSortOrder,
       },
