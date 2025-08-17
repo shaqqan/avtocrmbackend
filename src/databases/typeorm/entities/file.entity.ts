@@ -1,4 +1,4 @@
-import { FileCategory, FileFormat } from 'src/common/enums';
+import { FileCategory, FileFormat } from '../../../common/enums';
 import {
   Entity,
   PrimaryGeneratedColumn,
