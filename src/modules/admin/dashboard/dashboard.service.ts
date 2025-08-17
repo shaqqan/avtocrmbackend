@@ -5,7 +5,7 @@ import { Order, OrderState, AutoModels, Stock, StockStatus, Customer } from 'src
 
 export interface SalesStatistics {
   period: string;
-  count: number;
+  count: number; 
   revenue: number;
 }
 

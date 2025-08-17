@@ -7,10 +7,7 @@ import { ValidationErrorHandler } from './common/pipes';
 import { I18nService } from 'nestjs-i18n';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
-import compression from '@fastify/compress';
-// import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { asset } from './common/utils/asset';
-import fastifyStatic from '@fastify/static';
 import * as path from 'path';
 import { Logger } from '@nestjs/common';
 
@@ -44,15 +41,15 @@ import { Logger } from '@nestjs/common';
       bufferLogs: true, // Buffer logs for better performance
       abortOnError: false, // Don't abort on errors for better uptime
     },
-  ); 
+  );
 
   global.asset = asset;
 
-  const i18n = app.get(I18nService); 
+  const i18n = app.get(I18nService);
   await app.register(require('@fastify/multipart'), {
     // Attach fields to request (muhim!)
-    attachFieldsToBody: true, 
-    limits: { 
+    attachFieldsToBody: true,
+    limits: {
       fieldNameSize: 100,
       fieldSize: 1000000,
       fields: 10,
@@ -62,7 +59,7 @@ import { Logger } from '@nestjs/common';
     },
   });
 
-  await app.register(fastifyStatic, {
+  await app.register(require('@fastify/static'), {
     root: path.join(process.cwd(), 'storage'),
     prefix: '/storage/',
     // Optimize static file serving
@@ -72,7 +69,7 @@ import { Logger } from '@nestjs/common';
 
   // Create a standard logger
   // const logger = new Logger('Application');
-  
+
   // Register global filters and pipes in the correct order
   // app.useGlobalFilters(new GlobalExceptionFilter(logger));
   app.useGlobalPipes(new ValidationErrorHandler(i18n));
@@ -80,15 +77,15 @@ import { Logger } from '@nestjs/common';
 
   // Enhanced compression configuration for maximum performance
   if (isProd) {
-    await app.register(compression, {
-      encodings: ['gzip'],
-      threshold: 2048,
-      zlibOptions: {
-        level: 4,
-        memLevel: 8,
-      },
-    });
-  }
+      await app.register(require('@fastify/compress'), {
+        encodings: ['gzip'],
+        threshold: 2048,
+        zlibOptions: {
+          level: 4,
+          memLevel: 8,
+        },
+      });
+    }
 
   if (!isProd) {
     setupSwaggerAdmin(app);
@@ -102,7 +99,8 @@ import { Logger } from '@nestjs/common';
   await app.listen(
     {
       port: serverConfig.port,
-      host: serverConfig.host,
+      // @ts-ignore
+      host: '0.0.0.0' ? serverConfig.host : '127.0.0.1',
       // High-performance server options
       backlog: 511, // Maximum length of the queue of pending connections
     },
@@ -119,7 +117,7 @@ import { Logger } from '@nestjs/common';
           environment: serverConfig.env,
         }
       );
-      
+
       if (isProd) {
         console.log('🚀 Production mode: Optimized for maximum performance', {
           module: 'main',
