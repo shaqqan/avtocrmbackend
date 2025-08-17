@@ -77,15 +77,15 @@ import { Logger } from '@nestjs/common';
 
   // Enhanced compression configuration for maximum performance
   if (isProd) {
-      await app.register(require('@fastify/compress'), {
-        encodings: ['gzip'],
-        threshold: 2048,
-        zlibOptions: {
-          level: 4,
-          memLevel: 8,
-        },
-      });
-    }
+    await app.register(require('@fastify/compress'), {
+      encodings: ['gzip'],
+      threshold: 2048,
+      zlibOptions: {
+        level: 4,
+        memLevel: 8,
+      },
+    });
+  }
 
   if (!isProd) {
     setupSwaggerAdmin(app);
@@ -99,8 +99,7 @@ import { Logger } from '@nestjs/common';
   await app.listen(
     {
       port: serverConfig.port,
-      // @ts-ignore
-      host: '0.0.0.0' ? serverConfig.host : '127.0.0.1',
+      host: serverConfig.host,
       // High-performance server options
       backlog: 511, // Maximum length of the queue of pending connections
     },
