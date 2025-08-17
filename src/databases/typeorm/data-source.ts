@@ -13,7 +13,7 @@ export const dataSourceOptions: DataSourceOptions = {
   entities: [path.join(__dirname, '..', '..', '**', '*.entity{.ts,.js}')],
   migrations: [path.join(__dirname, 'migrations', '*{.ts,.js}')],
   subscribers: [path.join(__dirname, 'subscribers', '*.subscriber{.ts,.js}')],
-  synchronize: true, // Disabled to use migrations instead
+  synchronize: false, // Disabled to use migrations instead
   // Logging optimizations (disable in production)
   logging: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : false,
 
