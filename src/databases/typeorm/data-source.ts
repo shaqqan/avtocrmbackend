@@ -13,7 +13,7 @@ export const dataSourceOptions: DataSourceOptions = {
   entities: [path.join(__dirname, '..', '..', '**', '*.entity{.ts,.js}')],
   migrations: [path.join(__dirname, 'migrations', '*{.ts,.js}')],
   subscribers: [path.join(__dirname, 'subscribers', '*.subscriber{.ts,.js}')],
-  synchronize: false, //process.env.NODE_ENV === 'development',
+  synchronize: true, //process.env.NODE_ENV === 'development',
   // Connection pooling for high performance
   extra: {
     connectionLimit: 100,
