@@ -15,6 +15,7 @@ import { CreateUserDto } from './dto/request/create-user.dto';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { BasePaginationDto } from 'src/common/dto/request';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Paginate, PaginateQuery } from 'nestjs-paginate';
 import { ApiGlobalResponses } from 'src/common/decorators/swagger';
 import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
 import { RequirePermissions } from 'src/common/decorators/permissions.decorator';
@@ -39,7 +40,7 @@ export class UserController {
   @Get()
   @RequirePermissions(PermissionsEnum.READ_USER)
   @ApiOperation({ summary: 'Get all users with pagination' })
-  async findAll(@Query() query: BasePaginationDto) {
+  async findAll(@Paginate() query: PaginateQuery) {
     return this.userService.findAll(query);
   }
 

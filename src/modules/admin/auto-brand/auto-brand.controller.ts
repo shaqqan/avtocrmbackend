@@ -16,6 +16,7 @@ import { AutoBrandService } from './auto-brand.service';
 import { CreateAutoBrandDto } from './dto/request/create-auto-brand.dto';
 import { UpdateAutoBrandDto } from './dto/request/update-auto-brand.dto';
 import { BasePaginationDto } from 'src/common/dto/request/base-pagination.dto';
+import { Paginate, PaginateQuery } from 'nestjs-paginate';
 import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { User } from 'src/databases/typeorm/entities';
@@ -60,7 +61,7 @@ export class AutoBrandController {
     status: 401,
     description: 'Unauthorized',
   })
-  findAll(@Query() query: BasePaginationDto) {
+  findAll(@Paginate() query: PaginateQuery) {
     return this.autoBrandService.findAll(query);
   }
 

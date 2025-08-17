@@ -10,7 +10,9 @@ import { PriceList, AutoModels, AutoColor, AutoPosition } from 'src/databases/ty
 import { CreatePriceListDto } from './dto/request/create-price-list.dto';
 import { UpdatePriceListDto } from './dto/request/update-price-list.dto';
 import { PriceListMapper } from './mapper/price-list.mapper';
-import { BasePaginationDto } from 'src/common/dto/request/base-pagination.dto';
+import { BasePaginationDto, PaginateQuery, Paginated } from 'src/common/dto/request/base-pagination.dto';
+import { paginate } from 'nestjs-paginate';
+import { priceListPaginateConfig } from 'src/common/utils/pagination.utils';
 import { MessageWithDataResponseDto } from 'src/common/dto/response/message-with-data.res.dto';
 import { MessageResponseDto } from 'src/common/dto/response/message.res.dto';
 
@@ -92,65 +94,11 @@ export class PriceListService {
     );
   }
 
-  async findAll(query: BasePaginationDto) {
-    const { take, skip, page, limit, sortBy, sortOrder, search } = query;
-
-    const allowedSortFields = [
-      'id',
-      'autoModelId',
-      'autoColorId',
-      'autoPositionId',
-      'basePrice',
-      'wholesalePrice',
-      'retailPrice',
-      'vat',
-      'margin',
-      'validFrom',
-      'validTo',
-      'isActive',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    // Validate sortBy field
-    const validSortBy = allowedSortFields.includes(sortBy)
-      ? sortBy
-      : 'createdAt';
-
-    // Validate sortOrder
-    const validSortOrder = ['ASC', 'DESC'].includes(sortOrder?.toUpperCase())
-      ? (sortOrder.toUpperCase() as 'ASC' | 'DESC')
-      : 'DESC';
-
-    // Build where conditions for search
-    const whereConditions: any[] = [];
-    if (search) {
-      whereConditions.push(
-        { autoModel: { name: ILike(`%${search}%`) } },
-        { autoColor: { name: ILike(`%${search}%`) } },
-        { autoPosition: { name: ILike(`%${search}%`) } },
-      );
-    }
-
-    const [priceLists, total] = await this.priceListRepository.findAndCount({
-      where: whereConditions.length > 0 ? whereConditions : undefined,
+  async findAll(query: PaginateQuery): Promise<Paginated<PriceList>> {
+    return paginate(query, this.priceListRepository, {
+      ...priceListPaginateConfig,
       relations: ['autoModel', 'autoColor', 'autoPosition'],
-      order: {
-        [validSortBy]: validSortOrder,
-      },
-      skip,
-      take,
     });
-
-    return {
-      data: PriceListMapper.toDtoList(priceLists),
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
   }
 
   async findOne(id: number) {

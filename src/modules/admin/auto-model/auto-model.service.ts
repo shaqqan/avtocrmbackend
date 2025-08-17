@@ -6,19 +6,21 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ILike } from 'typeorm';
 import { I18nService } from 'nestjs-i18n';
-import { AutoModels, AutoBrand } from 'src/databases/typeorm/entities';
+import { AutoModels as AutoModel, AutoBrand } from 'src/databases/typeorm/entities';
 import { CreateAutoModelDto } from './dto/request/create-auto-model.dto';
 import { UpdateAutoModelDto } from './dto/request/update-auto-model.dto';
 import { AutoModelMapper } from './mapper/auto-model.mapper';
-import { BasePaginationDto } from 'src/common/dto/request/base-pagination.dto';
+import { BasePaginationDto, PaginateQuery, Paginated } from 'src/common/dto/request/base-pagination.dto';
+import { paginate } from 'nestjs-paginate';
+import { autoModelPaginateConfig } from 'src/common/utils/pagination.utils';
 import { MessageWithDataResponseDto } from 'src/common/dto/response/message-with-data.res.dto';
 import { MessageResponseDto } from 'src/common/dto/response/message.res.dto';
 
 @Injectable()
 export class AutoModelService {
   constructor(
-    @InjectRepository(AutoModels)
-    private readonly autoModelRepository: Repository<AutoModels>,
+    @InjectRepository(AutoModel)
+    private readonly autoModelRepository: Repository<AutoModel>,
     @InjectRepository(AutoBrand)
     private readonly autoBrandRepository: Repository<AutoBrand>,
     private readonly i18n: I18nService,
@@ -70,68 +72,11 @@ export class AutoModelService {
     );
   }
 
-  public async findAll(query: BasePaginationDto) {
-    const { take, skip, page, limit, sortBy, sortOrder, search } = query;
-
-    const allowedSortFields = [
-      'id',
-      'name',
-      'brandId',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    // Validate sortBy field
-    const validSortBy = allowedSortFields.includes(sortBy)
-      ? sortBy
-      : 'createdAt';
-
-    // Validate sortOrder
-    const validSortOrder = ['ASC', 'DESC'].includes(sortOrder?.toUpperCase())
-      ? (sortOrder.toUpperCase() as 'ASC' | 'DESC')
-      : 'DESC';
-
-    // Build where conditions for search
-    const whereConditions: any[] = [];
-    if (search) {
-      whereConditions.push(
-        { name: ILike(`%${search}%`) },
-        { brand: { name: ILike(`%${search}%`) } },
-      );
-    }
-
-    const [models, total] = await this.autoModelRepository.findAndCount({
-      select: {
-        id: true,
-        name: true,
-        brandId: true,
-        createdAt: true,
-        updatedAt: true,
-        brand: {
-          id: true,
-          name: true,
-        },
-      },
-      where: whereConditions.length > 0 ? whereConditions : undefined,
-      order: {
-        [validSortBy]: validSortOrder,
-      },
-      relations: {
-        brand: true,
-      },
-      skip,
-      take,
+  public async findAll(query: PaginateQuery): Promise<Paginated<AutoModel>> {
+    return paginate(query, this.autoModelRepository, {
+      ...autoModelPaginateConfig,
+      relations: ['brand'],
     });
-
-    return {
-      data: AutoModelMapper.toDtoList(models),
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
   }
 
   public async findOne(id: number) {

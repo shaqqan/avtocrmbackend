@@ -10,7 +10,9 @@ import { Order, Customer, AutoModels, AutoPosition, AutoColor } from 'src/databa
 import { CreateOrderDto } from './dto/request/create-order.dto';
 import { UpdateOrderDto } from './dto/request/update-order.dto';
 import { OrderMapper } from './mapper/order.mapper';
-import { BasePaginationDto } from 'src/common/dto/request/base-pagination.dto';
+import { BasePaginationDto, PaginateQuery, Paginated } from 'src/common/dto/request/base-pagination.dto';
+import { paginate } from 'nestjs-paginate';
+import { orderPaginateConfig } from 'src/common/utils/pagination.utils';
 import { MessageWithDataResponseDto } from 'src/common/dto/response/message-with-data.res.dto';
 import { MessageResponseDto } from 'src/common/dto/response/message.res.dto';
 
@@ -95,67 +97,11 @@ export class OrderService {
     );
   }
 
-  async findAll(query: BasePaginationDto) {
-    const { take, skip, page, limit, sortBy, sortOrder, search } = query;
-
-    const allowedSortFields = [
-      'id',
-      'customerId',
-      'autoModelId',
-      'autoPositionId',
-      'autoColorId',
-      'contractCode',
-      'state',
-      'queueNumber',
-      'amountDue',
-      'orderDate',
-      'price',
-      'expectedDeliveryDate',
-      'statusChangedAt',
-      'frozen',
-      'paidPercentage',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    // Validate sortBy field
-    const validSortBy = allowedSortFields.includes(sortBy)
-      ? sortBy
-      : 'createdAt';
-
-    // Validate sortOrder
-    const validSortOrder = ['ASC', 'DESC'].includes(sortOrder?.toUpperCase())
-      ? (sortOrder.toUpperCase() as 'ASC' | 'DESC')
-      : 'DESC';
-
-    // Build where conditions for search
-    let whereConditions: any = {};
-    if (search && search.trim()) {
-      whereConditions = [
-        { contractCode: ILike(`%${search.trim()}%`) },
-        { state: ILike(`%${search.trim()}%`) },
-      ];
-    }
-
-    const [orders, total] = await this.orderRepository.findAndCount({
-      where: whereConditions,
+  async findAll(query: PaginateQuery): Promise<Paginated<Order>> {
+    return paginate(query, this.orderRepository, {
+      ...orderPaginateConfig,
       relations: ['customer', 'autoModel', 'autoPosition', 'autoColor'],
-      order: {
-        [validSortBy]: validSortOrder,
-      },
-      skip,
-      take,
     });
-
-    return {
-      data: OrderMapper.toDtoList(orders),
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
   }
 
   async findOne(id: number) {

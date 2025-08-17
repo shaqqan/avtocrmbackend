@@ -16,6 +16,7 @@ import { StockService } from './stock.service';
 import { CreateStockDto } from './dto/request/create-stock.dto';
 import { UpdateStockDto } from './dto/request/update-stock.dto';
 import { BasePaginationDto } from 'src/common/dto/request/base-pagination.dto';
+import { Paginate, PaginateQuery } from 'nestjs-paginate';
 import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { User } from 'src/databases/typeorm/entities';
@@ -61,7 +62,7 @@ export class StockController {
     status: 401,
     description: 'Unauthorized',
   })
-  findAll(@Query() query: BasePaginationDto) {
+  findAll(@Paginate() query: PaginateQuery) {
     return this.stockService.findAll(query);
   }
 

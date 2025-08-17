@@ -16,6 +16,7 @@ import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/request/create-order.dto';
 import { UpdateOrderDto } from './dto/request/update-order.dto';
 import { BasePaginationDto } from 'src/common/dto/request/base-pagination.dto';
+import { Paginate, PaginateQuery } from 'nestjs-paginate';
 import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { User } from 'src/databases/typeorm/entities';
@@ -60,7 +61,7 @@ export class OrderController {
     status: 401,
     description: 'Unauthorized',
   })
-  findAll(@Query() query: BasePaginationDto) {
+  findAll(@Paginate() query: PaginateQuery) {
     return this.orderService.findAll(query);
   }
 

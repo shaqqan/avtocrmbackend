@@ -21,7 +21,8 @@ import { CreatePermissionDto } from './dto/request/create-permission.dto';
 import { UpdatePermissionDto } from './dto/request/update-permission.dto';
 import { Permission } from '../../../databases/typeorm/entities/permission.entity';
 import { ApiGlobalResponses } from 'src/common/decorators/swagger';
-import { BasePaginationDto } from 'src/common/dto/request';
+import { BasePaginationDto, Paginated } from 'src/common/dto/request';
+import { Paginate, PaginateQuery } from 'nestjs-paginate';
 import {
   BasePaginationResponseDto,
   MessageResponseDto,
@@ -54,8 +55,8 @@ export class PermissionController {
   @RequirePermissions(PermissionsEnum.READ_PERMISSION)
   @ApiOperation({ summary: 'Get all permissions' })
   async findAll(
-    @Query() query: BasePaginationDto,
-  ): Promise<BasePaginationResponseDto<PermissionResponseDto>> {
+    @Paginate() query: PaginateQuery,
+  ): Promise<Paginated<Permission>> {
     return this.permissionService.findAll(query);
   }
 

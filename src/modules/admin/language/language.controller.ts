@@ -16,7 +16,9 @@ import { UpdateLanguageDto } from './dto/request/update-language.dto';
 import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiGlobalResponses } from 'src/common/decorators/swagger';
-import { BasePaginationDto } from 'src/common/dto/request';
+import { BasePaginationDto, Paginated } from 'src/common/dto/request';
+import { Paginate, PaginateQuery } from 'nestjs-paginate';
+import { Language } from 'src/databases/typeorm/entities';
 import { BasePaginationResponseDto } from 'src/common/dto/response/base-pagination.res.dto';
 import {
   MessageResponseDto,
@@ -48,8 +50,8 @@ export class LanguageController {
   @RequirePermissions(PermissionsEnum.READ_LANGUAGE)
   @ApiOperation({ summary: 'Get all languages' })
   async findAll(
-    @Query() query: BasePaginationDto,
-  ): Promise<BasePaginationResponseDto<LanguageResponseDto>> {
+    @Paginate() query: PaginateQuery,
+  ): Promise<Paginated<Language>> {
     return this.languageService.findAll(query);
   }
 

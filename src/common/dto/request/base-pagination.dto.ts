@@ -3,11 +3,15 @@ import { Type } from 'class-transformer';
 import { IsInt, Min, IsOptional, Max, IsString, IsEnum } from 'class-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
 
+// Re-export nestjs-paginate types for convenience
+export { PaginateQuery, Paginated, PaginateConfig } from 'nestjs-paginate';
+
 export enum SortOrder {
   ASC = 'asc',
   DESC = 'desc',
 }
 
+// Keep the legacy DTO for backward compatibility during migration
 export class BasePaginationDto {
   @ApiPropertyOptional({
     description: 'Page number',

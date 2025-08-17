@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Paginated } from 'nestjs-paginate';
 
 class Meta {
   @ApiProperty({
@@ -38,6 +39,7 @@ class Meta {
   hasPreviousPage: boolean;
 }
 
+// Legacy response DTO for backward compatibility
 export class BasePaginationResponseDto<T> {
   constructor(
     public data: T[],
@@ -58,3 +60,6 @@ export class BasePaginationResponseDto<T> {
     } as Meta;
   }
 }
+
+// Re-export nestjs-paginate types for convenience
+export { Paginated } from 'nestjs-paginate';

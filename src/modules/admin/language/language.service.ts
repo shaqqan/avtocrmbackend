@@ -6,7 +6,9 @@ import {
 } from '@nestjs/common';
 import { CreateLanguageDto } from './dto/request/create-language.dto';
 import { UpdateLanguageDto } from './dto/request/update-language.dto';
-import { BasePaginationDto, SortOrder } from 'src/common/dto/request';
+import { BasePaginationDto, SortOrder, PaginateQuery, Paginated } from 'src/common/dto/request';
+import { paginate } from 'nestjs-paginate';
+import { languagePaginateConfig } from 'src/common/utils/pagination.utils';
 import {
   BasePaginationResponseDto,
   MessageResponseDto,
@@ -38,47 +40,10 @@ export class LanguageService {
     );
   }
 
-  public async findAll({
-    take,
-    skip,
-    page,
-    limit,
-    sortBy,
-    sortOrder,
-    search,
-  }: BasePaginationDto): Promise<
-    BasePaginationResponseDto<LanguageResponseDto>
-  > {
-    const allowedSortFields: string[] = [
-      'id',
-      'name',
-      'locale',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    if (!allowedSortFields.includes(sortBy)) {
-      throw new BadRequestException(
-        this.i18n.t('errors.VALIDATION.INVALID_SORT_BY'),
-      );
-    }
-
-    const [languages, total] = await this.languageRepository.findAndCount({
-      relations: { icon: true },
-      where: search
-        ? [{ name: ILike(`%${search}%`) }, { locale: ILike(`%${search}%`) }]
-        : undefined,
-      order: {
-        [sortBy]: sortOrder === SortOrder.ASC ? 'ASC' : 'DESC',
-      },
-      skip,
-      take,
-    });
-
-    return new BasePaginationResponseDto(LanguageMapper.toDtoList(languages), {
-      total,
-      page: page,
-      limit: limit,
+  public async findAll(query: PaginateQuery): Promise<Paginated<Language>> {
+    return paginate(query, this.languageRepository, {
+      ...languagePaginateConfig,
+      relations: ['icon'],
     });
   }
 

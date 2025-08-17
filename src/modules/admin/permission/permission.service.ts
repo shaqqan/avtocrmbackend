@@ -15,7 +15,9 @@ import {
   MessageResponseDto,
   MessageWithDataResponseDto,
 } from 'src/common/dto/response';
-import { BasePaginationDto, SortOrder } from 'src/common/dto/request';
+import { BasePaginationDto, SortOrder, PaginateQuery, Paginated } from 'src/common/dto/request';
+import { paginate } from 'nestjs-paginate';
+import { permissionPaginateConfig } from 'src/common/utils/pagination.utils';
 import { PermissionMapper } from './mapper/permission.mapper';
 import { PermissionResponseDto } from './dto/response/permission.res.dto';
 
@@ -39,47 +41,8 @@ export class PermissionService {
     );
   }
 
-  async findAll({
-    take,
-    skip,
-    page,
-    limit,
-    sortBy,
-    sortOrder,
-    search,
-  }: BasePaginationDto): Promise<
-    BasePaginationResponseDto<PermissionResponseDto>
-  > {
-    const allowedSortFields: string[] = [
-      'id',
-      'name',
-      'action',
-      'subject',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    if (!allowedSortFields.includes(sortBy)) {
-      throw new BadRequestException(
-        this.i18n.t('errors.VALIDATION.INVALID_SORT_BY'),
-      );
-    }
-
-    const [permissions, total] = await this.permissionRepository.findAndCount({
-      where: search
-        ? [{ name: ILike(`%${search}%`) }, { action: ILike(`%${search}%`) }]
-        : undefined,
-      order: {
-        [sortBy]: sortOrder === SortOrder.ASC ? 'ASC' : 'DESC',
-      },
-      skip,
-      take,
-    });
-
-    return new BasePaginationResponseDto(
-      PermissionMapper.toDtoList(permissions),
-      { total, page, limit },
-    );
+  async findAll(query: PaginateQuery): Promise<Paginated<Permission>> {
+    return paginate(query, this.permissionRepository, permissionPaginateConfig);
   }
 
   async findOne(id: number): Promise<PermissionResponseDto> {

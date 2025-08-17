@@ -10,9 +10,11 @@ import { Customer } from 'src/databases/typeorm/entities';
 import { CreateCustomerDto } from './dto/request/create-customer.dto';
 import { UpdateCustomerDto } from './dto/request/update-customer.dto';
 import { CustomerMapper } from './mapper/customer.mapper';
-import { BasePaginationDto } from 'src/common/dto/request/base-pagination.dto';
+import { BasePaginationDto, PaginateQuery, Paginated } from 'src/common/dto/request/base-pagination.dto';
 import { MessageWithDataResponseDto } from 'src/common/dto/response/message-with-data.res.dto';
 import { MessageResponseDto } from 'src/common/dto/response/message.res.dto';
+import { paginate } from 'nestjs-paginate';
+import { customerPaginateConfig } from 'src/common/utils/pagination.utils';
 
 @Injectable()
 export class CustomerService {
@@ -44,62 +46,8 @@ export class CustomerService {
     );
   }
 
-  async findAll(query: BasePaginationDto) {
-    const { take, skip, page, limit, sortBy, sortOrder, search } = query;
-
-    const allowedSortFields = [
-      'id',
-      'pinfl',
-      'firstName',
-      'lastName',
-      'middleName',
-      'phoneNumber',
-      'address',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    // Validate sortBy field
-    const validSortBy = allowedSortFields.includes(sortBy)
-      ? sortBy
-      : 'createdAt';
-
-    // Validate sortOrder
-    const validSortOrder = ['ASC', 'DESC'].includes(sortOrder?.toUpperCase())
-      ? (sortOrder.toUpperCase() as 'ASC' | 'DESC')
-      : 'DESC';
-
-    // Build where conditions for search
-    let whereConditions: any = {};
-    if (search && search.trim()) {
-      whereConditions = [
-        { pinfl: ILike(`%${search.trim()}%`) },
-        { firstName: ILike(`%${search.trim()}%`) },
-        { lastName: ILike(`%${search.trim()}%`) },
-        { middleName: ILike(`%${search.trim()}%`) },
-        { phoneNumber: ILike(`%${search.trim()}%`) },
-        { address: ILike(`%${search.trim()}%`) },
-      ];
-    }
-
-    const [customers, total] = await this.customerRepository.findAndCount({
-      where: whereConditions,
-      order: {
-        [validSortBy]: validSortOrder,
-      },
-      skip,
-      take,
-    });
-
-    return {
-      data: CustomerMapper.toDtoList(customers),
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
+  async findAll(query: PaginateQuery): Promise<Paginated<Customer>> {
+    return paginate(query, this.customerRepository, customerPaginateConfig);
   }
 
   async findOne(id: number) {

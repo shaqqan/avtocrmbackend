@@ -16,6 +16,7 @@ import { AutoColorService } from './auto-color.service';
 import { CreateAutoColorDto } from './dto/request/create-auto-color.dto';
 import { UpdateAutoColorDto } from './dto/request/update-auto-color.dto';
 import { BasePaginationDto } from 'src/common/dto/request/base-pagination.dto';
+import { Paginate, PaginateQuery } from 'nestjs-paginate';
 import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { User } from 'src/databases/typeorm/entities';
@@ -60,7 +61,7 @@ export class AutoColorController {
     status: 401,
     description: 'Unauthorized',
   })
-  findAll(@Query() query: BasePaginationDto) {
+  findAll(@Paginate() query: PaginateQuery) {
     return this.autoColorService.findAll(query);
   }
 

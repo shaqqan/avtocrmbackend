@@ -18,7 +18,9 @@ import { UpdateRoleDto } from './dto/request/update-role.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiGlobalResponses } from 'src/common/decorators/swagger';
 import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
-import { BasePaginationDto } from 'src/common/dto/request';
+import { BasePaginationDto, Paginated } from 'src/common/dto/request';
+import { Paginate, PaginateQuery } from 'nestjs-paginate';
+import { Role } from 'src/databases/typeorm/entities';
 import {
   BasePaginationResponseDto,
   MessageResponseDto,
@@ -51,8 +53,8 @@ export class RoleController {
   @RequirePermissions(PermissionsEnum.READ_ROLE)
   @ApiOperation({ summary: 'Get all roles' })
   async findAll(
-    @Query() query: BasePaginationDto,
-  ): Promise<BasePaginationResponseDto<RoleResponseDto>> {
+    @Paginate() query: PaginateQuery,
+  ): Promise<Paginated<Role>> {
     return this.roleService.findAll(query);
   }
 

@@ -10,7 +10,9 @@ import { AutoPosition, AutoModels } from 'src/databases/typeorm/entities';
 import { CreateAutoPositionDto } from './dto/request/create-auto-position.dto';
 import { UpdateAutoPositionDto } from './dto/request/update-auto-position.dto';
 import { AutoPositionMapper } from './mapper/auto-position.mapper';
-import { BasePaginationDto } from 'src/common/dto/request/base-pagination.dto';
+import { BasePaginationDto, PaginateQuery, Paginated } from 'src/common/dto/request/base-pagination.dto';
+import { paginate } from 'nestjs-paginate';
+import { autoPositionPaginateConfig } from 'src/common/utils/pagination.utils';
 import { FindAllAutoPositionDto } from './dto/request/find-all-auto-position.dto';
 import { MessageWithDataResponseDto } from 'src/common/dto/response/message-with-data.res.dto';
 import { MessageResponseDto } from 'src/common/dto/response/message.res.dto';
@@ -71,90 +73,24 @@ export class AutoPositionService {
     );
   }
 
-  public async findAll(query: FindAllAutoPositionDto) {
-    const { take, skip, page, limit, sortBy, sortOrder, search, autoModelId } = query;
-
-    const allowedSortFields = [
-      'id',
-      'name',
-      'autoModelId',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    // Validate sortBy field
-    const validSortBy = allowedSortFields.includes(sortBy)
-      ? sortBy
-      : 'createdAt';
-
-    // Validate sortOrder
-    const validSortOrder = ['ASC', 'DESC'].includes(sortOrder?.toUpperCase())
-      ? (sortOrder.toUpperCase() as 'ASC' | 'DESC')
-      : 'DESC';
-
-    // Build where conditions for search and filters
-    let whereCondition: any = {};
-    
-    // Add autoModelId filter
-    if (autoModelId) {
-      whereCondition.autoModelId = autoModelId;
-    }
-    
-    // Add search conditions
-    if (search) {
-      if (autoModelId) {
-        // If we have autoModelId filter, we need to use OR for search
-        whereCondition = [
-          { ...whereCondition, name: ILike(`%${search}%`) },
-          { ...whereCondition, autoModel: { name: ILike(`%${search}%`) } },
-        ];
-      } else {
-        // If no autoModelId filter, use simple OR for search
-        whereCondition = [
-          { name: ILike(`%${search}%`) },
-          { autoModel: { name: ILike(`%${search}%`) } },
-        ];
-      }
-    }
-
-    const [positions, total] = await this.autoPositionRepository.findAndCount({
-      select: {
-        id: true,
-        name: true,
+  public async findAll(query: PaginateQuery & { autoModelId?: number }): Promise<Paginated<AutoPosition>> {
+    // If autoModelId is provided, add it as a filter
+    const config = { ...autoPositionPaginateConfig };
+    if (query.autoModelId) {
+      config.filterableColumns = {
+        ...config.filterableColumns,
         autoModelId: true,
-        createdAt: true,
-        updatedAt: true,
-        autoModel: {
-          id: true,
-          name: true,
-          brand: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-      where: whereCondition,
-      order: {
-        [validSortBy]: validSortOrder,
-      },
+      };
+    }
+
+    return paginate(query, this.autoPositionRepository, {
+      ...config,
       relations: {
         autoModel: {
           brand: true,
         },
       },
-      skip,
-      take,
     });
-
-    return {
-      data: AutoPositionMapper.toDtoList(positions),
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
   }
 
   public async findOne(id: number) {

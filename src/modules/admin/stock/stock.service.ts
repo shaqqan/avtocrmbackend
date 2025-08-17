@@ -10,7 +10,9 @@ import { Stock, Warehouse, AutoModels, AutoColor, AutoPosition, StockStatus } fr
 import { CreateStockDto } from './dto/request/create-stock.dto';
 import { UpdateStockDto } from './dto/request/update-stock.dto';
 import { StockMapper } from './mapper/stock.mapper';
-import { BasePaginationDto } from 'src/common/dto/request/base-pagination.dto';
+import { BasePaginationDto, PaginateQuery, Paginated } from 'src/common/dto/request/base-pagination.dto';
+import { paginate } from 'nestjs-paginate';
+import { stockPaginateConfig } from 'src/common/utils/pagination.utils';
 import { MessageWithDataResponseDto } from 'src/common/dto/response/message-with-data.res.dto';
 import { MessageResponseDto } from 'src/common/dto/response/message.res.dto';
 
@@ -117,97 +119,16 @@ export class StockService {
     );
   }
 
-  public async findAll(query: BasePaginationDto) {
-    const { take, skip, page, limit, sortBy, sortOrder, search } = query;
-
-    const allowedSortFields = [
-      'id',
-      'bodyNumber',
-      'arrivalDate',
-      'status',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    // Validate sortBy field
-    const validSortBy = allowedSortFields.includes(sortBy)
-      ? sortBy
-      : 'createdAt';
-
-    // Validate sortOrder
-    const validSortOrder = ['ASC', 'DESC'].includes(sortOrder?.toUpperCase())
-      ? (sortOrder.toUpperCase() as 'ASC' | 'DESC')
-      : 'DESC';
-
-    // Build where conditions for search
-    const whereConditions: any[] = [];
-    if (search) {
-      whereConditions.push(
-        { bodyNumber: ILike(`%${search}%`) },
-        { warehouse: { name: ILike(`%${search}%`) } },
-        { autoModel: { name: ILike(`%${search}%`) } },
-        { autoColor: { name: ILike(`%${search}%`) } },
-        { autoPosition: { name: ILike(`%${search}%`) } },
-      );
-    }
-
-    const [stocks, total] = await this.stockRepository.findAndCount({
-      select: {
-        id: true,
-        warehouseId: true,
-        autoModelId: true,
-        autoColorId: true,
-        autoPositionId: true,
-        bodyNumber: true,
-        arrivalDate: true,
-        status: true,
-        createdAt: true,
-        updatedAt: true,
-        warehouse: {
-          id: true,
-          name: true,
-          address: true,
-        },
-        autoModel: {
-          id: true,
-          name: true,
-          brand: {
-            id: true,
-            name: true,
-          },
-        },
-        autoColor: {
-          id: true,
-          name: true,
-        },
-        autoPosition: {
-          id: true,
-          name: true,
-        },
-      },
-      where: whereConditions.length > 0 ? whereConditions : undefined,
-      order: {
-        [validSortBy]: validSortOrder,
-      },
+  public async findAll(query: PaginateQuery): Promise<Paginated<Stock>> {
+    return paginate(query, this.stockRepository, {
+      ...stockPaginateConfig,
       relations: {
         warehouse: true,
         autoModel: { brand: true },
         autoColor: true,
         autoPosition: true,
       },
-      skip,
-      take,
     });
-
-    return {
-      data: StockMapper.toDtoList(stocks),
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
   }
 
   public async findOne(id: number) {

@@ -10,7 +10,9 @@ import { AutoColor } from 'src/databases/typeorm/entities';
 import { CreateAutoColorDto } from './dto/request/create-auto-color.dto';
 import { UpdateAutoColorDto } from './dto/request/update-auto-color.dto';
 import { AutoColorMapper } from './mapper/auto-color.mapper';
-import { BasePaginationDto } from 'src/common/dto/request/base-pagination.dto';
+import { BasePaginationDto, PaginateQuery, Paginated } from 'src/common/dto/request/base-pagination.dto';
+import { paginate } from 'nestjs-paginate';
+import { autoColorPaginateConfig } from 'src/common/utils/pagination.utils';
 import { MessageWithDataResponseDto } from 'src/common/dto/response/message-with-data.res.dto';
 import { MessageResponseDto } from 'src/common/dto/response/message.res.dto';
 
@@ -51,67 +53,11 @@ export class AutoColorService {
     );
   }
 
-  public async findAll(query: BasePaginationDto) {
-    const { take, skip, page, limit, sortBy, sortOrder, search } = query;
-
-    const allowedSortFields = [
-      'id',
-      'name',
-      'autoModelId',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    // Validate sortBy field
-    const validSortBy = allowedSortFields.includes(sortBy)
-      ? sortBy
-      : 'createdAt';
-
-    // Validate sortOrder
-    const validSortOrder = ['ASC', 'DESC'].includes(sortOrder?.toUpperCase())
-      ? (sortOrder.toUpperCase() as 'ASC' | 'DESC')
-      : 'DESC';
-
-    // Build where conditions for search
-    const whereConditions: any[] = [];
-    if (search) {
-      whereConditions.push(
-        { name: ILike(`%${search}%`) },
-      );
-    }
-
-    const [colors, total] = await this.autoColorRepository.findAndCount({
-      select: {
-        id: true,
-        name: true,
-        autoModelId: true,
-        createdAt: true,
-        updatedAt: true,
-        autoModel: {
-          id: true,
-          name: true,
-        },
-      },
-      where: whereConditions.length > 0 ? whereConditions : undefined,
-      order: {
-        [validSortBy]: validSortOrder,
-      },
-      relations: {
-        autoModel: true,
-      },
-      skip,
-      take,
+  public async findAll(query: PaginateQuery): Promise<Paginated<AutoColor>> {
+    return paginate(query, this.autoColorRepository, {
+      ...autoColorPaginateConfig,
+      relations: ['autoModel'],
     });
-
-    return {
-      data: AutoColorMapper.toDtoList(colors),
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
   }
 
   public async findOne(id: number) {

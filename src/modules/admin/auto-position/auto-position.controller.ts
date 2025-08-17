@@ -17,6 +17,7 @@ import { CreateAutoPositionDto } from './dto/request/create-auto-position.dto';
 import { UpdateAutoPositionDto } from './dto/request/update-auto-position.dto';
 import { BasePaginationDto } from 'src/common/dto/request/base-pagination.dto';
 import { FindAllAutoPositionDto } from './dto/request/find-all-auto-position.dto';
+import { Paginate, PaginateQuery } from 'nestjs-paginate';
 import { JwtAuthAdminAccessGuard } from 'src/common/guards/admin';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { User } from 'src/databases/typeorm/entities';
@@ -64,7 +65,7 @@ export class AutoPositionController {
     status: 401,
     description: 'Unauthorized',
   })
-  findAll(@Query() query: FindAllAutoPositionDto) {
+  findAll(@Paginate() query: PaginateQuery & { autoModelId?: number }) {
     return this.autoPositionService.findAll(query);
   }
 

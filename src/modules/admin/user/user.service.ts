@@ -10,12 +10,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository, In } from 'typeorm';
 import { User, Role } from 'src/databases/typeorm/entities';
 import { I18nContext, I18nService } from 'nestjs-i18n';
-import { BasePaginationDto } from 'src/common/dto/request';
+import { BasePaginationDto, PaginateQuery, Paginated } from 'src/common/dto/request';
 import {
   BasePaginationResponseDto,
   MessageResponseDto,
   MessageWithDataResponseDto,
 } from 'src/common/dto/response';
+import { paginate } from 'nestjs-paginate';
+import { userPaginateConfig } from 'src/common/utils/pagination.utils';
 import { UserMapper } from './mapper/user.mapper';
 import * as bcrypt from 'bcrypt';
 
@@ -77,7 +79,15 @@ export class UserService {
     );
   }
 
-  public async findAll(query: BasePaginationDto) {
+  public async findAll(query: PaginateQuery): Promise<Paginated<User>> {
+    return paginate(query, this.userRepository, {
+      ...userPaginateConfig,
+      relations: ['roles'],
+    });
+  }
+
+  // Legacy method for backward compatibility
+  public async findAllLegacy(query: BasePaginationDto) {
     const { take, skip, page, limit, sortBy, sortOrder, search } = query;
 
     const allowedSortFields = [

@@ -14,8 +14,10 @@ import {
   MessageWithDataResponseDto,
 } from 'src/common/dto/response';
 import { I18nService } from 'nestjs-i18n';
-import { BasePaginationDto, SortOrder } from 'src/common/dto/request';
+import { BasePaginationDto, SortOrder, PaginateQuery, Paginated } from 'src/common/dto/request';
 import { BasePaginationResponseDto } from 'src/common/dto/response';
+import { paginate } from 'nestjs-paginate';
+import { rolePaginateConfig } from 'src/common/utils/pagination.utils';
 import { AssignPermissionDto } from './dto/request/assign-permission.dto';
 import { RoleMapper } from './mapper/role.mapper';
 import { RoleResponseDto } from './dto/response/role.res.dto';
@@ -50,50 +52,10 @@ export class RoleService {
     );
   }
 
-  async findAll({
-    take,
-    skip,
-    page,
-    limit,
-    sortBy,
-    sortOrder,
-    search,
-  }: BasePaginationDto): Promise<BasePaginationResponseDto<RoleResponseDto>> {
-    const allowedSortFields: string[] = [
-      'id',
-      'name',
-      'createdAt',
-      'updatedAt',
-    ];
-
-    if (!allowedSortFields.includes(sortBy)) {
-      throw new BadRequestException(
-        this.i18n.t('errors.VALIDATION.INVALID_SORT_BY'),
-      );
-    }
-
-    const [roles, total] = await this.roleRepository.findAndCount({
-      select: {
-        permissions: {
-          id: true,
-          name: true,
-        },
-      },
-      relations: {
-        permissions: true,
-      },
-      where: search ? [{ name: ILike(`%${search}%`) }] : undefined,
-      order: {
-        [sortBy]: sortOrder === SortOrder.ASC ? 'ASC' : 'DESC',
-      },
-      skip,
-      take,
-    });
-
-    return new BasePaginationResponseDto(RoleMapper.toDtoList(roles), {
-      total,
-      page,
-      limit,
+  async findAll(query: PaginateQuery): Promise<Paginated<Role>> {
+    return paginate(query, this.roleRepository, {
+      ...rolePaginateConfig,
+      relations: ['permissions'],
     });
   }
 
